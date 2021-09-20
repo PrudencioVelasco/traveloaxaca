@@ -84,7 +84,7 @@
     
     "comments" : "Comentarios",
     "write a comment" : "Escribir un comentario", 
-
+    "comment":"Comentar",
 
     
     "no content" : "No se encontraron contenidos",
@@ -125,7 +125,13 @@
     "ubication":"Ubicacion",
     "turistics routers":"Rutas Turisticas",
 
-    "activity or divertion":"Actividad o diversion",
+    "divertion":"Diversion",
+    "activity":"Actividad",
     "attractive turistic":"Atractivo Turistico",
-    "category":"Category"
+    "category":"Category",
+    "search":"Buscar",
+    "explorer":"Explorar",
+    "events":"Eventos",
+    "number":"Numero",
+    "map":"Mapa"
 }

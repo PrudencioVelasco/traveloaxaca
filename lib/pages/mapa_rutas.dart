@@ -67,7 +67,8 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
             element.direccion ?? '',
             element.latitud ?? 0.0,
             element.longitud ?? 0.0,
-            element.numero ?? 0);
+            element.numero ?? 0,
+            element.descripcion ?? '');
         _alldata.add(d);
         _alldata.sort((a, b) => a.numero.compareTo(b.numero));
       });
@@ -183,7 +184,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                         height: 10,
                       ),
                       Text(
-                        ' ${_alldata[index].numero} -  ${_alldata[index].nombre} 1',
+                        ' ${_alldata[index].numero} -  ${_alldata[index].nombre}',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -277,7 +278,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(top: 15, left: 15, right: 5),
+                    padding: EdgeInsets.only(top: 15, left: 15, right: 15),
                     child: Column(
                       children: <Widget>[
                         Row(
@@ -296,9 +297,34 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                                 style: TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w500),
                               ),
-                            )
+                            ),
                           ],
                         ),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: Icon(
+                                  Icons.book,
+                                  color: Colors.orangeAccent,
+                                  size: 25,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  _alldata[index].descripcion,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  maxLines: 8,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.justify,
+                                ),
+                              )
+                            ]),
                         Divider(),
                       ],
                     ),
@@ -431,11 +457,15 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
   }*/
 
   moveCamera() {
-    _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(_alldata[_pageController!.page!.toInt()].latitud,
-            _alldata[_pageController!.page!.toInt()].longitud),
-        zoom: 20,
-        bearing: 45.0,
-        tilt: 45.0)));
+    _controller!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+            target: LatLng(_alldata[_pageController!.page!.toInt()].latitud,
+                _alldata[_pageController!.page!.toInt()].longitud),
+            zoom: 15,
+            bearing: 90.0,
+            tilt: 45.0),
+      ),
+    );
   }
 }

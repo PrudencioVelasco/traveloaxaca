@@ -1,5 +1,6 @@
-/*import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:line_icons/line_icons.dart';
@@ -23,8 +24,17 @@ class PerfilPage extends StatefulWidget {
 
 class _PerfilPageState extends State<PerfilPage>
     with AutomaticKeepAliveClientMixin {
+  SignInBloc sb = new SignInBloc();
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+      // _con.init(context);
+    });
+  }
+
   openAboutDialog() {
-    final sb = context.read<SignInBloc>();
+    // final sb = context.read<SignInBloc>();
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -43,7 +53,8 @@ class _PerfilPageState extends State<PerfilPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final sb = context.watch<SignInBloc>();
+    // final sb = context.watch<SignInBloc>();
+    //  final sb = context.watch<SignInBloc>();
     return Scaffold(
         appBar: AppBar(
           title: Text('profile').tr(),
@@ -51,13 +62,13 @@ class _PerfilPageState extends State<PerfilPage>
           actions: [
             IconButton(
                 icon: Icon(FontAwesomeIcons.bell, size: 20),
-                onPressed: () => nextScreen(context, NotificationsPage()))
+                onPressed: () => {})
           ],
         ),
         body: ListView(
           padding: EdgeInsets.fromLTRB(20, 20, 20, 50),
           children: [
-            sb.isSignedIn == false ? GuestUserUI() : UserUI(),
+            (true) ? GuestUserUI() : UserUI(),
             Text(
               "general setting",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
@@ -80,7 +91,7 @@ class _PerfilPageState extends State<PerfilPage>
                     size: 20, color: Colors.white),
               ),
               trailing: Icon(
-                FontAwesomeIcons.ring,
+                FontAwesomeIcons.chevronRight,
                 size: 20,
               ),
               onTap: () async => await launch(
@@ -101,7 +112,7 @@ class _PerfilPageState extends State<PerfilPage>
                     Icon(FontAwesomeIcons.globe, size: 20, color: Colors.white),
               ),
               trailing: Icon(
-                FontAwesomeIcons.ring,
+                FontAwesomeIcons.chevronRight,
                 size: 20,
               ),
               onTap: () => nextScreenPopup(context, LanguagePopup()),
@@ -121,54 +132,11 @@ class _PerfilPageState extends State<PerfilPage>
                     Icon(FontAwesomeIcons.star, size: 20, color: Colors.white),
               ),
               trailing: Icon(
-                FontAwesomeIcons.ring,
+                FontAwesomeIcons.chevronRight,
                 size: 20,
               ),
               onTap: () async => LaunchReview.launch(
                   androidAppId: sb.packageName, iOSAppId: Config().iOSAppId),
-            ),
-            Divider(
-              height: 5,
-            ),
-            ListTile(
-              title: Text('licence').tr(),
-              leading: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: Colors.purpleAccent,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Icon(FontAwesomeIcons.paperclip,
-                    size: 20, color: Colors.white),
-              ),
-              trailing: Icon(
-                FontAwesomeIcons.ring,
-                size: 20,
-              ),
-              onTap: () => openAboutDialog(),
-            ),
-            Divider(
-              height: 5,
-            ),
-            ListTile(
-              title: Text('privacy policy').tr(),
-              leading: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Icon(FeatherIcons.lock, size: 20, color: Colors.white),
-              ),
-              trailing: Icon(
-                FeatherIcons.chevronRight,
-                size: 20,
-              ),
-              onTap: () async {
-                if (await canLaunch(Config().privacyPolicyUrl)) {
-                  launch(Config().privacyPolicyUrl);
-                }
-              },
             ),
             Divider(
               height: 5,
@@ -185,14 +153,9 @@ class _PerfilPageState extends State<PerfilPage>
                     Icon(FontAwesomeIcons.info, size: 20, color: Colors.white),
               ),
               trailing: Icon(
-                FontAwesomeIcons.ring,
+                FontAwesomeIcons.chevronRight,
                 size: 20,
               ),
-              onTap: () async {
-                if (await canLaunch(Config().ourWebsiteUrl)) {
-                  launch(Config().ourWebsiteUrl);
-                }
-              },
             ),
             Divider(
               height: 5,
@@ -223,14 +186,9 @@ class GuestUserUI extends StatelessWidget {
             child: Icon(FontAwesomeIcons.user, size: 20, color: Colors.white),
           ),
           trailing: Icon(
-            FontAwesomeIcons.ring,
+            FontAwesomeIcons.chevronRight,
             size: 20,
           ),
-          onTap: () => nextScreenPopup(
-              context,
-              SignInPage(
-                tag: 'popup',
-              )),
         ),
         SizedBox(
           height: 20,
@@ -245,7 +203,7 @@ class UserUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sb = context.watch<SignInBloc>();
+    // final sb = context.watch<SignInBloc>();
     return Column(
       children: [
         Container(
@@ -255,19 +213,20 @@ class UserUI extends StatelessWidget {
               CircleAvatar(
                   radius: 60,
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: CachedNetworkImageProvider(sb.imageUrl)),
+                  backgroundImage: CachedNetworkImageProvider(
+                      'http://via.placeholder.com/350x150')),
               SizedBox(
                 height: 10,
               ),
               Text(
-                sb.name,
+                'Prudencio',
                 style: TextStyle(fontSize: 18),
               )
             ],
           ),
         ),
         ListTile(
-          title: Text(sb.email),
+          title: Text('prudencio.vepa@gmail.com'),
           leading: Container(
             height: 30,
             width: 30,
@@ -281,7 +240,7 @@ class UserUI extends StatelessWidget {
           height: 5,
         ),
         ListTile(
-          title: Text(sb.joiningDate),
+          title: Text('28/04/1990'),
           leading: Container(
             height: 30,
             width: 30,
@@ -294,21 +253,20 @@ class UserUI extends StatelessWidget {
           height: 5,
         ),
         ListTile(
-            title: Text('edit profile').tr(),
-            leading: Container(
-              height: 30,
-              width: 30,
-              decoration: BoxDecoration(
-                  color: Colors.purpleAccent,
-                  borderRadius: BorderRadius.circular(5)),
-              child: Icon(FeatherIcons.edit3, size: 20, color: Colors.white),
-            ),
-            trailing: Icon(
-              FeatherIcons.chevronLeft,
-              size: 20,
-            ),
-            onTap: () => nextScreen(
-                context, EditProfile(name: sb.name, imageUrl: sb.imageUrl))),
+          title: Text('edit profile').tr(),
+          leading: Container(
+            height: 30,
+            width: 30,
+            decoration: BoxDecoration(
+                color: Colors.purpleAccent,
+                borderRadius: BorderRadius.circular(5)),
+            child: Icon(FeatherIcons.edit3, size: 20, color: Colors.white),
+          ),
+          trailing: Icon(
+            FeatherIcons.chevronLeft,
+            size: 20,
+          ),
+        ),
         Divider(
           height: 5,
         ),
@@ -348,15 +306,10 @@ class UserUI extends StatelessWidget {
               ),
               TextButton(
                 child: Text('yes').tr(),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await context.read<SignInBloc>().userSignout().then(
-                      (value) => nextScreenCloseOthers(context, SignInPage()));
-                },
+                onPressed: () => {},
               )
             ],
           );
         });
   }
 }
-*/

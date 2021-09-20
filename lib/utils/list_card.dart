@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/models/lugar.dart';
-//import 'package:travel_hour/pages/place_details.dart';
+import 'package:traveloaxaca/pages/place_details.dart';
+import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ListCard extends StatelessWidget {
   final Lugar? d;
@@ -18,6 +20,7 @@ class ListCard extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Container(
+            // color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.only(top: 15, bottom: 0),
@@ -25,16 +28,17 @@ class ListCard extends StatelessWidget {
             child: Stack(
               children: <Widget>[
                 Container(
-                  margin:
-                      EdgeInsets.only(top: 15, left: 25, right: 10, bottom: 10),
-                  alignment: Alignment.topLeft,
-                  height: 120,
+                  //  color: Colors.green,
                   decoration: BoxDecoration(
                     color: color,
                     borderRadius: BorderRadius.circular(5),
                   ),
+                  margin:
+                      EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
+                  alignment: Alignment.topLeft,
+                  height: 120,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 15, left: 115),
+                    padding: const EdgeInsets.only(top: 15, left: 135),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,9 +58,9 @@ class ListCard extends StatelessWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.map,
+                              FontAwesomeIcons.mapMarker,
                               size: 12,
-                              color: Colors.grey,
+                              color: Colors.red,
                             ),
                             SizedBox(
                               width: 3,
@@ -86,9 +90,12 @@ class ListCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Icon(
-                              LineIcons.heart,
+                              FontAwesomeIcons.heart,
                               size: 18,
-                              color: Colors.orangeAccent,
+                              color: Colors.red,
+                            ),
+                            SizedBox(
+                              width: 10,
                             ),
                             Text(
                               d!.love.toString(),
@@ -99,12 +106,15 @@ class ListCard extends StatelessWidget {
                               width: 20,
                             ),
                             Icon(
-                              Icons.comment,
+                              FontAwesomeIcons.comment,
                               size: 18,
-                              color: Colors.grey[700],
+                              color: Colors.blue,
+                            ),
+                            SizedBox(
+                              width: 10,
                             ),
                             Text(
-                              '0',
+                              d!.comentario.toString(),
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
@@ -119,8 +129,9 @@ class ListCard extends StatelessWidget {
             ),
           ),
           Positioned(
+              top: 40,
               bottom: 30,
-              left: 5,
+              left: 10,
               child: Hero(
                 tag: tag!,
                 child: Container(
@@ -128,11 +139,15 @@ class ListCard extends StatelessWidget {
                     width: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: CustomCacheImage(imageUrl: d!.primeraimagen!))),
+                        child: (d!.primeraimagen!.isNotEmpty)
+                            ? CustomCacheImage(imageUrl: d!.primeraimagen!)
+                            : Image.asset(
+                                "assets/images/no-image.png",
+                              ))),
               ))
         ],
       ),
-      // onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag)),
+      onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag!)),
     );
   }
 
@@ -264,7 +279,7 @@ class ListCard1 extends StatelessWidget {
               ))
         ],
       ),
-      // onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag)),
+      onTap: () => nextScreen(context, PlaceDetails(data: d, tag: "yt")),
     );
   }
 }

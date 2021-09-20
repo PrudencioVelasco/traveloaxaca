@@ -7,11 +7,12 @@ import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/ruta.dart';
-import 'package:traveloaxaca/pages/maparutas.dart';
+import 'package:traveloaxaca/pages/mapa_rutas.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LugaresRuta extends StatefulWidget {
   final Ruta ruta;
@@ -122,14 +123,14 @@ class _LugaresRutaState extends State<LugaresRuta> {
                           margin: EdgeInsets.only(right: 10),
 
                           child: Text(
-                            'Ver mapa',
+                            'map',
                             style: GoogleFonts.montserrat(
                               color: Colors.white,
                               fontSize: 12,
 
                               //  backgroundColor: Colors.white,
                             ),
-                          ),
+                          ).tr(),
                         ),
                       ),
                       onTap: () => nextScreen(
@@ -241,12 +242,12 @@ class _ListItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Icon(
-                            FontAwesomeIcons.mapMarked,
+                            FontAwesomeIcons.mapPin,
                             size: 16,
-                            color: Colors.grey,
+                            color: Colors.red,
                           ),
                           SizedBox(
-                            width: 3,
+                            width: 6,
                           ),
                           Expanded(
                             child: Text(
@@ -273,31 +274,30 @@ class _ListItem extends StatelessWidget {
                             width: 3,
                           ),
                           Text(
-                            d!.numero.toString(),
+                            'number: ${d!.numero.toString()}',
                             style: TextStyle(
                                 fontSize: 13, color: Colors.grey[700]),
-                          ),
+                          ).tr(),
                           Spacer(),
                           Icon(
                             LineIcons.heart,
-                            size: 16,
-                            color: Colors.grey,
+                            size: 18,
+                            color: Colors.red,
                           ),
                           SizedBox(
                             width: 3,
                           ),
                           Text(
                             d!.love.toString(),
-                            style: TextStyle(
-                                fontSize: 13, color: Colors.grey[700]),
+                            style: TextStyle(fontSize: 13, color: Colors.black),
                           ),
                           SizedBox(
                             width: 10,
                           ),
                           Icon(
                             LineIcons.comment,
-                            size: 16,
-                            color: Colors.grey,
+                            size: 18,
+                            color: Colors.blue,
                           ),
                           SizedBox(
                             width: 3,

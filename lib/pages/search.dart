@@ -49,14 +49,17 @@ class _SearchPageState extends State<SearchPage>
     return Scaffold(
       key: scaffoldKey,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(115),
+        preferredSize: Size.fromHeight(145),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           flexibleSpace: Column(
             children: [
-              SizedBox(height: 30),
+              SizedBox(height: 50),
               _textFielSearch(),
+              Container(
+                child: Text('Maps'),
+              )
             ],
           ),
           bottom: TabBar(

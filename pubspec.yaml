@@ -64,6 +64,7 @@ dependencies:
   html_unescape: ^2.0.0
   flutter_widget_from_html: ^0.7.0
   expandable: ^5.0.1
+  fluttertoast: ^8.0.8
 
 dev_dependencies:
   flutter_test:

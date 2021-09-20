@@ -153,9 +153,9 @@ class Header extends StatelessWidget {
             ],
           ),
           SizedBox(
-            height: 25,
+            height: 10,
           ),
-          InkWell(
+          /*InkWell(
             child: Container(
               alignment: Alignment.centerLeft,
               margin: EdgeInsets.only(left: 5, right: 5),
@@ -193,7 +193,7 @@ class Header extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => SearchPage()),
               );
             },
-          )
+          )*/
         ],
       ),
     );

@@ -1,11 +1,12 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
+import 'package:traveloaxaca/pages/buscar.dart';
 import 'package:traveloaxaca/pages/explorar.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
     Icons.bookmark,
     Icons.verified_user,
   ];
-  List _screens = [Explorar(), Explorar(), Explorar(), Explorar()];
+  List _screens = [Explorar(), BuscarPage(), Explorar(), PerfilPage()];
 
   void onTabTapped(int index) {
     setState(() {
@@ -71,27 +72,27 @@ class _HomeState extends State<Home> {
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(
             icon: Icon(Icons.apps),
-            title: Text('Home'),
+            title: Text('explorer').tr(),
             activeColor: Colors.red,
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(
-            icon: Icon(Icons.people),
-            title: Text('Users'),
+            icon: Icon(Icons.search),
+            title: Text('search').tr(),
             activeColor: Colors.purpleAccent,
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(
-            icon: Icon(Icons.message),
+            icon: Icon(Icons.event),
             title: Text(
-              'Messages test for mes teset test test ',
-            ),
+              'events',
+            ).tr(),
             activeColor: Colors.pink,
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(
             icon: Icon(Icons.person),
-            title: Text('User'),
+            title: Text('profile').tr(),
             activeColor: Colors.blue,
             textAlign: TextAlign.center,
           ),

@@ -5,16 +5,19 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
+import 'package:traveloaxaca/blocs/atractivo_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:traveloaxaca/models/actividad.dart';
+import 'package:traveloaxaca/models/atractivo.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:traveloaxaca/models/sitiosinteres.dart';
+import 'package:traveloaxaca/pages/comments.dart';
 import 'package:traveloaxaca/pages/guide.dart';
 import 'package:traveloaxaca/pages/hotel.dart';
 import 'package:traveloaxaca/pages/otras_opciones.dart';
@@ -43,10 +46,12 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   List<Lugar?> _listalugares = [];
   List<Categoria?> _listaCategoria = [];
   List<Actividad?> _listaActividad = [];
+  List<Atractivo?> _listaAtractivo = [];
 
   PopularPlacesBloc _con = new PopularPlacesBloc();
   CategoriaBloc _categoriaBloc = new CategoriaBloc();
   ActividadBloc _actividadBloc = new ActividadBloc();
+  AtractivoBloc _atractivoBloc = new AtractivoBloc();
 
   SitiosInteresBloc _sitiosInteresBloc = new SitiosInteresBloc();
   List<SitiosInteres> _sitiosInteres = [];
@@ -64,9 +69,11 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       _categoriaBloc.init(context, refresh);
       _sitiosInteresBloc.init(context, refresh);
       _actividadBloc.init(context, refresh);
+      _atractivoBloc.init(context, refresh);
     });
     getData();
     getActividadLugar();
+    getActractivoLugar();
     refresh();
   }
 
@@ -78,6 +85,11 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   void getActividadLugar() async {
     _listaActividad =
         (await _actividadBloc.obtenerActividadLugar(widget.data!.idlugar!));
+  }
+
+  void getActractivoLugar() async {
+    _listaAtractivo =
+        (await _atractivoBloc.obtenerAtractivoLugar(widget.data!.idlugar!));
   }
 
   void refresh() {
@@ -109,6 +121,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     } else {
       // context.read<BookmarkBloc>().onLoveIconClick(collectionName, widget.data.timestamp);
     }
+  }
+
+  agregarComentarioClick() {
+    bool _guestUser = true;
+    nextScreen(
+        context,
+        CommentsPage(
+          lugar: widget.data!,
+          collectionName: "places",
+        ));
   }
 
   @override
@@ -199,11 +221,12 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       )),
-                      IconButton(
-                          icon: const Icon(FontAwesomeIcons.comment),
+                      TextButton.icon(
                           onPressed: () {
-                            handleLoveClick();
-                          }),
+                            agregarComentarioClick();
+                          },
+                          icon: const Icon(FontAwesomeIcons.comment),
+                          label: Text("comment").tr()),
                       /* IconButton(
                           icon: BuildLoveIcon(
                               collectionName: collectionName,
@@ -276,7 +299,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                   SizedBox(
                     height: 25,
                   ),
-                  Html(data: '''${widget.data!.descripcion!}'''),
+                  Html(
+                    data: '${widget.data!.descripcion!}',
+                    style: {
+                      "body": Style(
+                        textAlign: TextAlign.justify,
+                        fontSize: FontSize(15.0),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    },
+                  ),
                   SizedBox(
                     height: 30,
                   ),
@@ -385,7 +417,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                 top: 10,
                               ),
                               child: Text(
-                                'activity or divertion',
+                                'activity',
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
@@ -417,7 +449,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           ],
                         )
                       : Text(''),
-                  (_sitiosInteres.length > 0)
+                  (_listaAtractivo.length > 0)
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -427,7 +459,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                 top: 10,
                               ),
                               child: Text(
-                                'attractive turistic',
+                                'divertion',
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
@@ -443,22 +475,72 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                   borderRadius: BorderRadius.circular(40)),
                             ),
                             Container(
-                              height: 260,
+                              height: 80,
                               //color: Colors.green,
                               width: MediaQuery.of(context).size.width,
-
                               child: ListView.builder(
-                                scrollDirection: Axis.vertical,
+                                scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
                                 physics: BouncingScrollPhysics(),
-                                itemCount: _sitiosInteres.length,
+                                itemCount: _listaAtractivo.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  return _buildPlayerModelList(
-                                      _sitiosInteres[index]);
+                                  return _choisAtractivos(
+                                      _listaAtractivo[index]);
                                 },
                               ),
                             ),
                           ],
+                        )
+                      : Text(''),
+                  (_sitiosInteres.length > 0)
+                      ? Container(
+                          //margin: EdgeInsets.only(right: 100),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(
+                                  left: 0,
+                                  top: 10,
+                                ),
+                                child: Text(
+                                  'attractive turistic',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ).tr(),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 8, bottom: 8),
+                                height: 3,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    borderRadius: BorderRadius.circular(40)),
+                              ),
+                              Container(
+                                //height: 260,
+                                //  margin: EdgeInsets.only(right: 55),
+                                // color: Colors.green,
+
+                                width: MediaQuery.of(context).size.width,
+                                child: ListView.builder(
+                                  // padding: EdgeInsets.only(right: 15, top: 5),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  physics: BouncingScrollPhysics(),
+                                  itemCount: _sitiosInteres.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return _buildPlayerModelList(
+                                        _sitiosInteres[index]);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         )
                       : Text(''),
                   (_listalugares.length > 0)
@@ -538,8 +620,29 @@ Widget _chois(Actividad? item) {
   );
 }
 
+Widget _choisAtractivos(Atractivo? item) {
+  return InkWell(
+    child: Container(
+      padding: EdgeInsets.all(5),
+      alignment: Alignment.topCenter,
+      margin: EdgeInsets.only(top: 0),
+      child: ChoiceChip(
+        elevation: 10,
+        pressElevation: 5,
+        label: Text(item!.nombreatractivo!),
+        selected: false,
+        padding: EdgeInsets.all(10),
+        labelStyle: TextStyle(color: Colors.white),
+        backgroundColor: Colors.blue,
+        onSelected: (bool value) {},
+      ),
+    ),
+  );
+}
+
 Widget _buildPlayerModelList(SitiosInteres items) {
   return Card(
+    //margin: EdgeInsets.all(10),
     child: ExpansionTile(
       title: Text(
         items.nombre!,
@@ -575,7 +678,11 @@ class ItemList extends StatelessWidget {
               tag: 'others',
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: CustomCacheImage(imageUrl: d!.primeraimagen!)),
+                  child: (d!.primeraimagen != null)
+                      ? CustomCacheImage(imageUrl: d!.primeraimagen!)
+                      : Image.asset(
+                          "assets/images/no-image.jpg",
+                        )),
             ),
             Align(
               alignment: Alignment.bottomLeft,

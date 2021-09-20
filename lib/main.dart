@@ -23,32 +23,42 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: context.supportedLocales,
-      localizationsDelegates: context.localizationDelegates,
-      locale: context.locale,
-      theme: ThemeData(
-          primarySwatch: Colors.blue,
-          primaryColor: Colors.blueAccent,
-          iconTheme: IconThemeData(color: Colors.grey[900]),
-          fontFamily: 'Muli',
-          scaffoldBackgroundColor: Colors.grey[100],
-          appBarTheme: AppBarTheme(
-            color: Colors.white,
-            elevation: 0,
-            iconTheme: IconThemeData(
-              color: Colors.grey[800],
-            ),
-            brightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
-            textTheme: TextTheme(
-                headline6: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    color: Colors.grey[900],
-                    fontWeight: FontWeight.w500)),
-          )),
-      title: 'Travel Oaxaca',
-      debugShowCheckedModeBanner: false,
-      home: Home(),
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: MaterialApp(
+        supportedLocales: context.supportedLocales,
+        localizationsDelegates: context.localizationDelegates,
+        locale: context.locale,
+        theme: ThemeData(
+            primarySwatch: Colors.blue,
+            primaryColor: Colors.blueAccent,
+            iconTheme: IconThemeData(color: Colors.grey[900]),
+            fontFamily: 'Muli',
+            scaffoldBackgroundColor: Colors.grey[100],
+            appBarTheme: AppBarTheme(
+              color: Colors.white,
+              elevation: 0,
+              iconTheme: IconThemeData(
+                color: Colors.grey[800],
+              ),
+              brightness:
+                  Platform.isAndroid ? Brightness.dark : Brightness.light,
+              textTheme: TextTheme(
+                  headline6: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      color: Colors.grey[900],
+                      fontWeight: FontWeight.w500)),
+            )),
+        title: 'Travel Oaxaca',
+        debugShowCheckedModeBanner: false,
+        home: Home(),
+      ),
     );
   }
 }

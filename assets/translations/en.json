@@ -84,7 +84,7 @@
     
     "comments" : "Comments",
     "write a comment" : "Write A Comment", 
-
+"comment":"Comment",
 
     
     "no content" : "No contents found",
@@ -124,8 +124,14 @@
     "hotel":"Hotel",
     "ubication":"Ubication",
     "turistics routers":"Turistics Routers",
-"activity or divertion":"Activity or Divertion",
+"activity":"Activity",
+"divertion":"Divertion",
 "attractive turistic":"Attractive Turistic",
-    "category":"Category"
+    "category":"Category",
+    "search":"Search",
+    "explorer":"Explorer",
+    "events":"Events",
+    "number":"Number",
+    "map":"Map"
 
 }
