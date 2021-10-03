@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/buscar_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
@@ -47,6 +48,8 @@ class _BuscarPageState extends State<BuscarPage> {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.black));
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -58,15 +61,15 @@ class _BuscarPageState extends State<BuscarPage> {
       child: Scaffold(
         key: scaffoldKey,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(130),
+          preferredSize: Size.fromHeight(100),
           child: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: Colors.white,
             flexibleSpace: Column(
               children: [
-                SizedBox(height: 35),
+                SizedBox(height: 45),
                 _textFielSearch(),
-                Row(
+                /* Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
@@ -87,7 +90,7 @@ class _BuscarPageState extends State<BuscarPage> {
                       ),
                     ),
                   ],
-                )
+                )*/
               ],
             ),
           ),
@@ -142,7 +145,7 @@ class _BuscarPageState extends State<BuscarPage> {
   }
 
   Widget _busquedaRapida() {
-    return Container(margin: EdgeInsets.all(10), child: CategoriaPage());
+    return Container(margin: EdgeInsets.all(0), child: CategoriaPage());
   }
 
   Widget _textFielSearch() {
@@ -164,7 +167,7 @@ class _BuscarPageState extends State<BuscarPage> {
         decoration: InputDecoration(
           hintText: 'search & explore'.tr(),
           prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 3),
             child: IconButton(
               icon: Icon(
                 Icons.search,
@@ -174,17 +177,43 @@ class _BuscarPageState extends State<BuscarPage> {
               onPressed: () {},
             ),
           ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.grey[800],
-              size: 25,
-            ),
-            onPressed: () {
-              _con.saerchInitialize();
-              busqueda = false;
-              refresh();
-            },
+          suffixIcon: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.grey[800],
+                  size: 25,
+                ),
+                onPressed: () {
+                  _con.saerchInitialize();
+                  busqueda = false;
+                  refresh();
+                },
+              ),
+              Container(
+                padding: EdgeInsets.only(right: 2),
+                child: IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.mapMarkedAlt,
+                    color: Colors.blue[400],
+                    size: 25,
+                  ),
+                  onPressed: () {
+                    if (busqueda == true && encontado == true) {
+                      nextScreen(context,
+                          MapaBusquedaPage(listalugares: _listaLugares));
+                    } else {
+                      openSnacbar(scaffoldKey, 'Primero haga la busquerda!');
+                    }
+                    busqueda = false;
+                    refresh();
+                  },
+                ),
+              ),
+            ],
           ),
           hintStyle: TextStyle(fontSize: 17, color: Colors.grey[500]),
           enabledBorder: OutlineInputBorder(

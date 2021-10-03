@@ -132,6 +132,10 @@
     "explorer":"Explorer",
     "events":"Events",
     "number":"Number",
-    "map":"Map"
-
+    "map":"Map",
+    "category places":"Category Places", 
+    "search others places":"Search others places",
+    "not found": "Not Found",
+    "close": "Close",
+    "like":"Like"
 }

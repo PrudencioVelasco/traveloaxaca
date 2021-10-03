@@ -56,112 +56,127 @@ class _PerfilPageState extends State<PerfilPage>
     // final sb = context.watch<SignInBloc>();
     //  final sb = context.watch<SignInBloc>();
     return Scaffold(
-        appBar: AppBar(
-          title: Text('profile').tr(),
-          centerTitle: false,
-          actions: [
-            IconButton(
-                icon: Icon(FontAwesomeIcons.bell, size: 20),
-                onPressed: () => {})
-          ],
-        ),
-        body: ListView(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 50),
-          children: [
-            (true) ? GuestUserUI() : UserUI(),
-            Text(
-              "general setting",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ).tr(),
-            SizedBox(
-              height: 15,
+      appBar: AppBar(
+        title: Text('profile').tr(),
+        centerTitle: false,
+        actions: [],
+      ),
+      body: ListView(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 50),
+        children: [
+          (true) ? GuestUserUI() : UserUI(),
+          Text(
+            "general setting",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ).tr(),
+          SizedBox(
+            height: 15,
+          ),
+          Divider(
+            height: 5,
+          ),
+          ListTile(
+            title: Text('contact us').tr(),
+            leading: Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(5)),
+              child: Icon(FontAwesomeIcons.mailBulk,
+                  size: 20, color: Colors.white),
             ),
-            Divider(
-              height: 5,
+            trailing: Icon(
+              FontAwesomeIcons.chevronRight,
+              size: 20,
             ),
-            ListTile(
-              title: Text('contact us').tr(),
-              leading: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Icon(FontAwesomeIcons.mailBulk,
-                    size: 20, color: Colors.white),
+            onTap: () async => await launch(
+                'mailto:${Config().supportEmail}?subject=About ${Config().appName} App&body='),
+          ),
+          Divider(
+            height: 5,
+          ),
+          ListTile(
+            title: Text('language').tr(),
+            leading: Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                  color: Colors.pinkAccent,
+                  borderRadius: BorderRadius.circular(5)),
+              child:
+                  Icon(FontAwesomeIcons.globe, size: 20, color: Colors.white),
+            ),
+            trailing: Icon(
+              FontAwesomeIcons.chevronRight,
+              size: 20,
+            ),
+            onTap: () => nextScreenPopup(context, LanguagePopup()),
+          ),
+          Divider(
+            height: 5,
+          ),
+          ListTile(
+            title: Text('rate this app').tr(),
+            leading: Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(5)),
+              child: Icon(FontAwesomeIcons.star, size: 20, color: Colors.white),
+            ),
+            trailing: Icon(
+              FontAwesomeIcons.chevronRight,
+              size: 20,
+            ),
+            onTap: () async => LaunchReview.launch(
+                androidAppId: sb.packageName, iOSAppId: Config().iOSAppId),
+          ),
+          Divider(
+            height: 5,
+          ),
+          ListTile(
+            title: Text('about us').tr(),
+            leading: Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                  color: Colors.green, borderRadius: BorderRadius.circular(5)),
+              child: Icon(FontAwesomeIcons.info, size: 20, color: Colors.white),
+            ),
+            trailing: Icon(
+              FontAwesomeIcons.chevronRight,
+              size: 20,
+            ),
+            onTap: () => abrirVentanaQuienesSomos(context),
+          ),
+          Divider(
+            height: 5,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void abrirVentanaQuienesSomos(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('about us').tr(),
+            content: Text(
+              'Somos un grupo de jóvenes Oaxaqueños que nos dimos a la tarea de crear esta aplicación para impulsas a nuestro Estado en el sector turístico.',
+              textAlign: TextAlign.justify,
+            ),
+            actions: [
+              TextButton(
+                child: Text('close').tr(),
+                onPressed: () => Navigator.pop(context),
               ),
-              trailing: Icon(
-                FontAwesomeIcons.chevronRight,
-                size: 20,
-              ),
-              onTap: () async => await launch(
-                  'mailto:${Config().supportEmail}?subject=About ${Config().appName} App&body='),
-            ),
-            Divider(
-              height: 5,
-            ),
-            ListTile(
-              title: Text('language').tr(),
-              leading: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: Colors.pinkAccent,
-                    borderRadius: BorderRadius.circular(5)),
-                child:
-                    Icon(FontAwesomeIcons.globe, size: 20, color: Colors.white),
-              ),
-              trailing: Icon(
-                FontAwesomeIcons.chevronRight,
-                size: 20,
-              ),
-              onTap: () => nextScreenPopup(context, LanguagePopup()),
-            ),
-            Divider(
-              height: 5,
-            ),
-            ListTile(
-              title: Text('rate this app').tr(),
-              leading: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: Colors.orangeAccent,
-                    borderRadius: BorderRadius.circular(5)),
-                child:
-                    Icon(FontAwesomeIcons.star, size: 20, color: Colors.white),
-              ),
-              trailing: Icon(
-                FontAwesomeIcons.chevronRight,
-                size: 20,
-              ),
-              onTap: () async => LaunchReview.launch(
-                  androidAppId: sb.packageName, iOSAppId: Config().iOSAppId),
-            ),
-            Divider(
-              height: 5,
-            ),
-            ListTile(
-              title: Text('about us').tr(),
-              leading: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(5)),
-                child:
-                    Icon(FontAwesomeIcons.info, size: 20, color: Colors.white),
-              ),
-              trailing: Icon(
-                FontAwesomeIcons.chevronRight,
-                size: 20,
-              ),
-            ),
-            Divider(
-              height: 5,
-            ),
-          ],
-        ));
+            ],
+          );
+        });
   }
 
   @override

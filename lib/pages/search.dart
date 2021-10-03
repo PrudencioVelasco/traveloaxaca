@@ -139,55 +139,59 @@ class _SearchPageState extends State<SearchPage>
   Widget _textFielSearch() {
     return Container(
       margin: EdgeInsets.all(10),
-      child: TextField(
-        controller: _con.textfieldCtrl,
-        onSubmitted: (value) {
-          _con.getData();
-          inputText = value;
-          if (value == '') {
-            openSnacbar(scaffoldKey, 'Type something!');
-          } else {
-            _con.setSearchText(value);
-            _con.addToSearchList(value);
-          }
-        },
-        decoration: InputDecoration(
-          hintText: 'Buscar..',
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 15),
-            child: IconButton(
-              icon: Icon(
-                Icons.keyboard_backspace,
-                color: Colors.grey[800],
-              ),
-              color: Colors.grey[800],
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.grey[800],
-              size: 25,
-            ),
-            onPressed: () {
-              _con.saerchInitialize();
+      child: Column(
+        children: [
+          TextField(
+            controller: _con.textfieldCtrl,
+            onSubmitted: (value) {
+              _con.getData();
+              inputText = value;
+              if (value == '') {
+                openSnacbar(scaffoldKey, 'Type something!');
+              } else {
+                _con.setSearchText(value);
+                _con.addToSearchList(value);
+              }
             },
+            decoration: InputDecoration(
+              hintText: 'Buscar..',
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(left: 10, right: 15),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.keyboard_backspace,
+                    color: Colors.grey[800],
+                  ),
+                  color: Colors.grey[800],
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.grey[800],
+                  size: 25,
+                ),
+                onPressed: () {
+                  _con.saerchInitialize();
+                },
+              ),
+              hintStyle: TextStyle(fontSize: 17, color: Colors.grey[500]),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              contentPadding: EdgeInsets.all(15),
+            ),
+            textInputAction: TextInputAction.search,
           ),
-          hintStyle: TextStyle(fontSize: 17, color: Colors.grey[500]),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          contentPadding: EdgeInsets.all(15),
-        ),
-        textInputAction: TextInputAction.search,
+        ],
       ),
     );
   }

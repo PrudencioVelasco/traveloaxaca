@@ -4,6 +4,10 @@ import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:traveloaxaca/pages/lugares_por_categoria.dart';
+import 'package:traveloaxaca/pages/more_activity.dart';
+import 'package:traveloaxaca/utils/loading_cards.dart';
+import 'package:traveloaxaca/utils/next_screen.dart';
 
 class CategoriaPage extends StatefulWidget {
   CategoriaPage({Key? key}) : super(key: key);
@@ -29,7 +33,9 @@ class _CategoriaPageState extends State<CategoriaPage> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -59,7 +65,7 @@ class _CategoriaPageState extends State<CategoriaPage> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.arrow_forward),
-                      onPressed: () => {},
+                      onPressed: () => nextScreen(context, MoreActivityPage()),
                     )
                   ],
                 ),
@@ -84,6 +90,10 @@ class _CategoriaPageState extends State<CategoriaPage> {
                   //itemCount: 6,
                   itemBuilder: (BuildContext ctx, index) {
                     //return tarjetas(_listaCategoria[index], context);
+                    if (_listasCategorias.isEmpty)
+                      return LoadingCard(
+                        height: 180,
+                      );
                     return InkWell(
                       child: Container(
                         padding: EdgeInsets.all(10),
@@ -122,7 +132,10 @@ class _CategoriaPageState extends State<CategoriaPage> {
                           ],
                         ),
                       ),
-                      //onTap: () => nextScreen(context, GuidePage(d: placeData)),
+                      onTap: () => nextScreen(
+                          context,
+                          LugaresPorCategoriaPage(
+                              categoria: _listasCategorias[index]!)),
                     );
                   },
                 ),

@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:http/http.dart' as http;
 import 'package:traveloaxaca/models/comment.dart';
@@ -17,6 +15,8 @@ class CommentsBloc extends ChangeNotifier {
 
   String date = "";
   String timestamp1 = "";
+  int _totalComentarios = 0;
+  int get totalComentarios => _totalComentarios;
 
   Future agregarCommentario(
       int idusuario, int idlugar, String comentario) async {
@@ -37,14 +37,16 @@ class CommentsBloc extends ChangeNotifier {
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
       // Comentario img = Atractivo.fromJsonToList(responseApi.data);
-      return responseApi.success;
+      await totalComentariosLugar(idlugar);
+      // return responseApi.success;
       // return img.toList;
     } catch (error) {
       print('Error: $error');
     }
+    //notifyListeners();
   }
 
-  Future eliminarCommentario(int idcomentario) async {
+  Future eliminarCommentario(int idcomentario, int idLugar) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
@@ -61,10 +63,12 @@ class CommentsBloc extends ChangeNotifier {
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
       // Comentario img = Atractivo.fromJsonToList(responseApi.data);
       return responseApi.success;
+
       // return img.toList;
     } catch (error) {
       print('Error: $error');
     }
+    await totalComentariosLugar(idLugar);
   }
 
   Future<List<Comentario?>> obtenerComentariosPorLugar(int idLugar) async {
@@ -87,6 +91,32 @@ class CommentsBloc extends ChangeNotifier {
       print('Error: $error');
       return [];
     }
-    //return null;
+  }
+
+  Future totalComentariosLugar(int idLugar) async {
+    this._totalComentarios = await obtenerTotalComentariosPorLugar(idLugar);
+    notifyListeners();
+  }
+
+  Future<int> obtenerTotalComentariosPorLugar(int idLugar) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    try {
+      Uri url = Uri.http(_url, '$_api/totalComentarioLugar');
+      String bodyParams = json.encode({'idlugar': idLugar});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      //Comentario img = Comentario.fromJsonToList(responseApi.data);
+      return responseApi.data;
+      // return img.toList;
+    } catch (error) {
+      print('Error: $error');
+      return 0;
+    }
   }
 }

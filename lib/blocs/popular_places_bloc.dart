@@ -101,6 +101,33 @@ class PopularPlacesBloc with ChangeNotifier {
     //return null;
   }
 
+  Future<Lugar?> obtenerDetalleLugar(int idLugar) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/lugar';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerLugaresDentroLugar');
+      String bodyParams = json.encode({'idlugar': idLugar});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      //return responseApi.data;
+      //lista = new List<Lugar>.from(responseApi.data);
+      Lugar img = Lugar.fromJsonToList(responseApi.data);
+      //_data = img.toList;
+
+      return img;
+    } catch (error) {
+      print('Error: $error');
+      return null;
+    }
+    //return null;
+  }
+
   onRefresh() {
     _data.clear();
     getData();

@@ -156,7 +156,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
             _onCardTap(index);
           },
           child: Container(
-            margin: EdgeInsets.only(left: 5, right: 5),
+            margin: EdgeInsets.only(left: 5, right: 5, bottom: 30),
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -176,7 +176,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(width: 0.5, color: Colors.grey)),
-                    child: Image.asset(Config().hotelIcon)),
+                    child: Image.asset(Config().placeMarkerIcon)),
                 Flexible(
                   child: Wrap(
                     children: [
@@ -199,7 +199,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                             fontWeight: FontWeight.w400,
                             color: Colors.black54),
                       ),
-                      Row(
+                      /* Row(
                         children: <Widget>[
                           Container(
                             height: 20,
@@ -226,7 +226,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                                 fontWeight: FontWeight.w500, fontSize: 13),
                           )
                         ],
-                      )
+                      )*/
                     ],
                   ),
                 ),
@@ -266,7 +266,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: Text(
-                              '${_alldata[index].numero} ${_alldata[index].nombre}',
+                              '${_alldata[index].nombre}',
                               style: TextStyle(
                                   fontSize: 25,
                                   color: Colors.white,
@@ -357,6 +357,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               child: GoogleMap(
+                mapToolbarEnabled: true,
                 compassEnabled: false,
                 zoomControlsEnabled: false,
                 myLocationButtonEnabled: false,

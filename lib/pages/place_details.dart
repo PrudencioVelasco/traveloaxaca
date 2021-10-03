@@ -7,11 +7,14 @@ import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/atractivo_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
+import 'package:traveloaxaca/blocs/comments_bloc.dart';
+import 'package:traveloaxaca/blocs/love_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/atractivo.dart';
 import 'package:traveloaxaca/models/categoria.dart';
+import 'package:traveloaxaca/models/icon_data.dart';
 import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +28,9 @@ import 'package:traveloaxaca/pages/restaurante.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
+import 'package:traveloaxaca/widgets/comment_count.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
+import 'package:traveloaxaca/widgets/love_count.dart';
 import 'package:traveloaxaca/widgets/love_icon.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -52,10 +57,12 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   CategoriaBloc _categoriaBloc = new CategoriaBloc();
   ActividadBloc _actividadBloc = new ActividadBloc();
   AtractivoBloc _atractivoBloc = new AtractivoBloc();
-
+  CommentsBloc _commentBloc = new CommentsBloc();
+  LoveBloc _loveBloc = new LoveBloc();
   SitiosInteresBloc _sitiosInteresBloc = new SitiosInteresBloc();
   List<SitiosInteres> _sitiosInteres = [];
-
+  int _totalLove = 0;
+  bool _marcadoCorazon = false;
   @override
   void initState() {
     super.initState();
@@ -64,17 +71,43 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       getAllImages(widget.data!.idlugar!);
       getAllCategorias(widget.data!.idlugar!);
       obtenerLugaresDentroLugar(widget.data!.idlugar!);
+      Provider.of<CommentsBloc>(context, listen: false)
+          .totalComentariosLugar(widget.data!.idlugar!);
+      Provider.of<LoveBloc>(context, listen: false)
+          .principalTotalLoves(widget.data!.idlugar!);
     });
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _categoriaBloc.init(context, refresh);
       _sitiosInteresBloc.init(context, refresh);
       _actividadBloc.init(context, refresh);
       _atractivoBloc.init(context, refresh);
+      _loveBloc.init(context, refresh);
     });
     getData();
     getActividadLugar();
     getActractivoLugar();
+    //totalLove();
+    //totalComment();
+    validarMarcadoCorazon();
     refresh();
+  }
+
+  void totalLove() async {
+    await _loveBloc.principalTotalLoves(widget.data!.idlugar!);
+  }
+
+  void totalComment() async {
+    await _commentBloc.totalComentariosLugar(widget.data!.idlugar!);
+  }
+
+  void validarMarcadoCorazon() async {
+    int lovePorUsuario =
+        await _loveBloc.obtenerLovePorUsuario(widget.data!.idlugar!, 1);
+    if (lovePorUsuario > 0) {
+      _marcadoCorazon = true;
+    } else {
+      _marcadoCorazon = false;
+    }
   }
 
   void getData() async {
@@ -93,7 +126,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void getAllImages(int idlugar) async {
@@ -118,6 +153,11 @@ class _PlaceDetailsState extends State<PlaceDetails> {
 
     if (_guestUser == true) {
       //openSignInDialog(context);
+      //final _loveBloc2 = Provider.of<LoveBloc>(context, listen: true);
+      context.read<LoveBloc>().onLoveIconClick(widget.data!.idlugar!);
+      // _loveBloc.onLoveIconClick(widget.data!.idlugar!);
+      //validarMarcadoCorazon();
+      //refresh();
     } else {
       // context.read<BookmarkBloc>().onLoveIconClick(collectionName, widget.data.timestamp);
     }
@@ -136,6 +176,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   @override
   Widget build(BuildContext context) {
     // final SignInBloc sb = context.watch<SignInBloc>();
+    final _loveBlocProvider = Provider.of<LoveBloc>(context, listen: true);
+    final _commentBlocProvider =
+        Provider.of<CommentsBloc>(context, listen: true);
     final double height = MediaQuery.of(context).size.height;
     final orientation = MediaQuery.of(context).orientation;
     return Scaffold(
@@ -146,37 +189,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                Hero(
-                  tag: widget.tag,
-                  child: Container(
-                    color: Colors.white,
-                    child: Container(
-                      height: 250,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                      ),
-                      child: CarouselSlider(
-                        options: CarouselOptions(
-                          height: height,
-                          viewportFraction: 1.0,
-                          enlargeCenterPage: false,
-                          autoPlay: true,
-                        ),
-                        items: lista
-                            .map((item) => Container(
-                                  child: Center(
-                                      child: Image.network(
-                                    item!.nombre!,
-                                    fit: BoxFit.cover,
-                                    height: height,
-                                  )),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                ),
+                _sliderImages(context, height),
                 Positioned(
                   top: 20,
                   left: 15,
@@ -204,6 +217,35 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      TextButton.icon(
+                        onPressed: () {
+                          handleLoveClick();
+                        },
+                        icon: (_loveBlocProvider.mostrarMarcadoCorazon)
+                            ? LoveIcon().bold
+                            : LoveIcon().normal,
+                        label: (_loveBlocProvider.mostrarMarcadoCorazon)
+                            ? Text(
+                                "like",
+                                style: TextStyle(color: Colors.red),
+                              ).tr()
+                            : Text(
+                                "like",
+                                style: TextStyle(color: Colors.grey),
+                              ).tr(),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          agregarComentarioClick();
+                        },
+                        icon: const Icon(FontAwesomeIcons.comment),
+                        label: Text("comment").tr(),
+                      ),
+                    ],
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Icon(
@@ -221,29 +263,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       )),
-                      TextButton.icon(
-                          onPressed: () {
-                            agregarComentarioClick();
-                          },
-                          icon: const Icon(FontAwesomeIcons.comment),
-                          label: Text("comment").tr()),
-                      /* IconButton(
-                          icon: BuildLoveIcon(
-                              collectionName: collectionName,
-                              uid: sb.uid,
-                              timestamp: widget.data.timestamp),
-                          onPressed: () {
-                            handleLoveClick();
-                          }),
-                      IconButton(
-                          icon: BuildBookmarkIcon(
-                              collectionName: collectionName,
-                              uid: sb.uid,
-                              timestamp: widget.data.timestamp),
-                          onPressed: () {
-                            handleBookmarkClick();
-                          }),
-                          */
                     ],
                   ),
                   Text(widget.data!.nombre!,
@@ -261,13 +280,14 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                   ),
                   Row(
                     children: <Widget>[
-                      Text(
-                        widget.data!.comentario!.toString(),
+                      CommentCount(idLugar: widget.data!.idlugar!),
+                      /*Text(
+                        _commentBlocProvider.totalComentarios.toString(),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                      ),
+                      ),*/
                       SizedBox(
                         width: 5,
                       ),
@@ -279,13 +299,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       SizedBox(
                         width: 10,
                       ),
-                      Text(
-                        widget.data!.love!.toString(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                      LoveCount(idlugar: widget.data!.idlugar!),
                       SizedBox(
                         width: 5,
                       ),
@@ -344,6 +358,8 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: _listaCategoria.length,
                             itemBuilder: (BuildContext ctx, index) {
+                              if (_listaCategoria.isEmpty)
+                                return LoadingPopularPlacesCard();
                               //return tarjetas(_listaCategoria[index], context);
                               return InkWell(
                                 child: Container(
@@ -594,6 +610,40 @@ class _PlaceDetailsState extends State<PlaceDetails> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Hero _sliderImages(BuildContext context, double height) {
+    return Hero(
+      tag: widget.tag,
+      child: Container(
+        color: Colors.white,
+        child: Container(
+          height: 250,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Colors.black,
+          ),
+          child: CarouselSlider(
+            options: CarouselOptions(
+              height: height,
+              viewportFraction: 1.0,
+              enlargeCenterPage: false,
+              autoPlay: true,
+            ),
+            items: lista
+                .map((item) => Container(
+                      child: Center(
+                          child: Image.network(
+                        item!.nombre!,
+                        fit: BoxFit.cover,
+                        height: height,
+                      )),
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );

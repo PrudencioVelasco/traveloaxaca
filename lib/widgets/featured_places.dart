@@ -33,7 +33,9 @@ class _FeaturedState extends State<Featured> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

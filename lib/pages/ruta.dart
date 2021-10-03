@@ -38,7 +38,9 @@ class _RutaPageState extends State<RutaPage> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -48,7 +50,7 @@ class _RutaPageState extends State<RutaPage> {
         Container(
           margin: EdgeInsets.only(
             left: 15,
-            top: 10,
+            top: 20,
           ),
           child: Row(
             children: <Widget>[
@@ -60,20 +62,16 @@ class _RutaPageState extends State<RutaPage> {
                     color: Colors.grey[800]),
               ).tr(),
               Spacer(),
-              IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed: () => {},
-              )
             ],
           ),
         ),
         Container(
           child: CarouselSlider(
             options: CarouselOptions(
-              autoPlay: false,
+              autoPlay: true,
               aspectRatio: 2.0,
               enlargeCenterPage: true,
-              autoPlayInterval: Duration(seconds: 3),
+              autoPlayInterval: Duration(seconds: 4),
             ),
             items: _ruta
                 .map((item) => Container(

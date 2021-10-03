@@ -35,7 +35,9 @@ class _PopularPlaces extends State<PopularPlaces> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

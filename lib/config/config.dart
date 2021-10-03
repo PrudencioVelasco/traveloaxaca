@@ -37,6 +37,7 @@ class Config {
   final String hotelPinIcon = 'assets/images/hotel_pin.png';
   final String restaurantPinIcon = 'assets/images/restaurant_pin.png';
   final String drivingMarkerIcon = 'assets/images/driving_pin.png';
+  final String placeMarkerIcon = 'assets/images/lugar.png';
   final String destinationMarkerIcon =
       'assets/images/destination_map_marker.png';
 }

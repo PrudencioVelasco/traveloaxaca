@@ -210,20 +210,22 @@ class _ListItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                    height: 150,
-                    width: MediaQuery.of(context).size.width,
-                    child: Hero(
-                        tag: tag,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5)),
-                          child: (d!.primeraimagen!.isNotEmpty)
-                              ? CustomCacheImage(imageUrl: d!.primeraimagen!)
-                              : Image.asset(
-                                  "assets/images/no-image.png",
-                                ),
-                        ))),
+                  height: 150,
+                  width: MediaQuery.of(context).size.width,
+                  child: Hero(
+                    tag: tag,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5)),
+                      child: (d!.primeraimagen!.isNotEmpty)
+                          ? CustomCacheImage(imageUrl: d!.primeraimagen!)
+                          : Image.asset(
+                              "assets/images/no-image.png",
+                            ),
+                    ),
+                  ),
+                ),
                 Container(
                   padding: EdgeInsets.all(15),
                   child: Column(

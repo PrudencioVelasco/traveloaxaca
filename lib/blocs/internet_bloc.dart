@@ -2,6 +2,11 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
 class InternetBloc extends ChangeNotifier {
+  BuildContext? context;
+  Future? init(BuildContext context) async {
+    this.context = context;
+  }
+
   bool _hasInternet = false;
 
   InternetBloc() {

@@ -128,10 +128,15 @@
     "divertion":"Diversion",
     "activity":"Actividad",
     "attractive turistic":"Atractivo Turistico",
-    "category":"Category",
+    "category":"Categoria",
     "search":"Buscar",
     "explorer":"Explorar",
     "events":"Eventos",
     "number":"Numero",
-    "map":"Mapa"
+    "map":"Mapa",
+    "category places":"Categoria de lugares",
+    "search others places":"Busque otros lugares",
+    "not found": "No funciona",
+    "close": "Cerrar",
+    "like":"Me gusta"
 }

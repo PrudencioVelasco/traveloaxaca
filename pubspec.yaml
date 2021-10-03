@@ -29,7 +29,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   animated_bottom_navigation_bar: ^0.3.2 
-  provider: ^6.0.0
+  provider: ^6.0.1
   flutter_feather_icons: ^2.0.0+1
   cached_network_image: ^3.1.0
   shared_preferences: ^2.0.7
@@ -65,6 +65,9 @@ dependencies:
   flutter_widget_from_html: ^0.7.0
   expandable: ^5.0.1
   fluttertoast: ^8.0.8
+  another_flushbar: ^1.10.24
+  splash_screen_view: ^3.0.0
+  shimmer: ^2.0.0
 
 dev_dependencies:
   flutter_test:

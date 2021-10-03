@@ -40,12 +40,14 @@ class _CommentsPageState extends State<CommentsPage> {
   var textCtrl = TextEditingController();
   bool? _hasData;
   List<Comentario?> _listComentarios = [];
+  InternetBloc _internetBloc = new InternetBloc();
   @override
   void initState() {
     controller = new ScrollController()..addListener(_scrollListener);
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _commentsBloc.init(context);
+      _internetBloc.init(context);
     });
     _isLoading = true;
     _getData();
@@ -164,8 +166,8 @@ class _CommentsPageState extends State<CommentsPage> {
                             openToast(
                                 context, 'You can not delete others comment');
                           } else {
-                            await _commentsBloc
-                                .eliminarCommentario(d.idcomentario!);
+                            await _commentsBloc.eliminarCommentario(
+                                d.idcomentario!, widget.lugar.idlugar!);
 
                             onRefreshData();
                             Navigator.pop(context);
@@ -191,19 +193,19 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Future handleSubmit() async {
-    final ib = Provider.of<InternetBloc>(context, listen: false);
+    // final ib = Provider.of<InternetBloc>(context, listen: false);
     // final ib = Provider.of<InternetBloc>(context, listen: false);
     /*final SignInBloc sb = context.read<SignInBloc>();
     if (sb.guestUser == true) {
       openSignInDialog(context);
     } else {*/
-    await ib.checkInternet();
+    await _internetBloc.checkInternet();
     if (textCtrl.text.isEmpty) {
       print('Comment is empty');
     } else {
-      /*context.read<CommentsBloc>().saveNewComment(
-              widget.collectionName, widget.timestamp, textCtrl.text);*/
-      _commentsBloc.agregarCommentario(1, widget.lugar.idlugar!, textCtrl.text);
+      context
+          .read<CommentsBloc>()
+          .agregarCommentario(1, widget.lugar.idlugar!, textCtrl.text);
       onRefreshData();
       textCtrl.clear();
       FocusScope.of(context).requestFocus(new FocusNode());
