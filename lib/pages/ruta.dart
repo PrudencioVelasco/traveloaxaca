@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
-import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/ruta.dart';
 import 'package:traveloaxaca/pages/lugares_ruta.dart';
-import 'package:traveloaxaca/pages/place_details.dart';
-import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
-import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 

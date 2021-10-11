@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
@@ -10,8 +9,10 @@ import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/models/comment.dart';
 import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
+import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
 import 'package:traveloaxaca/utils/toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -46,11 +47,17 @@ class _CommentsPageState extends State<CommentsPage> {
     controller = new ScrollController()..addListener(_scrollListener);
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
-      _commentsBloc.init(context);
+      _commentsBloc.init(context, refresh);
       _internetBloc.init(context);
     });
     _isLoading = true;
     _getData();
+  }
+
+  void refresh() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future _getData() async {
@@ -58,20 +65,20 @@ class _CommentsPageState extends State<CommentsPage> {
     //QuerySnapshot data;
     if (_lastVisible == 0) {
 //_listComentarios
-      _listComentarios = (await _commentsBloc
-          .obtenerComentariosPorLugar(widget.lugar.idlugar!));
+      _listComentarios = (await _commentsBloc.obtenerComentariosPorLugar(
+          widget.lugar.idlugar!, 0, 7));
     } else {
       // data = await firestore
-      _data = (await _commentsBloc
-          .obtenerComentariosPorLugar(widget.lugar.idlugar!));
-      _listComentarios = _data;
-      _listComentarios
-          .where((element) => element!.idcomentario! > _idComentarioUltimo);
+      _data = (await _commentsBloc.obtenerComentariosPorLugar(
+          widget.lugar.idlugar!, _idComentarioUltimo, 7));
+      //_listComentarios.add(_data);
+      _data.forEach((element) {
+        _listComentarios.add(element);
+      });
     }
     if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
-      if (_listComentarios.length > 7) {
-        _idComentarioUltimo =
-            _listComentarios[_listComentarios.length - 1]!.idcomentario!;
+      if (_listComentarios.length >= 7) {
+        _idComentarioUltimo = _listComentarios.last!.idcomentario!;
         _lastVisible = 1;
       }
 
@@ -117,7 +124,7 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   handleDelete(context, Comentario d) {
-    // final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
+    final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
     final ib = Provider.of<InternetBloc>(context, listen: false);
     showDialog(
         context: context,
@@ -148,6 +155,12 @@ class _CommentsPageState extends State<CommentsPage> {
                   child: Row(
                 children: <Widget>[
                   TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
                       child: Text(
                         'yes',
                         style: TextStyle(
@@ -159,23 +172,40 @@ class _CommentsPageState extends State<CommentsPage> {
                         await ib.checkInternet();
                         if (ib.hasInternet == false) {
                           Navigator.pop(context);
-                          openToast(context, 'no internet'.tr());
+                          mostrarAlerta(context, 'Internet',
+                              'No tienes conexion a internet.');
                         } else {
-                          if ("1" != d.uid) {
+                          if (sb.idusuario != d.idusuario) {
                             Navigator.pop(context);
                             openToast(
                                 context, 'You can not delete others comment');
                           } else {
-                            await _commentsBloc.eliminarCommentario(
-                                d.idcomentario!, widget.lugar.idlugar!);
-
-                            onRefreshData();
-                            Navigator.pop(context);
+                            final _commentsBloc = Provider.of<CommentsBloc>(
+                                context,
+                                listen: false);
+                            ResponseApi? resultado =
+                                await _commentsBloc.eliminarCommentario(
+                                    d.idcomentario!, widget.lugar.idlugar!);
+                            if (resultado!.success!) {
+                              mostrarAlerta(
+                                  context, 'Eliminado', resultado.message!);
+                              onRefreshData();
+                              Navigator.pop(context);
+                            } else {
+                              mostrarAlerta(context, 'Registro incorrecto',
+                                  resultado.message!);
+                            }
                           }
                         }
                       }),
                   SizedBox(width: 10),
                   TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.deepPurpleAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
                     child: Text(
                       'no',
                       style: TextStyle(
@@ -193,22 +223,30 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Future handleSubmit() async {
-    // final ib = Provider.of<InternetBloc>(context, listen: false);
-    // final ib = Provider.of<InternetBloc>(context, listen: false);
-    /*final SignInBloc sb = context.read<SignInBloc>();
-    if (sb.guestUser == true) {
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    final _commentBloc = Provider.of<CommentsBloc>(context, listen: false);
+    final SignInBloc sb = context.read<SignInBloc>();
+    if (!sb.autenticando) {
       openSignInDialog(context);
-    } else {*/
-    await _internetBloc.checkInternet();
-    if (textCtrl.text.isEmpty) {
-      print('Comment is empty');
     } else {
-      context
-          .read<CommentsBloc>()
-          .agregarCommentario(1, widget.lugar.idlugar!, textCtrl.text);
-      onRefreshData();
-      textCtrl.clear();
-      FocusScope.of(context).requestFocus(new FocusNode());
+      await ib.checkInternet();
+      if (textCtrl.text == '' || textCtrl.text.isEmpty) {
+        print('Comment is empty');
+      } else {
+        if (ib.hasInternet == false) {
+          mostrarAlerta(context, 'Internet', 'No tiene conexion a Internet.');
+        } else {
+          ResponseApi? resultado = await _commentBloc.agregarCommentario(
+              widget.lugar.idlugar!, textCtrl.text);
+          if (resultado!.success! == true) {
+            onRefreshData();
+            textCtrl.clear();
+            FocusScope.of(context).requestFocus(new FocusNode());
+          } else {
+            mostrarAlerta(context, 'Registro incorrecto', resultado.message!);
+          }
+        }
+      }
     }
   }
   // }
@@ -258,7 +296,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       ],
                     )
                   : ListView.separated(
-                      padding: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(5),
                       controller: controller,
                       physics: AlwaysScrollableScrollPhysics(),
                       itemCount: _listComentarios.length != 0
@@ -270,7 +308,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       ),
                       itemBuilder: (_, int index) {
                         if (index < _listComentarios.length) {
-                          return reviewList(_listComentarios[index]!);
+                          return reviewList(_listComentarios[index]!, context);
                         }
                         return Opacity(
                           opacity: _isLoading! ? 1.0 : 0.0,
@@ -333,56 +371,93 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
-  Widget reviewList(Comentario d) {
+  Widget reviewList(Comentario d, BuildContext context) {
+    final _signInBloc = Provider.of<SignInBloc>(context, listen: true);
     return Container(
-        padding: EdgeInsets.only(top: 10, bottom: 10),
+        padding: EdgeInsets.only(top: 5, bottom: 5),
         decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(5)),
         child: ListTile(
-          leading: CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.grey[200],
-              backgroundImage: CachedNetworkImageProvider(
-                  'http://via.placeholder.com/350x150')),
-          title: Row(
-            children: <Widget>[
-              Row(
-                children: [
-                  Text(
-                    d.userName!,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700),
+          leading: (d.imageUrl!.isEmpty)
+              ? Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
                   ),
-                ],
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Row(
-                children: [
-                  Text(d.fecha!,
+                  child: Icon(Icons.person, size: 28),
+                )
+              : CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: CachedNetworkImageProvider(d.imageUrl!)),
+          title: Column(
+            children: <Widget>[
+              Container(
+                child: Row(
+                  children: [
+                    Text(
+                      d.userName!,
                       style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500)),
-                ],
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(d.fecha.toString(),
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500)),
+                  ],
+                ),
               ),
             ],
           ),
-          subtitle: Text(
-            d.comentario!,
-            style: TextStyle(
-                fontSize: 15,
-                color: Colors.black87,
-                fontWeight: FontWeight.w500),
+          subtitle: Row(
+            children: [
+              Text(
+                d.comentario!,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500),
+              ),
+            ],
           ),
-          onLongPress: () {
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_signInBloc.idusuario == d.idusuario)
+                IconButton(
+                  onPressed: () {
+                    handleDelete(context, d);
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
+                )
+            ],
+          ),
+          /* onTap: () {
+            print('object');
             handleDelete(context, d);
           },
+          onLongPress: () {
+            print('Eliminando');
+            handleDelete(context, d);
+          },*/
         ));
   }
 }

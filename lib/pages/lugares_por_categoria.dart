@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +12,6 @@ import 'package:traveloaxaca/blocs/love_bloc.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
-import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
@@ -36,7 +34,6 @@ class _LugaresPorCategoriaPageState extends State<LugaresPorCategoriaPage> {
   bool _isLoading = true;
   int _lastVisible = 0;
   int _idlugarultimo = 0;
-  bool? _hasData;
   CategoriaBloc _categoriaBloc = new CategoriaBloc();
   List<Lugar?> _lugares = [];
   List<Lugar?> _data = [];
@@ -55,7 +52,6 @@ class _LugaresPorCategoriaPageState extends State<LugaresPorCategoriaPage> {
   }
 
   Future _getData() async {
-    setState(() => _hasData = true);
     //QuerySnapshot data;
     if (_lastVisible == 0) {
 //_listComentarios
@@ -86,13 +82,11 @@ class _LugaresPorCategoriaPageState extends State<LugaresPorCategoriaPage> {
       if (_lastVisible == 0) {
         setState(() {
           _isLoading = false;
-          _hasData = false;
           print('no items');
         });
       } else {
         setState(() {
           _isLoading = false;
-          _hasData = true;
           print('no more items');
         });
       }

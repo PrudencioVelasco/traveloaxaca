@@ -13,12 +13,8 @@ class BuscarBloc with ChangeNotifier {
   Future? init(BuildContext context, Function refresh) async {
     this.context = context;
     this.refresh = refresh;
-    //getData();
     refresh();
   }
-  // SearchBloc() {
-  //   getRecentSearchList();
-  // }
 
   String _searchText = '';
   String get searchText => _searchText;

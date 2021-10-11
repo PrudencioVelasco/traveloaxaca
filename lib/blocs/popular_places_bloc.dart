@@ -25,7 +25,6 @@ class PopularPlacesBloc with ChangeNotifier {
     String _api = '/monarca/lugar';
     try {
       Uri url = Uri.http(_url, '$_api/sliderLugaresTops');
-      // String bodyParams = json.encode({'valor': valor});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -34,17 +33,12 @@ class PopularPlacesBloc with ChangeNotifier {
       final dataresponse = json.decode(res.body);
 
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      //return responseApi.data;
-      //lista = new List<Lugar>.from(responseApi.data);
       Lugar lug = Lugar.fromJsonToList(responseApi.data);
       return _data = lug.toList;
-
-      // return lug.toList;
     } catch (error) {
       print('Error: $error');
       return [];
     }
-    //return null;
   }
 
   Future<List<Imagen>?> obtenerImagenesLugar(int idLugar) async {
@@ -61,17 +55,12 @@ class PopularPlacesBloc with ChangeNotifier {
       final dataresponse = json.decode(res.body);
 
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      //return responseApi.data;
-      //lista = new List<Lugar>.from(responseApi.data);
       Imagen img = Imagen.fromJsonToList(responseApi.data);
-      //_data = img.toList;
-
       return img.toList;
     } catch (error) {
       print('Error: $error');
       return null;
     }
-    //return null;
   }
 
   Future<List<Lugar>?> obtenerLugaresDentroLugar(int idLugar) async {
@@ -88,17 +77,12 @@ class PopularPlacesBloc with ChangeNotifier {
       final dataresponse = json.decode(res.body);
 
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      //return responseApi.data;
-      //lista = new List<Lugar>.from(responseApi.data);
-      Lugar img = Lugar.fromJsonToList(responseApi.data);
-      //_data = img.toList;
-
-      return img.toList;
+      Lugar lugar = Lugar.fromJsonToList(responseApi.data);
+      return lugar.toList;
     } catch (error) {
       print('Error: $error');
       return null;
     }
-    //return null;
   }
 
   Future<Lugar?> obtenerDetalleLugar(int idLugar) async {
@@ -113,19 +97,13 @@ class PopularPlacesBloc with ChangeNotifier {
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
-
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      //return responseApi.data;
-      //lista = new List<Lugar>.from(responseApi.data);
-      Lugar img = Lugar.fromJsonToList(responseApi.data);
-      //_data = img.toList;
-
-      return img;
+      Lugar lugar = Lugar.fromJsonToList(responseApi.data);
+      return lugar;
     } catch (error) {
       print('Error: $error');
       return null;
     }
-    //return null;
   }
 
   onRefresh() {

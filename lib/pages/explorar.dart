@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
+import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:traveloaxaca/pages/categoria.dart';
+import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:traveloaxaca/pages/ruta.dart';
-import 'package:traveloaxaca/pages/search.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
+import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/featured_places.dart';
 import 'package:traveloaxaca/widgets/popular_places.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -101,8 +104,9 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final SignInBloc sb = Provider.of<SignInBloc>(context);
-    bool sb = true;
+    final sb = Provider.of<SignInBloc>(context, listen: true);
+
+    //  bool sb = true;
     return Padding(
       padding: const EdgeInsets.only(left: 15, right: 15, top: 30, bottom: 20),
       child: Column(
@@ -131,7 +135,7 @@ class Header extends StatelessWidget {
               ),
               Spacer(),
               InkWell(
-                child: sb == false
+                child: (sb.autenticando == false)
                     ? Container(
                         height: 50,
                         width: 50,
@@ -149,11 +153,11 @@ class Header extends StatelessWidget {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                                 image: CachedNetworkImageProvider(
-                                    'http://via.placeholder.com/350x150'),
+                                    sb.usuario!.imageUrl!),
                                 fit: BoxFit.cover)),
                       ),
                 onTap: () {
-                  //nextScreen(context, ProfilePage());
+                  nextScreen(context, PerfilPage());
                 },
               )
             ],

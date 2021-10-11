@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:collection/collection.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/mapalugaresruta.dart';
-import 'package:traveloaxaca/models/ruta.dart';
 import 'package:traveloaxaca/utils/convert_map_icon.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -177,7 +173,7 @@ class _MapaBusquedaPageState extends State<MapaBusquedaPage> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(width: 0.5, color: Colors.grey)),
-                    child: Image.asset(Config().hotelIcon)),
+                    child: Image.asset(Config().placeMarkerIcon)),
                 Flexible(
                   child: Wrap(
                     children: [
@@ -185,7 +181,7 @@ class _MapaBusquedaPageState extends State<MapaBusquedaPage> {
                         height: 10,
                       ),
                       Text(
-                        ' ${_alldata[index].numero} -  ${_alldata[index].nombre}',
+                        '${_alldata[index].nombre}',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -267,7 +263,7 @@ class _MapaBusquedaPageState extends State<MapaBusquedaPage> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: Text(
-                              '${_alldata[index].numero} ${_alldata[index].nombre}',
+                              '${_alldata[index].nombre}',
                               style: TextStyle(
                                   fontSize: 25,
                                   color: Colors.white,

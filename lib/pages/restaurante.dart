@@ -350,7 +350,7 @@ class _RestaurantePageState extends State<RestaurantePage> {
                   Container(
                     alignment: Alignment.bottomRight,
                     height: 50,
-                    child: FlatButton(
+                    child: TextButton(
                       child: Text('Close'),
                       onPressed: () {
                         Navigator.pop(context);

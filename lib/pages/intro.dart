@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/pages/home.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -15,7 +14,6 @@ class _IntroPageState extends State<IntroPage> {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(

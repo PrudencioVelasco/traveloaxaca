@@ -28,14 +28,12 @@ class AtractivoBloc with ChangeNotifier {
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      Atractivo img = Atractivo.fromJsonToList(responseApi.data);
-
-      return img.toList;
+      Atractivo atractivo = Atractivo.fromJsonToList(responseApi.data);
+      return atractivo.toList;
     } catch (error) {
       print('Error: $error');
       return [];
     }
-    //return null;
   }
 
   onRefresh() {

@@ -3,7 +3,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/models/categoria.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/pages/lugares_por_categoria.dart';
 import 'package:traveloaxaca/pages/more_activity.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';

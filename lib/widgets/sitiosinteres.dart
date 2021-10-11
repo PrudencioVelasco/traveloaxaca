@@ -2,13 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/sitiosinteres.dart';
-import 'package:traveloaxaca/pages/place_details.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
-import 'package:traveloaxaca/utils/next_screen.dart';
-import 'custom_cache_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class SitiosInteresPage extends StatefulWidget {

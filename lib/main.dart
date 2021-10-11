@@ -8,26 +8,36 @@ import 'package:traveloaxaca/blocs/buscar_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/love_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/blocs/search_bloc.dart';
+import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
-import 'package:traveloaxaca/pages/home.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:traveloaxaca/pages/splash.dart';
+import 'package:traveloaxaca/pages/loading_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bool english = true;
+  final String defaultLocale = Platform.localeName;
+  if (defaultLocale.isNotEmpty) {
+    String languageCode = Platform.localeName.split('_')[0];
+    String countryCode = Platform.localeName.split('_')[1];
+    if (languageCode.isNotEmpty && countryCode.isNotEmpty) {
+      if (languageCode == 'es') {
+        english = false;
+      }
+    }
+  }
   runApp(EasyLocalization(
     supportedLocales: [Locale('en'), Locale('es')],
     path: 'assets/translations',
-    fallbackLocale: Locale('en'),
-    startLocale: Locale('en'),
+    fallbackLocale: (english) ? Locale('en') : Locale('es'),
+    startLocale: (english) ? Locale('en') : Locale('es'),
     useOnlyLangCode: true,
     child: MyApp(),
   ));
@@ -58,6 +68,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => LoveBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SignInBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => InternetBloc(),
         ),
         ChangeNotifierProvider<PopularPlacesBloc>(
           create: (context) => PopularPlacesBloc(),
@@ -94,6 +110,7 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(
                   color: Colors.grey[800],
                 ),
+
                 brightness:
                     Platform.isAndroid ? Brightness.dark : Brightness.light,
                 textTheme: TextTheme(
@@ -104,7 +121,7 @@ class MyApp extends StatelessWidget {
               )),
           title: 'Travel Oaxaca',
           debugShowCheckedModeBanner: false,
-          home: SplashPage(),
+          home: LoadingPage(),
         ),
       ),
     );

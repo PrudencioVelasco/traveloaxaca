@@ -28,8 +28,9 @@ class SitiosInteresBloc with ChangeNotifier {
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      SitiosInteres lug = SitiosInteres.fromJsonToList(responseApi.data);
-      return lug.toList;
+      SitiosInteres sitiosInteres =
+          SitiosInteres.fromJsonToList(responseApi.data);
+      return sitiosInteres.toList;
     } catch (error) {
       print('Error: $error');
       return [];

@@ -2,6 +2,8 @@
 //  Generated file. Do not edit.
 //
 
+// clang-format off
+
 #include "generated_plugin_registrant.h"
 
 #include <maps_launcher/maps_launcher_plugin.h>

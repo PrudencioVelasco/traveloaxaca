@@ -1,10 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -46,7 +41,9 @@ class _MoreActivityPageState extends State<MoreActivityPage> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

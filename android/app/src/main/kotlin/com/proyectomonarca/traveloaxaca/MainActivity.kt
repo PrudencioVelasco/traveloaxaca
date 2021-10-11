@@ -1,4 +1,4 @@
-package com.proyectomonarca.traveloaxacapruebas
+package com.proyectomonarca.traveloaxaca
 
 import io.flutter.embedding.android.FlutterActivity
 

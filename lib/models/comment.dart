@@ -11,6 +11,7 @@ String comentarioToJson(Comentario data) => json.encode(data.toJson());
 
 class Comentario {
   int? idcomentario;
+  int? idusuario;
   String? uid;
   String? userName;
   String? imageUrl;
@@ -19,6 +20,7 @@ class Comentario {
   List<Comentario> toList = [];
   Comentario({
     this.idcomentario,
+    this.idusuario,
     this.uid,
     this.userName,
     this.imageUrl,
@@ -28,6 +30,7 @@ class Comentario {
 
   factory Comentario.fromJson(Map<String, dynamic> json) => Comentario(
         idcomentario: json["idcomentario"],
+        idusuario: json["idusuario"],
         uid: json["uid"],
         userName: json["userName"],
         imageUrl: json["imageUrl"],
@@ -43,6 +46,7 @@ class Comentario {
   }
   Map<String, dynamic> toJson() => {
         "idcomentario": idcomentario,
+        "idusuario": idusuario,
         "uid": uid,
         "userName": userName,
         "imageUrl": imageUrl,

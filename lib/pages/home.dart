@@ -1,11 +1,9 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/pages/buscar.dart';
 import 'package:traveloaxaca/pages/explorar.dart';
+import 'package:traveloaxaca/pages/informacion.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class Home extends StatefulWidget {
@@ -24,7 +22,7 @@ class _HomeState extends State<Home> {
     Icons.bookmark,
     Icons.verified_user,
   ];
-  List _screens = [Explorar(), BuscarPage(), Explorar(), PerfilPage()];
+  List _screens = [Explorar(), BuscarPage(), InformacionPage(), PerfilPage()];
 
   void onTabTapped(int index) {
     setState(() {
@@ -85,9 +83,9 @@ class _HomeState extends State<Home> {
             inactiveColor: Colors.grey[700],
           ),
           BottomNavyBarItem(
-            icon: Icon(Icons.event),
+            icon: Icon(Icons.info),
             title: Text(
-              'events',
+              'information',
             ).tr(),
             activeColor: Colors.blue,
             textAlign: TextAlign.center,

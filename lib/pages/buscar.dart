@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/buscar_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/categoria.dart';

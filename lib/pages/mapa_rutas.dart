@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:collection/collection.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/lugar.dart';
@@ -80,7 +76,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
   Uint8List? _sourceIcon;
   Uint8List? _destinationIcon;
   setMarkerIcon() async {
-    _customMarkerIcon = await getBytesFromAsset(Config().hotelPinIcon, 100);
+    _customMarkerIcon = await getBytesFromAsset(Config().placeMarkerIcon, 100);
   }
 
   _setMarkerIcons() async {
@@ -156,7 +152,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
             _onCardTap(index);
           },
           child: Container(
-            margin: EdgeInsets.only(left: 5, right: 5, bottom: 30),
+            margin: EdgeInsets.only(left: 5, right: 5),
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -256,7 +252,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
                         Flexible(
                           flex: 1,
                           child: Image(
-                            image: AssetImage(Config().hotelIcon),
+                            image: AssetImage(Config().placeMarkerIcon),
                             height: 120,
                             width: 120,
                           ),

@@ -28,14 +28,12 @@ class ActividadBloc with ChangeNotifier {
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      Actividad img = Actividad.fromJsonToList(responseApi.data);
-
-      return img.toList;
+      Actividad actividad = Actividad.fromJsonToList(responseApi.data);
+      return actividad.toList;
     } catch (error) {
       print('Error: $error');
       return [];
     }
-    //return null;
   }
 
   onRefresh() {

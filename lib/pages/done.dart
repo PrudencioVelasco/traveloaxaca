@@ -2,6 +2,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/pages/intro.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DonePage extends StatefulWidget {
   const DonePage({Key? key}) : super(key: key);
@@ -21,6 +22,10 @@ class _DonePageState extends State<DonePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        foregroundColor: Colors.grey[600],
+        title: const Text('information').tr(),
+      ),
       body: Center(
         child: Container(
           height: 150,

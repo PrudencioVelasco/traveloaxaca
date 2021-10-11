@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:launch_review/launch_review.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
-import 'package:traveloaxaca/pages/edit_profile.dart';
 import 'package:traveloaxaca/pages/sign_in.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/language.dart';
@@ -24,7 +22,6 @@ class PerfilPage extends StatefulWidget {
 
 class _PerfilPageState extends State<PerfilPage>
     with AutomaticKeepAliveClientMixin {
-  SignInBloc sb = new SignInBloc();
   @override
   void initState() {
     super.initState();
@@ -34,7 +31,7 @@ class _PerfilPageState extends State<PerfilPage>
   }
 
   openAboutDialog() {
-    // final sb = context.read<SignInBloc>();
+    final sb = context.read<SignInBloc>();
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -54,9 +51,12 @@ class _PerfilPageState extends State<PerfilPage>
   Widget build(BuildContext context) {
     super.build(context);
     // final sb = context.watch<SignInBloc>();
-    //  final sb = context.watch<SignInBloc>();
+    //  final sb = context.watch<SignInBloc>()
+    final sb = Provider.of<SignInBloc>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.grey[600],
         title: Text('profile').tr(),
         centerTitle: false,
         actions: [],
@@ -64,7 +64,7 @@ class _PerfilPageState extends State<PerfilPage>
       body: ListView(
         padding: EdgeInsets.fromLTRB(20, 20, 20, 50),
         children: [
-          (true) ? GuestUserUI() : UserUI(),
+          sb.autenticando == false ? GuestUserUI() : UserUI(),
           Text(
             "general setting",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
@@ -179,6 +179,36 @@ class _PerfilPageState extends State<PerfilPage>
         });
   }
 
+  void openLogoutDialog(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('logout title').tr(),
+            actions: [
+              TextButton(
+                child: Text('no').tr(),
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(
+                child: Text('yes').tr(),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await context
+                      .read<SignInBloc>()
+                      .logout()
+                      .then((value) => nextScreenCloseOthers(
+                          context,
+                          SignInPage(
+                            tag: 'poput',
+                          )));
+                },
+              )
+            ],
+          );
+        });
+  }
+
   @override
   bool get wantKeepAlive => true;
 }
@@ -204,6 +234,11 @@ class GuestUserUI extends StatelessWidget {
             FontAwesomeIcons.chevronRight,
             size: 20,
           ),
+          onTap: () => nextScreenPopup(
+              context,
+              SignInPage(
+                tag: 'popup',
+              )),
         ),
         SizedBox(
           height: 20,
@@ -218,7 +253,7 @@ class UserUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final sb = context.watch<SignInBloc>();
+    final sb = context.watch<SignInBloc>();
     return Column(
       children: [
         Container(
@@ -228,20 +263,20 @@ class UserUI extends StatelessWidget {
               CircleAvatar(
                   radius: 60,
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: CachedNetworkImageProvider(
-                      'http://via.placeholder.com/350x150')),
+                  backgroundImage:
+                      CachedNetworkImageProvider(sb.usuario!.imageUrl!)),
               SizedBox(
                 height: 10,
               ),
               Text(
-                'Prudencio',
+                sb.usuario!.userName!,
                 style: TextStyle(fontSize: 18),
               )
             ],
           ),
         ),
         ListTile(
-          title: Text('prudencio.vepa@gmail.com'),
+          title: Text(sb.usuario!.userEmail!),
           leading: Container(
             height: 30,
             width: 30,
@@ -249,37 +284,6 @@ class UserUI extends StatelessWidget {
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.circular(5)),
             child: Icon(Icons.email, size: 20, color: Colors.white),
-          ),
-        ),
-        Divider(
-          height: 5,
-        ),
-        ListTile(
-          title: Text('28/04/1990'),
-          leading: Container(
-            height: 30,
-            width: 30,
-            decoration: BoxDecoration(
-                color: Colors.green, borderRadius: BorderRadius.circular(5)),
-            child: Icon(FeatherIcons.home, size: 20, color: Colors.white),
-          ),
-        ),
-        Divider(
-          height: 5,
-        ),
-        ListTile(
-          title: Text('edit profile').tr(),
-          leading: Container(
-            height: 30,
-            width: 30,
-            decoration: BoxDecoration(
-                color: Colors.purpleAccent,
-                borderRadius: BorderRadius.circular(5)),
-            child: Icon(FeatherIcons.edit3, size: 20, color: Colors.white),
-          ),
-          trailing: Icon(
-            FeatherIcons.chevronLeft,
-            size: 20,
           ),
         ),
         Divider(
@@ -321,7 +325,10 @@ class UserUI extends StatelessWidget {
               ),
               TextButton(
                 child: Text('yes').tr(),
-                onPressed: () => {},
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await context.read<SignInBloc>().logout();
+                },
               )
             ],
           );

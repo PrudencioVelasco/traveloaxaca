@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
-import 'package:traveloaxaca/blocs/love_bloc.dart';
 
 class CommentCount extends StatelessWidget {
   final int idLugar;
@@ -17,12 +16,12 @@ class CommentCount extends StatelessWidget {
       return Text(
         0.toString(),
         style: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+            fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
       );
     return Text(
       _providerCommentsBloc.totalComentarios.toString(),
       style: TextStyle(
-          fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+          fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
     );
   }
 }

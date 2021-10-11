@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:splash_screen_view/splash_screen_view.dart';
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/pages/home.dart';
 

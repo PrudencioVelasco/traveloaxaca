@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +6,6 @@ import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/response_api.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class CategoriaBloc with ChangeNotifier {
   BuildContext? context;
@@ -35,9 +31,9 @@ class CategoriaBloc with ChangeNotifier {
       final res = await http.get(url, headers: headers);
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      Categoria img = Categoria.fromJsonToList(responseApi.data);
+      Categoria categoria = Categoria.fromJsonToList(responseApi.data);
 
-      return img.toList;
+      return categoria.toList;
     } catch (error) {
       print('Error: $error');
       return [];
@@ -57,14 +53,13 @@ class CategoriaBloc with ChangeNotifier {
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      Categoria img = Categoria.fromJsonToList(responseApi.data);
+      Categoria categoria = Categoria.fromJsonToList(responseApi.data);
 
-      return img.toList;
+      return categoria.toList;
     } catch (error) {
       print('Error: $error');
       return [];
     }
-    //return null;
   }
 
   Future<List<Lugar>?> obtenerLugaresPorCategoria(int idcategoria) async {
@@ -79,19 +74,13 @@ class CategoriaBloc with ChangeNotifier {
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
-
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      //return responseApi.data;
-      //lista = new List<Lugar>.from(responseApi.data);
-      Lugar img = Lugar.fromJsonToList(responseApi.data);
-      //_data = img.toList;
-
-      return img.toList;
+      Lugar lugar = Lugar.fromJsonToList(responseApi.data);
+      return lugar.toList;
     } catch (error) {
       print('Error: $error');
       return null;
     }
-    //return null;
   }
 
   onRefresh() {
