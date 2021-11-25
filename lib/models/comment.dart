@@ -17,6 +17,7 @@ class Comentario {
   String? imageUrl;
   String? comentario;
   String? fecha;
+  double? rating;
   List<Comentario> toList = [];
   Comentario({
     this.idcomentario,
@@ -26,6 +27,7 @@ class Comentario {
     this.imageUrl,
     this.comentario,
     this.fecha,
+    this.rating,
   });
 
   factory Comentario.fromJson(Map<String, dynamic> json) => Comentario(
@@ -36,12 +38,17 @@ class Comentario {
         imageUrl: json["imageUrl"],
         comentario: json["comentario"],
         fecha: json["fecha"],
+        rating: json["rating"] is String
+            ? double.parse(json["rating"])
+            : isInteger(json["rating"])
+                ? json["rating"].toDouble()
+                : json["rating"],
       );
   Comentario.fromJsonToList(List<dynamic> jsonList) {
     //if (jsonList == null) return;
     jsonList.forEach((element) {
-      Comentario actividad = Comentario.fromJson(element);
-      toList.add(actividad);
+      Comentario comentario = Comentario.fromJson(element);
+      toList.add(comentario);
     });
   }
   Map<String, dynamic> toJson() => {
@@ -52,5 +59,8 @@ class Comentario {
         "imageUrl": imageUrl,
         "comentario": comentario,
         "fecha": fecha,
+        "rating": rating,
       };
+  static bool isInteger(num value) =>
+      value is int || value == value.roundToDouble();
 }

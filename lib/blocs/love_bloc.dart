@@ -87,12 +87,13 @@ class LoveBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/love';
     try {
+      String? token = await _signInBloc.getToken();
       Uri url = Uri.http(_url, '$_api/totalLoveLugarUsuario');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8',
-        'x-token': this._token!
+        'x-token': token!
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);

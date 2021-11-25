@@ -251,13 +251,15 @@ class _ListItem extends StatelessWidget {
                           SizedBox(
                             width: 6,
                           ),
-                          Expanded(
-                            child: Text(
-                              d!.direccion!,
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 13, color: Colors.grey[700]),
-                            ),
+                          Column(
+                            children: [
+                              Text(
+                                d!.direccion!,
+                                maxLines: 1,
+                                style: TextStyle(
+                                    fontSize: 13, color: Colors.grey[700]),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -276,10 +278,10 @@ class _ListItem extends StatelessWidget {
                             width: 3,
                           ),
                           Text(
-                            'number: ${d!.numero.toString()}',
+                            'number'.tr() + ": " + d!.numero.toString(),
                             style: TextStyle(
                                 fontSize: 13, color: Colors.grey[700]),
-                          ).tr(),
+                          ),
                           Spacer(),
                           Icon(
                             LineIcons.heart,

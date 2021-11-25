@@ -261,10 +261,11 @@ class UserUI extends StatelessWidget {
           child: Column(
             children: [
               CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage:
-                      CachedNetworkImageProvider(sb.usuario!.imageUrl!)),
+                radius: 60,
+                backgroundColor: Colors.grey[300],
+                backgroundImage:
+                    CachedNetworkImageProvider(sb.usuario!.imageUrl!),
+              ),
               SizedBox(
                 height: 10,
               ),

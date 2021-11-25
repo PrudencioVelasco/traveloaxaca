@@ -138,5 +138,21 @@
     "not found": "Not Found",
     "close": "Close",
     "like":"Like",
-    "information":"Information"
+    "information":"Information",
+    "post":"Post",
+    "how would you rate your experience":"How would you rate your experience?",
+    "what kind of visit was this":"What kind of visit was this?",
+    "when did you visit":"When did you visit?",
+    "view reviews":"View reviews",
+    "read more":"Read More",
+    "read less":"Read Less",
+    "upload a photo":"Upload a photo" ,
+    "you rated your experience 2 out of 5 tell us more":"You rated your experience 2 out of 5. Tell us more.",
+    "add note":"Add Note",
+    "motive":"Motive",
+    "select a option":"Select a option",
+    "don not empty":"Dont not empty",
+    "message":"Message",
+    "success":"Success",
+    "contribute":"Contribute"
 }

@@ -2,17 +2,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
+import 'package:traveloaxaca/comentario/agregar_comentario.dart';
+import 'package:traveloaxaca/comentario/reportar_comentario_lugar.dart';
 import 'package:traveloaxaca/models/comment.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
+import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
 import 'package:traveloaxaca/utils/toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -41,6 +46,7 @@ class _CommentsPageState extends State<CommentsPage> {
   var textCtrl = TextEditingController();
   bool? _hasData;
   List<Comentario?> _listComentarios = [];
+  final GlobalKey _menuKey = GlobalKey();
   InternetBloc _internetBloc = new InternetBloc();
   @override
   void initState() {
@@ -65,11 +71,11 @@ class _CommentsPageState extends State<CommentsPage> {
     //QuerySnapshot data;
     if (_lastVisible == 0) {
 //_listComentarios
-      _listComentarios = (await _commentsBloc.obtenerComentariosPorLugar(
+      _listComentarios = (await _commentsBloc.obtenerComentariosLugarv2(
           widget.lugar.idlugar!, 0, 7));
     } else {
       // data = await firestore
-      _data = (await _commentsBloc.obtenerComentariosPorLugar(
+      _data = (await _commentsBloc.obtenerComentariosLugarv2(
           widget.lugar.idlugar!, _idComentarioUltimo, 7));
       //_listComentarios.add(_data);
       _data.forEach((element) {
@@ -85,9 +91,6 @@ class _CommentsPageState extends State<CommentsPage> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          //_snap.addAll(data.docs);
-          //_data = _snap.map((e) => Comment.fromFirestore(e)).toList();
-          //print('blog reviews : ${_data.length}');
         });
       }
     } else {
@@ -127,6 +130,72 @@ class _CommentsPageState extends State<CommentsPage> {
     final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
     final ib = Provider.of<InternetBloc>(context, listen: false);
     showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text('message').tr(),
+            content: Text('delete from database?',
+                    style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700))
+                .tr(),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  await ib.checkInternet();
+                  if (ib.hasInternet == true) {
+                    Navigator.pop(context);
+                    mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
+                  } else {
+                    if (sb.idusuario != d.idusuario) {
+                      Navigator.pop(context);
+                      mensajeDialog(context, 'message'.tr(),
+                          'You can not delete others comment'.tr());
+                    } else {
+                      final _commentsBloc =
+                          Provider.of<CommentsBloc>(context, listen: false);
+                      ResponseApi? resultado =
+                          await _commentsBloc.eliminarCommentario(
+                              d.idcomentario!, widget.lugar.idlugar!);
+                      if (resultado!.success!) {
+                        //  mostrarAlerta(
+                        //      context, 'Eliminado', resultado.message!);
+                        Navigator.pop(context);
+                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
+                        onRefreshData();
+                        // Navigator.pop(context);
+                      } else {
+                        Navigator.pop(context);
+                        // openToast(context, resultado.message!);
+                        mensajeDialog(
+                            context, 'message'.tr(), resultado.message!);
+                      }
+                    }
+                  }
+                },
+                child: Text(
+                  'yes',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ).tr(),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'no',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ).tr(),
+              ),
+            ],
+          );
+        });
+    /*showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -170,10 +239,11 @@ class _CommentsPageState extends State<CommentsPage> {
                       ).tr(),
                       onPressed: () async {
                         await ib.checkInternet();
-                        if (ib.hasInternet == false) {
-                          Navigator.pop(context);
-                          mostrarAlerta(context, 'Internet',
-                              'No tienes conexion a internet.');
+                        if (ib.hasInternet == true) {
+                          Navigator.of(context).pop();
+                          //openToast(context, 'no internet'.tr());
+                          mostrarAlerta(
+                              context, 'message'.tr(), 'no internet'.tr());
                         } else {
                           if (sb.idusuario != d.idusuario) {
                             Navigator.pop(context);
@@ -187,13 +257,13 @@ class _CommentsPageState extends State<CommentsPage> {
                                 await _commentsBloc.eliminarCommentario(
                                     d.idcomentario!, widget.lugar.idlugar!);
                             if (resultado!.success!) {
-                              mostrarAlerta(
-                                  context, 'Eliminado', resultado.message!);
+                              //  mostrarAlerta(
+                              //      context, 'Eliminado', resultado.message!);
                               onRefreshData();
                               Navigator.pop(context);
                             } else {
-                              mostrarAlerta(context, 'Registro incorrecto',
-                                  resultado.message!);
+                              Navigator.pop(context);
+                              openToast(context, resultado.message!);
                             }
                           }
                         }
@@ -219,7 +289,7 @@ class _CommentsPageState extends State<CommentsPage> {
               ))
             ],
           );
-        });
+        });*/
   }
 
   Future handleSubmit() async {
@@ -263,6 +333,8 @@ class _CommentsPageState extends State<CommentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    final _signInBloc = Provider.of<SignInBloc>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -304,11 +376,178 @@ class _CommentsPageState extends State<CommentsPage> {
                           : 10,
                       separatorBuilder: (BuildContext context, int index) =>
                           SizedBox(
-                        height: 10,
+                        height: 0,
                       ),
                       itemBuilder: (_, int index) {
                         if (index < _listComentarios.length) {
-                          return reviewList(_listComentarios[index]!, context);
+                          //return reviewList(_listComentarios[index]!, context,_signInBloc);
+                          return Container(
+                              padding: EdgeInsets.only(top: 5, bottom: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 1, color: Colors.grey.shade300),
+                                ),
+                                //  borderRadius: BorderRadius.circular(5)),
+                              ),
+                              child: ListTile(
+                                  leading: (_listComentarios[index]!
+                                          .imageUrl!
+                                          .isEmpty)
+                                      ? Container(
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[300],
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(Icons.person, size: 28),
+                                        )
+                                      : CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.grey[200],
+                                          backgroundImage:
+                                              CachedNetworkImageProvider(
+                                                  _listComentarios[index]!
+                                                      .imageUrl!)),
+                                  title: Column(
+                                    children: <Widget>[
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              _listComentarios[index]!
+                                                  .userName!,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                                _listComentarios[index]!
+                                                    .fecha
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    color: Colors.grey[500],
+                                                    fontSize: 11,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  subtitle: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            //alignment: MainAxisAlignment.start,
+                                            //color: Colors.red,
+                                            child: RatingBar.builder(
+                                              // ignoreGestures: true,
+                                              itemSize: 20,
+                                              initialRating:
+                                                  _listComentarios[index]!
+                                                      .rating!,
+                                              minRating:
+                                                  _listComentarios[index]!
+                                                      .rating!,
+                                              maxRating:
+                                                  _listComentarios[index]!
+                                                      .rating!,
+                                              ignoreGestures: true,
+                                              direction: Axis.horizontal,
+                                              allowHalfRating: false,
+                                              itemCount: 5,
+                                              itemPadding: EdgeInsets.symmetric(
+                                                  horizontal: 4.0),
+                                              itemBuilder: (context, _) => Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                              ),
+                                              onRatingUpdate: (rating) {
+                                                //_rating = rating;
+                                                //print(rating);
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ReadMoreText(
+                                              _listComentarios[index]!
+                                                  .comentario!,
+                                              trimLines: 4,
+                                              colorClickableText: Colors.blue,
+                                              trimMode: TrimMode.Line,
+                                              trimCollapsedText:
+                                                  'read more'.tr(),
+                                              textAlign: TextAlign.justify,
+                                              style: TextStyle(fontSize: 16),
+                                              trimExpandedText:
+                                                  'read less'.tr(),
+                                            ),
+                                            /*  Text(
+                                                _listComentarios[index]!
+                                                    .comentario!,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.black87,
+                                                    fontWeight: FontWeight.w500),
+                                              ),*/
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      PopupMenuButton(
+                                          // key: _menuKey,
+                                          itemBuilder: (_) =>
+                                              <PopupMenuItem<String>>[
+                                                if (_listComentarios[index]!
+                                                        .idusuario ==
+                                                    _signInBloc.idusuario)
+                                                  PopupMenuItem<String>(
+                                                      child: Text('Eliminar'),
+                                                      value: 'eliminar'),
+                                                PopupMenuItem<String>(
+                                                    child: Text('Reportar'),
+                                                    value: 'reportar'),
+                                              ],
+                                          onSelected: (valor) {
+                                            print(valor);
+                                            if (valor == "reportar") {
+                                              nextScreen(
+                                                  context,
+                                                  ReportarComentarioLugarPage(
+                                                      comentario:
+                                                          _listComentarios[
+                                                              index]!));
+                                            }
+                                            if (valor == "eliminar") {
+                                              handleDelete(context,
+                                                  _listComentarios[index]!);
+                                            }
+                                          }),
+                                    ],
+                                  )));
                         }
                         return Opacity(
                           opacity: _isLoading! ? 1.0 : 0.0,
@@ -342,26 +581,25 @@ class _CommentsPageState extends State<CommentsPage> {
                 decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(25)),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                      errorStyle: TextStyle(fontSize: 0),
-                      contentPadding:
-                          EdgeInsets.only(left: 15, top: 10, right: 5),
-                      border: InputBorder.none,
-                      hintText: widget.collectionName == 'places'
-                          ? 'write a review'.tr()
-                          : 'write a comment'.tr(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.send,
-                          color: Colors.grey[700],
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          handleSubmit();
-                        },
-                      )),
-                  controller: textCtrl,
+                child: ElevatedButton.icon(
+                  label: Text('write a review').tr(),
+                  icon: Icon(Icons.add_comment_rounded),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
+                    onSurface: Colors.black,
+                    //shadowColor: Colors.grey,
+                    padding: EdgeInsets.all(10.0),
+                    elevation: 6,
+
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(),
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                  ),
+                  onPressed: () {
+                    nextScreen(
+                        context, AgregarComentarioPage(lugar: widget.lugar));
+                  },
                 ),
               ),
             ),
@@ -371,93 +609,6 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
-  Widget reviewList(Comentario d, BuildContext context) {
-    final _signInBloc = Provider.of<SignInBloc>(context, listen: true);
-    return Container(
-        padding: EdgeInsets.only(top: 5, bottom: 5),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(5)),
-        child: ListTile(
-          leading: (d.imageUrl!.isEmpty)
-              ? Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.person, size: 28),
-                )
-              : CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: CachedNetworkImageProvider(d.imageUrl!)),
-          title: Column(
-            children: <Widget>[
-              Container(
-                child: Row(
-                  children: [
-                    Text(
-                      d.userName!,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(d.fecha.toString(),
-                        style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          subtitle: Row(
-            children: [
-              Text(
-                d.comentario!,
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_signInBloc.idusuario == d.idusuario)
-                IconButton(
-                  onPressed: () {
-                    handleDelete(context, d);
-                  },
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                )
-            ],
-          ),
-          /* onTap: () {
-            print('object');
-            handleDelete(context, d);
-          },
-          onLongPress: () {
-            print('Eliminando');
-            handleDelete(context, d);
-          },*/
-        ));
-  }
+// (_signInBloc.idusuario == d.idusuario) ??
+
 }

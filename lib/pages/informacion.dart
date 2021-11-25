@@ -11,13 +11,13 @@ class InformacionPage extends StatefulWidget {
 }
 
 class _InformacionPageState extends State<InformacionPage> {
-  List<Telefono> _listaTelefono = [
+  /*List<Telefono> _listaTelefono = [
     Telefono(descripcion: "SOS", telefono: "911", color: Colors.red),
     Telefono(
         descripcion: "Secretaria de Turismo",
         telefono: "+529515021200",
         color: Colors.blue)
-  ];
+  ];*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +26,8 @@ class _InformacionPageState extends State<InformacionPage> {
         title: const Text('information').tr(),
       ),
       body: Container(
-        // color: Colors.red,
-        child: Row(children: <Widget>[
+          // color: Colors.red,
+          /* child: Row(children: <Widget>[
           Container(
             height: 65,
             //color: Colors.green,
@@ -43,13 +43,13 @@ class _InformacionPageState extends State<InformacionPage> {
               },
             ),
           ),
-        ]),
-      ),
+        ]),*/
+          ),
       // backgroundColor: Colors.blueGrey.shade200,
     );
   }
 
-  Widget _choisTelefonos(Telefono? telefono) {
+  /* Widget _choisTelefonos(Telefono? telefono) {
     return InkWell(
       child: Container(
         padding: EdgeInsets.all(5),
@@ -76,5 +76,5 @@ class _InformacionPageState extends State<InformacionPage> {
         ),
       ),
     );
-  }
+  }*/
 }

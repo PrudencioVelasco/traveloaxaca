@@ -37,6 +37,28 @@ class SitiosInteresBloc with ChangeNotifier {
     }
   }
 
+  Future<List<SitiosInteres>?> getSitiosInteresv2(int idlugar) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/sitiosinteres';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerSitiosInteresPorLugarv2');
+      String bodyParams = json.encode({'idlugar': idlugar});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      SitiosInteres sitiosInteres =
+          SitiosInteres.fromJsonToList(responseApi.data);
+      return sitiosInteres.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
   onRefresh() {
     notifyListeners();
   }

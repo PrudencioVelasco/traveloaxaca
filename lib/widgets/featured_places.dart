@@ -88,7 +88,7 @@ class _FeaturedState extends State<Featured> {
 
 class _FeaturedItemList extends StatelessWidget {
   final Lugar? d;
-  const _FeaturedItemList({Key? key, @required this.d}) : super(key: key);
+  const _FeaturedItemList({Key? key, required this.d}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,16 +100,23 @@ class _FeaturedItemList extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Hero(
-              tag: 'featured timestamp',
+              tag: 'featured${d!.idlugar}',
               child: Container(
-                  height: 220,
-                  width: w,
-                  decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      borderRadius: BorderRadius.circular(10)),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CustomCacheImage(imageUrl: d!.primeraimagen))),
+                //color: Colors.grey[300],
+                height: 220,
+                width: w,
+                decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(10)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: (d!.primeraimagen!.isNotEmpty)
+                      ? CustomCacheImage(imageUrl: d!.primeraimagen)
+                      : Image.asset(
+                          "assets/images/no-image.png",
+                        ),
+                ),
+              ),
             ),
             Positioned(
               height: 120,
@@ -171,7 +178,10 @@ class _FeaturedItemList extends StatelessWidget {
                             Icon(
                               LineIcons.heart,
                               size: 18,
-                              color: Colors.orange,
+                              color: Colors.red,
+                            ),
+                            SizedBox(
+                              width: 10,
                             ),
                             Text(
                               d!.love!.toString(),
@@ -186,7 +196,10 @@ class _FeaturedItemList extends StatelessWidget {
                             Icon(
                               LineIcons.comment,
                               size: 18,
-                              color: Colors.orange,
+                              color: Colors.blue[300],
+                            ),
+                            SizedBox(
+                              width: 10,
                             ),
                             Text(
                               d!.comentario!.toString(),
@@ -208,7 +221,7 @@ class _FeaturedItemList extends StatelessWidget {
         ),
         onTap: () {
           nextScreen(
-              context, PlaceDetails(data: d!, tag: 'featured timestamp'));
+              context, PlaceDetails(data: d!, tag: 'featured${d!.idlugar}'));
         },
       ),
     );

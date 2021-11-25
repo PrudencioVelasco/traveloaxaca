@@ -13,12 +13,14 @@ class Categoria {
   int? idlugarsecundario;
   int? idclasificacion;
   String? nombreclasificacion;
+  String? icono;
   List<Categoria> toList = [];
   Categoria({
     required this.idlugarprincipal,
     required this.idlugarsecundario,
     required this.idclasificacion,
     this.nombreclasificacion,
+    this.icono,
   });
 
   factory Categoria.fromJson(Map<String, dynamic> json) => Categoria(
@@ -26,6 +28,7 @@ class Categoria {
         idlugarsecundario: json["idlugarsecundario"],
         idclasificacion: json["idclasificacion"],
         nombreclasificacion: json["nombreclasificacion"],
+        icono: json["icono"],
       );
   Categoria.fromJsonToList(List<dynamic> jsonList) {
     //if (jsonList == null) return;
@@ -39,5 +42,6 @@ class Categoria {
         "idlugarsecundario": idlugarsecundario,
         "idclasificacion": idclasificacion,
         "nombreclasificacion": nombreclasificacion,
+        "icono": icono,
       };
 }

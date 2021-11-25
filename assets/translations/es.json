@@ -20,7 +20,7 @@
     "recommended places" : "Lugares recomendados",
 
     "people like this" : "Gente como esta",
-    "todo" : "herramientas",
+    "todo" : "Opciones",
     "you may also like" : "También te puede interesar",
     "travel guide" : "Guía turístico",
     "nearby hotels" : "Hoteles cercanos",
@@ -139,5 +139,21 @@
     "not found": "No funciona",
     "close": "Cerrar",
     "like":"Me gusta",
-    "information":"Informacion"
+    "information":"Informacion",
+    "post":"Publicar",
+    "how would you rate your experience":"¿Como calificarías tu experiencia??",
+    "what kind of visit was this":"¿Qué tipo de visita fue?",
+    "when did you visit":"¿Cuándo fue tu visita?",
+    "view reviews":"Ver opiniones",
+    "read more":"Leer mas",
+    "read less":"Leer menos",
+    "upload a photo":"Subir una foto",
+    "you rated your experience 2 out of 5 tell us more":"Clificaste tu experiencia como 1 de 5. Cuéntanos mas.",
+    "add note":"Agregar Nota",
+    "motive":"Motivo",
+    "select a option":"Seleccionar un opcion",
+    "don not empty":"No puede estar vacio",
+    "message":"Mensaje",
+    "success":"Exito",
+    "contribute":"Hacer un aporte"
 }

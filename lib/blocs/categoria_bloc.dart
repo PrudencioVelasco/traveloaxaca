@@ -40,6 +40,28 @@ class CategoriaBloc with ChangeNotifier {
     }
   }
 
+  Future<List<Categoria?>> obtenerTodascategoriasPrincipal() async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/categoria';
+    try {
+      Uri url = Uri.http(_url, '$_api/todasCategoriasPrincipal');
+      // String bodyParams = json.encode({'idlugar': idLugar});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.get(url, headers: headers);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Categoria categoria = Categoria.fromJsonToList(responseApi.data);
+
+      return categoria.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
   Future<List<Categoria?>> obtenercategoriasPorLugar(int idLugar) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/categoria';

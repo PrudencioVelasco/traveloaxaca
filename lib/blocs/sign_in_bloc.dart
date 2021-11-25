@@ -67,6 +67,7 @@ class SignInBloc extends ChangeNotifier {
   }
 
   Future signInwithFacebook() async {
+    await FacebookAuth.instance.logOut();
     final LoginResult result = await FacebookAuth.instance.login(
       permissions: ['public_profile', 'email'],
     );

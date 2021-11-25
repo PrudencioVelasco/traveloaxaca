@@ -109,10 +109,15 @@ class ItemList extends StatelessWidget {
         child: Stack(
           children: [
             Hero(
-              tag: 'popular timespan',
+              tag: 'popular${d!.idlugar}',
               child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CustomCacheImage(imageUrl: d!.primeraimagen!)),
+                borderRadius: BorderRadius.circular(10),
+                child: (d!.primeraimagen!.isNotEmpty)
+                    ? CustomCacheImage(imageUrl: d!.primeraimagen)
+                    : Image.asset(
+                        "assets/images/no-image.jpg",
+                      ),
+              ),
             ),
             Align(
               alignment: Alignment.bottomLeft,
@@ -164,7 +169,7 @@ class ItemList extends StatelessWidget {
         ),
       ),
       onTap: () => nextScreen(
-          context, PlaceDetails(data: d!, tag: 'popular${d!.idlugar!}')),
+          context, PlaceDetails(data: d!, tag: 'popular${d!.idlugar}')),
     );
   }
 }

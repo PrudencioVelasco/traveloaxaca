@@ -10,16 +10,18 @@ class LoveCount extends StatelessWidget {
   Widget build(BuildContext context) {
     final _providerLovesBloc = Provider.of<LoveBloc>(context, listen: true);
 
-    if (_providerLovesBloc.totalLoves == 0)
+    if (_providerLovesBloc.totalLoves == 0) {
+      return Text(
+        _providerLovesBloc.totalLoves.toString(),
+        style: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+      );
+    } else {
       return Text(
         0.toString(),
         style: TextStyle(
             fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
       );
-    return Text(
-      _providerLovesBloc.totalLoves.toString(),
-      style: TextStyle(
-          fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
-    );
+    }
   }
 }

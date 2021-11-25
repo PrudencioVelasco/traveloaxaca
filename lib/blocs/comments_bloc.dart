@@ -55,7 +55,7 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/eliminarComentario');
+      Uri url = Uri.http(_url, '$_api/eliminarComentariov2');
       String bodyParams = json.encode({
         'idcomentario': idcomentario,
       });
@@ -80,6 +80,33 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     try {
       Uri url = Uri.http(_url, '$_api/obtenerComentariosPorLugar');
+      String bodyParams = json.encode({
+        'idlugar': idLugar,
+        'idcomentario': (idcomentario == 0) ? '' : idcomentario,
+        'limite': limite
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Comentario comentario = Comentario.fromJsonToList(responseApi.data);
+
+      return comentario.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  Future<List<Comentario?>> obtenerComentariosLugarv2(
+      int idLugar, int idcomentario, int limite) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerComentariosLugarv2');
       String bodyParams = json.encode({
         'idlugar': idLugar,
         'idcomentario': (idcomentario == 0) ? '' : idcomentario,
@@ -147,6 +174,62 @@ class CommentsBloc extends ChangeNotifier {
     } catch (error) {
       print('Error: $error');
       return 0;
+    }
+  }
+
+  Future<ResponseApi?> agregarComentarioLugar(int idlugar, double rating,
+      String comentario, int conquienvisito, DateTime fechavisita) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    String? token = await _signInBloc.getToken();
+    try {
+      Uri url = Uri.http(_url, '$_api/agregarComentarioLugar');
+      String bodyParams = json.encode({
+        'idlugar': idlugar,
+        'idconquienvisito': conquienvisito,
+        'rating': rating,
+        'comentario': comentario,
+        'fechavisito': fechavisita.toString()
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8',
+        'x-token': token!
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      // await totalComentariosLugar(idlugar);
+      return responseApi;
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  Future<ResponseApi?> agregarReporteComentarioLugar(
+      int idcomentario, int idmotivo, String? comentario) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    String? token = await _signInBloc.getToken();
+    try {
+      Uri url = Uri.http(_url, '$_api/agregarReporteComentarioLugar');
+      String bodyParams = json.encode({
+        'idcomentario': idcomentario,
+        'idcausareporte': idmotivo,
+        'comentario': comentario,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8',
+        'x-token': token!
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      // await totalComentariosLugar(idlugar);
+      return responseApi;
+    } catch (error) {
+      print('Error: $error');
     }
   }
 }
