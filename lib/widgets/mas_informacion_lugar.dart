@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/sitiosinteres.dart';
 
@@ -35,7 +36,27 @@ class _MasInformacionLugarPageState extends State<MasInformacionLugarPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(),
+        child: Container(
+          //height: 260,
+          //  margin: EdgeInsets.only(right: 55),
+          // color: Colors.green,
+padding: EdgeInsets.all(10),
+          width: MediaQuery.of(context).size.width,
+          child: Html(
+            data: '''${widget.sitiosinteres!.descripcion}''',
+            shrinkWrap: true,
+            style: {
+              "body": Style(
+                maxLines: 4,
+                textAlign: TextAlign.justify,
+                fontSize: FontSize(16.0),
+                // fontWeight: FontWeight.w500,
+                color: Colors.black,
+                textOverflow: TextOverflow.ellipsis,
+              ),
+            },
+          ),
+        ),
       ),
     );
   }

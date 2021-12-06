@@ -18,6 +18,7 @@ class Lugar {
   String? resena;
   int? love;
   int? comentario;
+  double? rating;
   String? primeraimagen;
   String? nombreclasificacion;
   //String? actividades;
@@ -37,6 +38,7 @@ class Lugar {
     this.resena,
     this.love,
     this.comentario,
+    this.rating,
     this.primeraimagen,
     this.nombreclasificacion,
     // required this.imagenes,
@@ -64,6 +66,11 @@ class Lugar {
         resena: json["resena"],
         love: json["love"],
         comentario: json["comentario"],
+    rating: json["rating"] is String
+        ? double.parse(json["rating"])
+        : isInteger(json["rating"])
+        ? json["rating"].toDouble()
+        : json["rating"],
         primeraimagen: json["primeraimagen"],
         nombreclasificacion: json["nombreclasificacion"],
         numero: json["numero"],
@@ -98,6 +105,7 @@ class Lugar {
         "resena": resena,
         "love": love,
         "comentario": comentario,
+        "rating": rating,
         "primeraimagen": primeraimagen,
         "nombreclasificacion": nombreclasificacion,
         "principal": principal,

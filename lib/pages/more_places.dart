@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
@@ -205,7 +206,11 @@ class _ListItem extends StatelessWidget {
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(5),
                               topRight: Radius.circular(5)),
-                          child: CustomCacheImage(imageUrl: d.primeraimagen)),
+                          child: (d.primeraimagen!.isNotEmpty)
+                              ? CustomCacheImage(imageUrl: d.primeraimagen)
+                              : Image.asset(
+                            "assets/images/no-image.png",
+                          ),),
                     )),
                 Container(
                   padding: EdgeInsets.all(15),
@@ -254,7 +259,7 @@ class _ListItem extends StatelessWidget {
                             color: Colors.grey[700],
                           ),
                           SizedBox(
-                            width: 3,
+                            width: 5,
                           ),
                           Text(
                             "Fecha",
@@ -263,33 +268,33 @@ class _ListItem extends StatelessWidget {
                           ),
                           Spacer(),
                           Icon(
-                            LineIcons.heart,
-                            size: 16,
-                            color: Colors.grey,
+                            FontAwesomeIcons.heart,
+                            color: Colors.red,
+                            size: 20,
                           ),
                           SizedBox(
-                            width: 3,
+                            width: 10,
                           ),
                           Text(
                             d.love.toString(),
                             style: TextStyle(
-                                fontSize: 13, color: Colors.grey[700]),
+                                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
                           ),
                           SizedBox(
                             width: 10,
                           ),
                           Icon(
-                            LineIcons.comment,
-                            size: 16,
-                            color: Colors.grey,
+                            FontAwesomeIcons.comments,
+                            color: Colors.blue[300],
+                            size: 20,
                           ),
                           SizedBox(
-                            width: 3,
+                            width: 10,
                           ),
                           Text(
                             d.comentario.toString(),
                             style: TextStyle(
-                                fontSize: 13, color: Colors.grey[700]),
+                                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
                           ),
                         ],
                       )

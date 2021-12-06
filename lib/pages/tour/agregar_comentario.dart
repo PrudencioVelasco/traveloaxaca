@@ -6,23 +6,24 @@ import 'package:flutter/services.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/conquien_visito_bloc.dart';
 import 'package:traveloaxaca/models/conquien_visitaste.dart';
-import 'package:traveloaxaca/models/lugar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:traveloaxaca/models/response_api.dart';
+import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 
-class AgregarComentarioPage extends StatefulWidget {
-  final Lugar? lugar;
-  AgregarComentarioPage({Key? key, required this.lugar}) : super(key: key);
+class AgregarComentarioTourPage extends StatefulWidget {
+  final Tour? tour;
+  AgregarComentarioTourPage({Key? key, required this.tour}) : super(key: key);
 
   @override
-  _AgregarComentarioPageState createState() => _AgregarComentarioPageState();
+  _AgregarComentarioTourPageState createState() =>
+      _AgregarComentarioTourPageState();
 }
 
-class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
+class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
   List<Asset> images = [];
   String _error = 'Selectionner une image';
   TextEditingController ctrlComentario = TextEditingController();
@@ -119,7 +120,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
             child: CupertinoDatePicker(
               mode: CupertinoDatePickerMode.date,
               onDateTimeChanged: (picked) {
-                if (picked != selectedDate)
+                if (picked != null && picked != selectedDate)
                   setState(() {
                     selectedDate = picked;
                   });
@@ -146,7 +147,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
       _deshabilitar = true;
     });
     ResponseApi? dato = await _commentsBloc.agregarComentarioLugar(
-        widget.lugar!.idlugar!,
+        widget.tour!.idtour!,
         _rating,
         ctrlComentario.text,
         _selectedIndex,
@@ -220,7 +221,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
         ),
         materialOptions: MaterialOptions(
           actionBarColor: "#abcdef",
-          actionBarTitle: widget.lugar!.nombre.toString(),
+          actionBarTitle: widget.tour!.nombre.toString(),
           allViewTitle: "all photos".tr(),
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
@@ -307,7 +308,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
           ],
           backgroundColor: Colors.white,
           title: Text(
-            widget.lugar!.nombre.toString(),
+            widget.tour!.nombre.toString(),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black,

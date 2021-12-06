@@ -16,6 +16,7 @@ class Tour {
   String? nombrecompania;
   String? nombre;
   String? descripcion;
+  String? informacion;
   String? actividad;
   double? precioxpersona;
   String? horainicio;
@@ -23,7 +24,9 @@ class Tour {
   String? horafinal;
   String? fechafinal;
   double? rating;
-  int? activo;
+  int? totalcomentarios;
+  int? totalloves;
+  //int? activo;
   List<Tour> toList = [];
   List<ImagenTour>? imagenestour = [];
   Tour({
@@ -32,6 +35,7 @@ class Tour {
     this.nombre,
     this.nombrecompania,
     this.descripcion,
+    this.informacion,
     this.actividad,
     this.precioxpersona,
     this.horainicio,
@@ -39,8 +43,10 @@ class Tour {
     this.horafinal,
     this.fechafinal,
     this.rating,
+    this.totalcomentarios,
+    this.totalloves,
     this.imagenestour,
-    this.activo,
+    //this.activo,
   });
 
   factory Tour.fromJson(Map<String, dynamic> json) => Tour(
@@ -49,6 +55,7 @@ class Tour {
         nombrecompania: json["nombrecompania"],
         nombre: json["nombre"],
         descripcion: json["descripcion"],
+        informacion: json["informacion"],
         actividad: json["actividad"],
         precioxpersona: json["precioxpersona"] is String
             ? double.parse(json["precioxpersona"])
@@ -64,12 +71,15 @@ class Tour {
             : isInteger(json["rating"])
                 ? json["rating"].toDouble()
                 : json["rating"],
+    totalcomentarios: json["totalcomentarios"],
+    totalloves: json["totalloves"],
         imagenestour: json["imagenestour"] == null
             ? []
             : List<ImagenTour>.from(json["imagenestour"]
                 .map((model) => ImagenTour.fromJson(model))),
-        activo: json["activo"],
+        //  activo: json["activo"],
       );
+
   Tour.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
       Tour tour = Tour.fromJson(element);
@@ -82,6 +92,7 @@ class Tour {
         "nombrecompania": nombrecompania,
         "nombre": nombre,
         "descripcion": descripcion,
+        "informacion": informacion,
         "actividad": actividad,
         "precioxpersona": precioxpersona,
         "horainicio": horainicio,
@@ -89,9 +100,10 @@ class Tour {
         "horafinal": horafinal,
         "fechafinal": fechafinal,
         "rating": rating,
-        "imagenestour":
-            List<dynamic>.from(imagenestour!.map((x) => x.toJson())),
-        "activo": activo,
+    "totalcomentarios": totalcomentarios,
+    "totalloves": totalloves,
+        "imagenestour": imagenestour!.map((e) => e.toJson()).toList(),
+        //"activo": activo,
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();

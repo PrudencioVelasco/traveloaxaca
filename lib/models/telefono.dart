@@ -25,9 +25,10 @@ class Telefono {
         numerotelefono: json["numerotelefono"],
       );
   Telefono.fromJsonToList(List<dynamic> jsonList) {
+    //if (jsonList == null) return;
     jsonList.forEach((element) {
-      Telefono telefono = Telefono.fromJson(element);
-      toList.add(telefono);
+      Telefono actividad = Telefono.fromJson(element);
+      toList.add(actividad);
     });
   }
   Map<String, dynamic> toJson() => {

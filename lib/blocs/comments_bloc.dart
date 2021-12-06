@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:http/http.dart' as http;
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
+import 'package:traveloaxaca/models/comentario_tour.dart';
 import 'package:traveloaxaca/models/comment.dart';
 import 'package:traveloaxaca/models/response_api.dart';
+import 'dart:async';
 
 class CommentsBloc extends ChangeNotifier {
   BuildContext? context;
@@ -24,6 +26,57 @@ class CommentsBloc extends ChangeNotifier {
   int get totalComentarios => _totalComentarios;
   int _totalComentariosUsuarioLugar = 0;
   int get totalComentariosUsuarioLugar => _totalComentariosUsuarioLugar;
+
+  /*Future<ResponseApi?> agregarComentarioTour(
+      List<Asset> images,
+      int idtour,
+      double rating,
+      String comentario,
+      int conquienvisito,
+      DateTime fechavisita) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    String? token = await _signInBloc.getToken();
+    try {
+      List<MultipartFile> multipartImageList = [];
+      if (null != images) {
+        for (Asset asset in images) {
+          ByteData byteData = await asset.getByteData();
+          List<int> imageData = byteData.buffer.asUint8List();
+
+          MultipartFile multipartFile = MultipartFile.fromBytes(
+            'photo', //key of the api
+            imageData,
+            filename: 'some-file-name.jpg',
+          
+          contentType: MediaType('image', '')//this is not nessessory variable. if this getting error, erase the line.
+          );
+          multipartImageList.add(multipartFile);
+        }
+      }
+
+      Uri url = Uri.http(_url, '$_api/agregarComentarioLugar');
+      String bodyParams = json.encode({
+        'idtour': idtour,
+        'idconquienvisito': conquienvisito,
+        'rating': rating,
+        'comentario': comentario,
+        'fechavisito': fechavisita.toString()
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8',
+        'x-token': token!
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      // await totalComentariosLugar(idlugar);
+      return responseApi;
+    } catch (error) {
+      print('Error: $error');
+    }
+  }*/
 
   Future<ResponseApi?> agregarCommentario(
       int idlugar, String comentario) async {
@@ -120,6 +173,34 @@ class CommentsBloc extends ChangeNotifier {
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
       Comentario comentario = Comentario.fromJsonToList(responseApi.data);
+
+      return comentario.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  Future<List<ComentarioTour?>> obtenerComentariosTour(
+      int idtour, int idcomentario, int limite) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerComentariosTour');
+      String bodyParams = json.encode({
+        'idtour': idtour,
+        'idcomentario': (idcomentario == 0) ? '' : idcomentario,
+        'limite': (limite == 0) ? '' : limite,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      ComentarioTour comentario =
+          ComentarioTour.fromJsonToList(responseApi.data);
 
       return comentario.toList;
     } catch (error) {

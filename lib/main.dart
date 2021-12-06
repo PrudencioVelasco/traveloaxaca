@@ -18,6 +18,7 @@ import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/pages/loading_page.dart';
 
 void main() async {
@@ -80,6 +81,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<RutasBloc>(
           create: (context) => RutasBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TourBloc(),
         ),
         ChangeNotifierProvider<SearchBloc>(create: (context) => SearchBloc()),
         ChangeNotifierProvider<SitiosInteresBloc>(

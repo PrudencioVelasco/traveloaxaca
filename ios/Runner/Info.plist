@@ -47,6 +47,15 @@
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+	<key>NSCameraUsageDescription</key>
+	<string>App name Want To Access Your Camera</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App name Want To Access Your Gallery</string>
     <key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location for display nearby places</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -21,6 +21,7 @@ import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/models/sitiosinteres.dart';
 import 'package:traveloaxaca/pages/comments.dart';
 import 'package:traveloaxaca/pages/guide.dart';
@@ -36,10 +37,7 @@ import 'package:traveloaxaca/widgets/love_count.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:readmore/readmore.dart';
-import 'package:html_unescape/html_unescape.dart';
-import 'package:html/parser.dart';
 import 'package:traveloaxaca/widgets/mas_informacion_lugar.dart';
-import 'package:flutter_translate/flutter_translate.dart';
 
 class PlaceDetails extends StatefulWidget {
   final Lugar? data;
@@ -70,6 +68,14 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   int _totalLove = 0;
   bool _marcadoCorazon = false;
   bool isReadmore = false;
+
+  int _totalLoves = 0;
+  int _totalComentarios = 0;
+  String _textlove = "love".tr();
+  String _textcomentario = "view reviews".tr();
+  String _textVer = "view".tr();
+  String _textReviews = "reviews".tr();
+  bool _marcarCorazon = false;
   @override
   void initState() {
     super.initState();
@@ -95,7 +101,8 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     getActractivoLugar();
     //totalLove();
     //totalComment();
-    validarMarcadoCorazon();
+    marcarCorazonInicial();
+    numerosIniciales();
     refresh();
   }
 
@@ -103,19 +110,29 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     await _loveBloc.principalTotalLoves(widget.data!.idlugar!);
   }
 
+  Future numerosIniciales() async {
+    int totalL = await _loveBloc.obtenerTotalLove(widget.data!.idlugar!);
+    int totalC = await _commentBloc
+        .obtenerTotalComentariosPorLugar(widget.data!.idlugar!);
+    setState(() {
+      _totalLoves = totalL;
+      _totalComentarios = totalC;
+    });
+  }
+
+  Future marcarCorazonInicial() async {
+    int total = await _loveBloc.obtenerLovePorUsuario(widget.data!.idlugar!);
+    if (total > 0) {
+      setState(() {
+        _marcarCorazon = true;
+      });
+    }
+  }
+
   void totalComment() async {
     await _commentBloc.totalComentariosLugar(widget.data!.idlugar!);
   }
 
-  void validarMarcadoCorazon() async {
-    int lovePorUsuario =
-        await _loveBloc.obtenerLovePorUsuario(widget.data!.idlugar!);
-    if (lovePorUsuario > 0) {
-      _marcadoCorazon = true;
-    } else {
-      _marcadoCorazon = false;
-    }
-  }
 
   void getData() async {
     _sitiosInteres =
@@ -159,7 +176,22 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     final _signLoveBloc = Provider.of<LoveBloc>(context, listen: false);
     final autenticado = await _signInBlocProvider.isLoggedIn();
     if (autenticado == true) {
-      _signLoveBloc.onLoveIconClick(widget.data!.idlugar!);
+      ResponseApi? value = await _loveBloc.agregarLove(widget.data!.idlugar!);
+      if (value!.success!) {
+        int totalL = await _loveBloc.obtenerTotalLove(widget.data!.idlugar!);
+        int totalC = await _commentBloc
+            .obtenerTotalComentariosPorLugar(widget.data!.idlugar!);
+        setState(() {
+          //  _marcarCorazon = true;
+          if (_marcarCorazon) {
+            _marcarCorazon = false;
+          } else {
+            _marcarCorazon = true;
+          }
+          _totalLoves = totalL;
+          _totalComentarios = totalC;
+        });
+      }
     } else {
       openSignInDialog(context);
     }
@@ -242,10 +274,18 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         onPressed: () {
                           handleLoveClick();
                         },
-                        icon: (_loveBlocProvider.mostrarMarcadoCorazon)
-                            ? LoveIcon().bold
-                            : LoveIcon().normal,
-                        label: (_loveBlocProvider.mostrarMarcadoCorazon)
+                        icon: (_marcarCorazon)
+                            ? Icon(
+                                FontAwesomeIcons.solidHeart,
+                                color: Colors.red,
+                                size: 20,
+                              )
+                            : Icon(
+                                FontAwesomeIcons.solidHeart,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                        label: (_marcarCorazon)
                             ? Text(
                                 "like",
                                 style: TextStyle(color: Colors.red),
@@ -262,11 +302,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         icon: Icon(
                           FontAwesomeIcons.comment,
                           color: Colors.grey[600],
+                          size: 22,
                         ),
-                        label: CommentCount(
-                          idLugar: widget.data!.idlugar!,
-                          parametro: 1,
-                        ),
+                        label: Text(_totalComentarios.toString() + " " + _textcomentario,  style: TextStyle(color: Colors.grey[600])),
                       ),
                     ],
                   ),
@@ -300,22 +338,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                     height: 3,
                     width: 150,
                     decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
+                        color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(40)),
                   ),
                   Row(
                     children: <Widget>[
-                      CommentCount(
-                        idLugar: widget.data!.idlugar!,
-                        parametro: 0,
-                      ),
-                      /*Text(
-                        _commentBlocProvider.totalComentarios.toString(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),*/
+                  Text(
+                  _totalComentarios.toString(),
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+            ),
                       SizedBox(
                         width: 5,
                       ),
@@ -327,7 +359,11 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       SizedBox(
                         width: 10,
                       ),
-                      LoveCount(idlugar: widget.data!.idlugar!),
+      Text(
+        _totalLoves.toString(),
+        style: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+      ),
                       SizedBox(
                         width: 5,
                       ),
@@ -341,59 +377,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                   SizedBox(
                     height: 25,
                   ),
-                  FutureBuilder(
-                    future: someFutureStringFunction(widget.data!.descripcion!),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ReadMoreText(
-                          snapshot.data.toString(),
-                          // convertir(widget.data!.descripcion!),
-                          // widget.data!.descripcion!,
-                          trimLines: 4,
-                          colorClickableText: Colors.blue,
-                          trimMode: TrimMode.Line,
-                          trimCollapsedText: 'read more'.tr(),
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(fontSize: 16),
-                          trimExpandedText: 'read less'.tr(),
-                        );
-                      } else {
-                        return Text('Loading...');
-                      }
-                    },
+                  ReadMoreText(
+                    widget.data!.descripcion!,
+                    trimLines: 4,
+                    colorClickableText: Colors.blue,
+                    trimMode: TrimMode.Line,
+                    trimCollapsedText: 'read more'.tr(),
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(fontSize: 16),
+                    trimExpandedText: 'read less'.tr(),
                   ),
-
-                  /*  buildText(widget.data!.descripcion!),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          // toggle the bool variable true or false
-                          isReadmore = !isReadmore;
-                        });
-                      },
-                      child: Text(
-                        (isReadmore ? 'Read Less' : 'Read More'),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          primary: Colors.teal,
-                          //fixedSize: const Size(300, 100),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40))),
-                    ),
-                  ),*/
-
-                  /* Html(
-                    data: '${widget.data!.descripcion!}',
-                    style: {
-                      "body": Style(
-                          textAlign: TextAlign.justify,
-                          fontSize: FontSize(14.0),
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[800]),
-                    },
-                  ),*/
                   SizedBox(
                     height: 30,
                   ),
@@ -410,9 +403,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         padding: EdgeInsets.only(top: 10, bottom: 10),
                         margin: EdgeInsets.only(top: 5, bottom: 5),
                         height: 3,
-                        width: 100,
+                        width: 150,
                         decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.grey[300],
                             borderRadius: BorderRadius.circular(40)),
                       ),
                       listaOpciones(
@@ -444,7 +437,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           height: 3,
                           width: 100,
                           decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(40)),
                         ),
                         Container(
@@ -485,9 +478,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                             Container(
                               margin: EdgeInsets.only(top: 8, bottom: 8),
                               height: 3,
-                              width: 100,
+                              width: 150,
                               decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
+                                  color: Colors.grey[300],
                                   borderRadius: BorderRadius.circular(40)),
                             ),
                             Container(
@@ -673,7 +666,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                             onSurface: Colors.black,
                             //shadowColor: Colors.grey,
                             padding: EdgeInsets.all(10.0),
-                            elevation: 6,
+                            elevation: 4,
 
                             shape: RoundedRectangleBorder(
                                 side: BorderSide(),
@@ -696,7 +689,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                             onSurface: Colors.black,
                             //shadowColor: Colors.grey,
                             padding: EdgeInsets.all(10.0),
-                            elevation: 6,
+                            elevation: 4,
 
                             shape: RoundedRectangleBorder(
                                 side: BorderSide(),
@@ -895,13 +888,13 @@ class listaOpciones extends StatelessWidget {
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                    border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
-                        blurRadius: 3,
+                        blurRadius: 2,
                         offset: Offset(0, 5), // changes position of shadow
                       ),
                     ]),
@@ -948,7 +941,7 @@ Widget _chois(Actividad? item) {
       alignment: Alignment.topCenter,
       margin: EdgeInsets.only(top: 0),
       child: ChoiceChip(
-        elevation: 5,
+        elevation: 4,
         pressElevation: 5,
         label: Text(
           item!.nombreactividad!,

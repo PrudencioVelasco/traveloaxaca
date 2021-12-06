@@ -7,10 +7,8 @@ import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:traveloaxaca/pages/categoria.dart';
 import 'package:traveloaxaca/pages/categoria_principal.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
-import 'package:traveloaxaca/pages/ruta.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
@@ -79,7 +77,7 @@ class _ExplorarState extends State<Explorar> {
                   Header(),
                   Featured(),
                   PopularPlaces(),
-                  RutaPage(),
+                  //RutaPage(),
                   CategoriaPrincipalPage(),
                   // CategoriaPage(),
                   //RecentPlaces(),

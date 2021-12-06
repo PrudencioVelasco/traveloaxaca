@@ -4,12 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:traveloaxaca/models/horario.dart';
-import 'package:traveloaxaca/models/imagen_compani.dart';
-import 'package:traveloaxaca/models/imagen_tour.dart';
-import 'package:traveloaxaca/models/telefono.dart';
-import 'package:traveloaxaca/models/tour.dart';
-
 Compania companiaFromJson(String str) => Compania.fromJson(json.decode(str));
 
 String companiaToJson(Compania data) => json.encode(data.toJson());
@@ -26,11 +20,6 @@ class Compania {
   String? direccion;
   String? correo;
   String? contacto;
-  List<Telefono>? telefonos = [];
-  List<Horario>? horarios = [];
-  List<Tour>? tours = [];
-  List<ImagenTour>? imagenestour = [];
-  List<ImagenCompany>? imagenescompania = [];
   List<Compania> toList = [];
   Compania({
     this.idclasificacion,
@@ -44,10 +33,6 @@ class Compania {
     this.direccion,
     this.correo,
     this.contacto,
-    this.telefonos,
-    this.tours,
-    this.imagenestour,
-    this.imagenescompania,
   });
 
   factory Compania.fromJson(Map<String, dynamic> json) => Compania(
@@ -62,22 +47,6 @@ class Compania {
         direccion: json["direccion"],
         correo: json["correo"],
         contacto: json["contacto"],
-        telefonos: json["telefonos"] == null
-            ? []
-            : List<Telefono>.from(
-                json["telefonos"].map((model) => Telefono.fromJson(model))),
-        tours: json["tours"] == null
-            ? []
-            : List<Tour>.from(
-                json["tours"].map((model) => Tour.fromJson(model))),
-        imagenestour: json["imagenestour"] == null
-            ? []
-            : List<ImagenTour>.from(json["imagenestour"]
-                .map((model) => ImagenTour.fromJson(model))),
-        imagenescompania: json["imagenescompania"] == null
-            ? []
-            : List<ImagenCompany>.from(json["imagenescompania"]
-                .map((model) => ImagenCompany.fromJson(model))),
       );
   Compania.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
@@ -97,11 +66,5 @@ class Compania {
         "direccion": direccion,
         "correo": correo,
         "contacto": contacto,
-        "telefonos": List<dynamic>.from(telefonos!.map((x) => x.toJson())),
-        "tours": List<dynamic>.from(tours!.map((x) => x.toJson())),
-        "imagenestour":
-            List<dynamic>.from(imagenestour!.map((x) => x.toJson())),
-        "imagenescompania":
-            List<dynamic>.from(imagenescompania!.map((x) => x.toJson())),
       };
 }

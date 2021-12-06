@@ -13,12 +13,14 @@ class ImagenTour {
   int? idimagentour;
   int? idtour;
   String? nombreimagen;
+  String? url;
   int? tipousuario;
   List<ImagenTour> toList = [];
   ImagenTour({
     this.idimagentour,
     this.idtour,
     this.nombreimagen,
+    this.url,
     this.tipousuario,
   });
 
@@ -26,6 +28,7 @@ class ImagenTour {
         idimagentour: json["idimagentour"],
         idtour: json["idtour"],
         nombreimagen: json["nombreimagen"],
+        url: json["url"],
         tipousuario: json["tipousuario"],
       );
   ImagenTour.fromJsonToList(List<dynamic> jsonList) {
@@ -38,6 +41,7 @@ class ImagenTour {
         "idimagentour": idimagentour,
         "idtour": idtour,
         "nombreimagen": nombreimagen,
+        "url": url,
         "tipousuario": tipousuario,
       };
 }

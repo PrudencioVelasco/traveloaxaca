@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:traveloaxaca/models/telefono.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class InformacionPage extends StatefulWidget {
   InformacionPage({Key? key}) : super(key: key);

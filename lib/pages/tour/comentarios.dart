@@ -9,11 +9,11 @@ import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
-import 'package:traveloaxaca/comentario/agregar_comentario.dart';
-import 'package:traveloaxaca/comentario/reportar_comentario_lugar.dart';
-import 'package:traveloaxaca/models/comment.dart';
-import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/models/comentario_tour.dart';
 import 'package:traveloaxaca/models/response_api.dart';
+import 'package:traveloaxaca/models/tour.dart';
+import 'package:traveloaxaca/pages/tour/agregar_comentario.dart';
+import 'package:traveloaxaca/pages/tour/agregar_reporte.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
@@ -21,18 +21,18 @@ import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class CommentsPage extends StatefulWidget {
-  final Lugar lugar;
+class ComentariosTourPage extends StatefulWidget {
+  final Tour tour;
   final String collectionName;
-  const CommentsPage(
-      {Key? key, required this.lugar, required this.collectionName})
+  const ComentariosTourPage(
+      {Key? key, required this.tour, required this.collectionName})
       : super(key: key);
 
   @override
-  _CommentsPageState createState() => _CommentsPageState();
+  _ComentariosTourPageState createState() => _ComentariosTourPageState();
 }
 
-class _CommentsPageState extends State<CommentsPage> {
+class _ComentariosTourPageState extends State<ComentariosTourPage> {
   //final FirebaseFirestore firestore = FirebaseFirestore.instance;
   ScrollController? controller;
   CommentsBloc _commentsBloc = new CommentsBloc();
@@ -40,11 +40,11 @@ class _CommentsPageState extends State<CommentsPage> {
   int _lastVisible = 0;
   int _idComentarioUltimo = 0;
   bool? _isLoading;
-  List<Comentario?> _data = [];
+  List<ComentarioTour?> _data = [];
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var textCtrl = TextEditingController();
   bool? _hasData;
-  List<Comentario?> _listComentarios = [];
+  List<ComentarioTour?> _listComentarios = [];
   final GlobalKey _menuKey = GlobalKey();
   InternetBloc _internetBloc = new InternetBloc();
   @override
@@ -70,12 +70,12 @@ class _CommentsPageState extends State<CommentsPage> {
     //QuerySnapshot data;
     if (_lastVisible == 0) {
 //_listComentarios
-      _listComentarios = (await _commentsBloc.obtenerComentariosLugarv2(
-          widget.lugar.idlugar!, 0, 7));
+      _listComentarios = (await _commentsBloc.obtenerComentariosTour(
+          widget.tour.idtour!, 0, 7));
     } else {
       // data = await firestore
-      _data = (await _commentsBloc.obtenerComentariosLugarv2(
-          widget.lugar.idlugar!, _idComentarioUltimo, 7));
+      _data = (await _commentsBloc.obtenerComentariosTour(
+          widget.tour.idtour!, _idComentarioUltimo, 7));
       //_listComentarios.add(_data);
       _data.forEach((element) {
         _listComentarios.add(element);
@@ -125,7 +125,7 @@ class _CommentsPageState extends State<CommentsPage> {
     }
   }
 
-  handleDelete(context, Comentario d) {
+  handleDelete(context, ComentarioTour d) {
     final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
     final ib = Provider.of<InternetBloc>(context, listen: false);
     showDialog(
@@ -156,7 +156,7 @@ class _CommentsPageState extends State<CommentsPage> {
                           Provider.of<CommentsBloc>(context, listen: false);
                       ResponseApi? resultado =
                           await _commentsBloc.eliminarCommentario(
-                              d.idcomentario!, widget.lugar.idlugar!);
+                              d.idcomentario!, widget.tour.idtour!);
                       if (resultado!.success!) {
                         //  mostrarAlerta(
                         //      context, 'Eliminado', resultado.message!);
@@ -211,7 +211,7 @@ class _CommentsPageState extends State<CommentsPage> {
           mostrarAlerta(context, 'Internet', 'No tiene conexion a Internet.');
         } else {
           ResponseApi? resultado = await _commentBloc.agregarCommentario(
-              widget.lugar.idlugar!, textCtrl.text);
+              widget.tour.idtour!, textCtrl.text);
           if (resultado!.success! == true) {
             onRefreshData();
             textCtrl.clear();
@@ -440,7 +440,7 @@ class _CommentsPageState extends State<CommentsPage> {
                                             if (valor == "reportar") {
                                               nextScreen(
                                                   context,
-                                                  ReportarComentarioLugarPage(
+                                                  ReportarComentarioTourPage(
                                                       comentario:
                                                           _listComentarios[
                                                               index]!));
@@ -500,9 +500,16 @@ class _CommentsPageState extends State<CommentsPage> {
                         side: BorderSide(),
                         borderRadius: BorderRadius.all(Radius.circular(20))),
                   ),
-                  onPressed: () {
-                    nextScreen(
-                        context, AgregarComentarioPage(lugar: widget.lugar));
+                  onPressed: () async {
+                    final _signInBlocProvider =
+                        Provider.of<SignInBloc>(context, listen: false);
+                    final autenticado = await _signInBlocProvider.isLoggedIn();
+                    if (autenticado == true) {
+                      nextScreen(context,
+                          AgregarComentarioTourPage(tour: widget.tour));
+                    } else {
+                      openSignInDialog(context);
+                    }
                   },
                 ),
               ),

@@ -54,7 +54,7 @@ class _PopularPlaces extends State<PopularPlaces> {
               Text(
                 'popular places',
                 style: TextStyle(
-                    fontSize: 17,
+                    fontSize: 25,
                     fontWeight: FontWeight.w700,
                     color: Colors.grey[800]),
               ).tr(),
@@ -65,7 +65,7 @@ class _PopularPlaces extends State<PopularPlaces> {
                     context,
                     MorePlacesPage(
                       title: 'popular',
-                      color: Colors.grey,
+                      color: Colors.greenAccent,
                     )),
               )
             ],

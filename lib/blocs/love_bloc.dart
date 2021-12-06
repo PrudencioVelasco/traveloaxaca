@@ -97,8 +97,12 @@ class LoveBloc extends ChangeNotifier {
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);
+
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
-      return responseApi.data;
+      if (responseApi.success == true) {
+        return responseApi.data;
+      }
+      return 0;
     } catch (error) {
       print('Error: $error');
       return 0;
