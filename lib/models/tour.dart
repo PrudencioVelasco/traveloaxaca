@@ -71,8 +71,8 @@ class Tour {
             : isInteger(json["rating"])
                 ? json["rating"].toDouble()
                 : json["rating"],
-    totalcomentarios: json["totalcomentarios"],
-    totalloves: json["totalloves"],
+        totalcomentarios: json["totalcomentarios"],
+        totalloves: json["totalloves"],
         imagenestour: json["imagenestour"] == null
             ? []
             : List<ImagenTour>.from(json["imagenestour"]
@@ -86,6 +86,32 @@ class Tour {
       toList.add(tour);
     });
   }
+  static String encode(List<Tour> tours) => json.encode(
+        tours.map<Map<String, dynamic>>((tour) => Tour.toMap(tour)).toList(),
+      );
+  static List<Tour> decode(String tours) =>
+      (json.decode(tours) as List<dynamic>)
+          .map<Tour>((item) => Tour.fromJson(item))
+          .toList();
+  static Map<String, dynamic> toMap(Tour tour) => {
+    "idtour": tour.idtour,
+    "idcompania": tour.idcompania,
+    "nombrecompania": tour.nombrecompania,
+    "nombre": tour.nombre,
+    "descripcion": tour.descripcion,
+    "informacion": tour.informacion,
+    "actividad": tour.actividad,
+    "precioxpersona": tour.precioxpersona,
+    "horainicio": tour.horainicio,
+    "fechainicio": tour.fechainicio,
+    "horafinal": tour.horafinal,
+    "fechafinal": tour.fechafinal,
+    "rating": tour.rating,
+    "totalcomentarios": tour.totalcomentarios,
+    "totalloves": tour.totalloves,
+    "imagenestour": tour.imagenestour!.map((e) => e.toJson()).toList(),
+    //"activo": activo,
+  };
   Map<String, dynamic> toJson() => {
         "idtour": idtour,
         "idcompania": idcompania,
@@ -100,8 +126,8 @@ class Tour {
         "horafinal": horafinal,
         "fechafinal": fechafinal,
         "rating": rating,
-    "totalcomentarios": totalcomentarios,
-    "totalloves": totalloves,
+        "totalcomentarios": totalcomentarios,
+        "totalloves": totalloves,
         "imagenestour": imagenestour!.map((e) => e.toJson()).toList(),
         //"activo": activo,
       };

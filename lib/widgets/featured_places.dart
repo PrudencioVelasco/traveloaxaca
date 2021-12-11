@@ -110,7 +110,7 @@ class _FeaturedItemList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: (d!.primeraimagen!.isNotEmpty)
+                  child: (d!.primeraimagen != null)
                       ? CustomCacheImage(imageUrl: d!.primeraimagen)
                       : Image.asset(
                           "assets/images/no-image.png",

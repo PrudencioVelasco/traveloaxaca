@@ -43,32 +43,11 @@ class _CategoriaPageState extends State<CategoriaPage> {
       // padding: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(left: 5, top: 10, right: 5),
+          margin: EdgeInsets.only(left: 5, right: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(
-                  left: 10,
-                  top: 10,
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      'category',
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey[800]),
-                    ).tr(),
-                    Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: () => nextScreen(context, MoreActivityPage()),
-                    )
-                  ],
-                ),
-              ),
+
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: GridView.builder(
@@ -76,8 +55,8 @@ class _CategoriaPageState extends State<CategoriaPage> {
                   padding: EdgeInsets.all(5.0),
                   shrinkWrap: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
                     // crossAxisCount: 3,
                     childAspectRatio: 1.8,
                     crossAxisCount: MediaQuery.of(context).orientation ==
@@ -98,18 +77,14 @@ class _CategoriaPageState extends State<CategoriaPage> {
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 7,
+                              spreadRadius: 1,
+                              blurRadius: 2,
                               offset:
-                                  Offset(0, 3), // changes position of shadow
+                                  Offset(0, 4), // changes position of shadow
                             ),
                           ],
                         ),

@@ -5,8 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/atractivo_bloc.dart';
 import 'package:traveloaxaca/blocs/buscar_bloc.dart';
+import 'package:traveloaxaca/blocs/busqueda_next_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
+import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
 import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/love_bloc.dart';
@@ -19,7 +21,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
+import 'package:traveloaxaca/pages/buscar.dart';
+import 'package:traveloaxaca/pages/buscarNext.dart';
 import 'package:traveloaxaca/pages/loading_page.dart';
+import 'package:traveloaxaca/utils/acceso_gps_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +93,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<SearchBloc>(create: (context) => SearchBloc()),
         ChangeNotifierProvider<SitiosInteresBloc>(
             create: (context) => SitiosInteresBloc()),
+        ChangeNotifierProvider<BusquedaNextBloc>(
+            create: (context) => BusquedaNextBloc()),
+        ChangeNotifierProvider<CompaniaBloc>(
+            create: (context) => CompaniaBloc()),
       ],
       child: GestureDetector(
         onTap: () {
@@ -126,6 +135,11 @@ class MyApp extends StatelessWidget {
           title: 'Travel Oaxaca',
           debugShowCheckedModeBanner: false,
           home: LoadingPage(),
+          routes: {
+          //  'mapa'      : ( _ ) => MapaPage(),
+            'principal_buscar'   : ( _ ) => BuscarPage(),
+            'acceso_gps': ( _ ) => AccesoGpsPage(),
+          },
         ),
       ),
     );

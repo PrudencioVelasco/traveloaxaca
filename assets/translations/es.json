@@ -139,7 +139,7 @@
     "not found": "No funciona",
     "close": "Cerrar",
     "like":"Me gusta",
-    "information":"Informacion",
+    "information":"Información",
     "post":"Publicar",
     "how would you rate your experience":"¿Como calificarías tu experiencia??",
     "what kind of visit was this":"¿Qué tipo de visita fue?",
@@ -172,10 +172,15 @@
     "3 start": "3 Estrella",
     "4 start": "4 Estrella",
     "5 start": "5 Estrella",
-    "filter": "Filtrar",
-    "cancel": "Cancelar",
+    "filter": "Filtrar", 
     "sort by": "Ordenar por",
     "reactions": "Reacciones",
     "clean": "Limpiar",
-    "loading...": "Cargando..."
+    "loading...": "Cargando...",
+    "AGENCIA DE TOURS": "Agencias de Tours",
+    "TIENDA DE ARTESANIAS": "Tiendas de Artesanias",
+    "TIENDA DE MEZCAL": "Tiendas de Mezcal",
+    "TOURS": "Tours",
+    "nearby": "Cercano", 
+    "list": "Lista"
 }

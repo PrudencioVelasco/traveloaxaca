@@ -15,6 +15,7 @@ import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/snacbar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 List<String> allNames = ["ahmed", "ali", "john", "user"];
 var mainColor = Color(0xff1B3954);
 var textColor = Color(0xff727272);
@@ -41,24 +42,25 @@ class TodosToursPageState extends State<TodosToursPage> {
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _tourBloc.init(context, refresh);
     });
-     getAllTours();
+    getAllTours();
     getAllToursOriginal();
     refresh();
   }
 
-   Future getAllTours() async {
-    _listaTours  = (await _tourBloc.todosLosTours(null));
+  Future getAllTours() async {
+    _listaTours = (await _tourBloc.todosLosTours(null));
     setState(() {
-      cargando =false;
+      cargando = false;
     });
-   refresh();
+    refresh();
   }
 
   Future getAllToursOriginal() async {
-    _listaToursOriginal  = (await _tourBloc.todosLosTours(null));
+    _listaToursOriginal = (await _tourBloc.todosLosTours(null));
     // _listaToursOriginal = (await _tourBloc.todosLosTours(null));
     // refresh();
   }
+
   void refresh() {
     if (mounted) {
       setState(() {});
@@ -80,8 +82,8 @@ class TodosToursPageState extends State<TodosToursPage> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final double  itemHeight = (size.height - kToolbarHeight-24);
-    final double itemWidt = size.width/2;
+    final double itemHeight = (size.height - kToolbarHeight - 24);
+    final double itemWidt = size.width / 2;
     return Scaffold(
       body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxScrolled) {
@@ -104,8 +106,8 @@ class TodosToursPageState extends State<TodosToursPage> {
                           prefixIcon: Icon(Icons.search),
                           suffixIcon: IconButton(
                             icon: Icon(Icons.clear),
-                            onPressed: ()  {
-                             btnCancelar();
+                            onPressed: () {
+                              btnCancelar();
                             },
                           ),
                           hintText: 'Search...',
@@ -134,44 +136,46 @@ class TodosToursPageState extends State<TodosToursPage> {
             ];
           },
           body: Container(
-            margin: EdgeInsets.only(left: 10,right: 10),
+            margin: EdgeInsets.only(left: 10, right: 10),
             child: Column(
               children: [
-                if(cargando)
-            Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 200.0,
-                child: Stack(
-                  children: <Widget>[
-                    Center(
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        child: new CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-                          strokeWidth: 5,
+                if (cargando)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 200.0,
+                          child: Stack(
+                            children: <Widget>[
+                              Center(
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  child: new CircularProgressIndicator(
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            Colors.blueAccent),
+                                    strokeWidth: 5,
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: Text(
+                                  "loading...",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600),
+                                ).tr(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    Center(child: Text("loading...",style: TextStyle(color: Colors
-                        .black,
-                        fontSize:
-                        12,
-                        fontWeight:
-                        FontWeight
-                            .w600),).tr(),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-      ),
-if(!cargando)
-  _cartas()
+                  ),
+                if (!cargando) _cartas()
               ],
             ),
           )),
@@ -195,7 +199,7 @@ if(!cargando)
           },
           child: Card(
 
-            // semanticContainer: true,
+              // semanticContainer: true,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               // margin: EdgeInsets.all(10),
@@ -212,21 +216,21 @@ if(!cargando)
                         children: <Widget>[
                           CachedNetworkImage(
                             imageUrl: (_listaTours[index]!
-                                .imagenestour!
-                                .toList()
-                                .isNotEmpty)
+                                    .imagenestour!
+                                    .toList()
+                                    .isNotEmpty)
                                 ? _listaTours[index]!
-                                .imagenestour!
-                                .toList()
-                                .first
-                                .url
-                                .toString()
+                                    .imagenestour!
+                                    .toList()
+                                    .first
+                                    .url
+                                    .toString()
                                 : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
                             placeholder: (context, url) => SizedBox(
                               child: CircularProgressIndicator(
                                 backgroundColor: Colors.cyanAccent,
-                                valueColor:
-                                new AlwaysStoppedAnimation<Color>(Colors.red),
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.red),
                               ),
                               height: 100.0,
                               width: 100.0,
@@ -237,10 +241,9 @@ if(!cargando)
                           ),
                           Container(
                             //color: Colors.greenAccent,
-                            padding: EdgeInsets.only(left:5,top: 3),
+                            padding: EdgeInsets.only(left: 5, top: 3),
                             height: 40,
                             child: Expanded(
-
                               //padding: EdgeInsets.only(left: 4, top: 16, right: 4),
                               child: Text(
                                 _listaTours[index]!.nombre!,
@@ -256,7 +259,7 @@ if(!cargando)
                           ),
                           Container(
                             // height: 150,
-                           // color: Colors.green,
+                            // color: Colors.green,
                             padding: EdgeInsets.only(bottom: 4),
                             //margin: EdgeInsets.only(bottom: 60),
                             child: RatingBar.builder(
@@ -267,7 +270,8 @@ if(!cargando)
                               direction: Axis.horizontal,
                               allowHalfRating: false,
                               itemCount: 5,
-                              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                              itemPadding:
+                                  EdgeInsets.symmetric(horizontal: 4.0),
                               itemBuilder: (context, _) => Icon(
                                 Icons.star,
                                 color: Colors.amber,
@@ -279,48 +283,47 @@ if(!cargando)
                             ),
                           ),
                           Expanded(
-
                             child: RichText(
-                              text: TextSpan(
-                                  children: [
-
-                                    WidgetSpan(
-                                        child:  Container(
-                                        padding:EdgeInsets.only(right: 5,left: 5),
-                                            child: Icon( FontAwesomeIcons.solidHeart,size: 17,color: Colors.red,)
-                                        )
+                              text: TextSpan(children: [
+                                WidgetSpan(
+                                    child: Container(
+                                        padding:
+                                            EdgeInsets.only(right: 5, left: 5),
+                                        child: Icon(
+                                          FontAwesomeIcons.solidHeart,
+                                          size: 15,
+                                          color: Colors.red,
+                                        ))),
+                                TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                     ),
-
-                                    TextSpan(
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        text:  _listaTours[index]!.totalloves.toString()
-
+                                    text: _listaTours[index]!
+                                        .totalloves
+                                        .toString()),
+                                WidgetSpan(
+                                    child: Container(
+                                        padding:
+                                            EdgeInsets.only(right: 5, left: 5),
+                                        child: Icon(
+                                          FontAwesomeIcons.comments,
+                                          size: 15,
+                                          color: Colors.blue[300],
+                                        ))),
+                                TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    WidgetSpan(
-                                        child:  Container(
-                                            padding:EdgeInsets.only(right: 5,left: 5),
-                                            child: Icon(  FontAwesomeIcons.comments,size: 17, color: Colors.blue[300],)
-                                        )
-                                    ),
-
-                                    TextSpan(
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        text:  _listaTours[index]!.totalcomentarios.toString()
-
-                                    ),
-                                  ]
-                              ),
+                                    text: _listaTours[index]!
+                                        .totalcomentarios
+                                        .toString()),
+                              ]),
                             ),
                           )
-
                         ],
                       ),
                     ),
@@ -334,15 +337,15 @@ if(!cargando)
 
   void btnCancelar() async {
     _listaToursOriginal = [];
-    if(_parametro.isNotEmpty){
+    if (_parametro.isNotEmpty) {
       _listaToursOriginal = await _tourBloc.todosLosTours(_parametro);
-    }else{
+    } else {
       _listaToursOriginal = await _tourBloc.todosLosTours(null);
     }
-    setState(()   {
+    setState(() {
       _ascValue = null;
       _sortValue = null;
-      _listaTours=_listaToursOriginal;
+      _listaTours = _listaToursOriginal;
     });
   }
 
@@ -361,7 +364,6 @@ if(!cargando)
           .where((item) =>
               item!.rating == int.parse(_sortValue.toString()).toDouble())
           .toList();
-
     }
     if (_ascValue != null) {
       if (_ascValue!.toString() == "1") {
@@ -391,9 +393,7 @@ if(!cargando)
     }
 
     setState(() {
-      _listaTours = (opcion == 1)
-          ? _listaToursOriginal
-          : filteredStrings;
+      _listaTours = (opcion == 1) ? _listaToursOriginal : filteredStrings;
     });
   }
 

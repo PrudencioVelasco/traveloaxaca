@@ -91,13 +91,24 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
       _tourBloc.init(context, refresh);
       _companiaBloc.init(context, refresh);
       _tourBloc.iniciarValor();
+      //_tourBloc.guardarRecientesTour(widget.tour!);
     });
     getDetalleCompania();
     getTelefonosCompania();
     _getData();
     marcarCorazonInicial();
     numerosIniciales();
+    obtenerRecientesTour();
+    guardarRecientesTour();
     refresh();
+  }
+
+  Future guardarRecientesTour() async {
+    await _tourBloc.guardarRecientesTour(widget.tour!.idtour!);
+  }
+
+  Future obtenerRecientesTour() async {
+    await _tourBloc.obtenerRecientesTour();
   }
 
   Future getDetalleCompania() async {
@@ -148,11 +159,13 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
       }
     } else {
       if (_lastVisible == 0) {
-        setState(() {
-          _isLoading = false;
-          _hasData = false;
-          print('no items');
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _hasData = false;
+            print('no items');
+          });
+        }
       } else {
         setState(() {
           _isLoading = false;
@@ -183,7 +196,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
         int totalC =
             (await _tourBloc.commentsTours(widget.tour!.idtour!)).length;
         setState(() {
-        //  _marcarCorazon = true;
+          //  _marcarCorazon = true;
           if (_marcarCorazon) {
             _marcarCorazon = false;
           } else {
@@ -445,7 +458,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                   //  padding: EdgeInsets.only(right: 10),
                                   alignment: AlignmentDirectional.centerEnd,
                                   // color: Colors.red,
-                                  child: Text( NumberFormat.currency(locale: 'es_419').format(widget.tour!.precioxpersona!),
+                                  child: Text(
+                                    NumberFormat.currency(locale: 'es_419')
+                                        .format(widget.tour!.precioxpersona!),
                                     style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 25,
@@ -1212,12 +1227,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                     onPressed: () {
                                       nextScreen(
                                           context,
-                                          MasInformacionPage(
-                                            nombre:
-                                                widget.tour!.nombre.toString(),
-                                            descripcion:
-                                                widget.tour!.actividad!,
-                                          ));
+                                          ComentariosTourPage(
+                                              tour: widget.tour!,
+                                              collectionName: 'places'));
                                     },
                                   ),
                                 )

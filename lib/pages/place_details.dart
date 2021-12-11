@@ -114,10 +114,12 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     int totalL = await _loveBloc.obtenerTotalLove(widget.data!.idlugar!);
     int totalC = await _commentBloc
         .obtenerTotalComentariosPorLugar(widget.data!.idlugar!);
-    setState(() {
-      _totalLoves = totalL;
-      _totalComentarios = totalC;
-    });
+    if (mounted) {
+      setState(() {
+        _totalLoves = totalL;
+        _totalComentarios = totalC;
+      });
+    }
   }
 
   Future marcarCorazonInicial() async {
@@ -132,7 +134,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   void totalComment() async {
     await _commentBloc.totalComentariosLugar(widget.data!.idlugar!);
   }
-
 
   void getData() async {
     _sitiosInteres =
@@ -304,7 +305,11 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           color: Colors.grey[600],
                           size: 22,
                         ),
-                        label: Text(_totalComentarios.toString() + " " + _textcomentario,  style: TextStyle(color: Colors.grey[600])),
+                        label: Text(
+                            _totalComentarios.toString() +
+                                " " +
+                                _textcomentario,
+                            style: TextStyle(color: Colors.grey[600])),
                       ),
                     ],
                   ),
@@ -343,11 +348,13 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                   ),
                   Row(
                     children: <Widget>[
-                  Text(
-                  _totalComentarios.toString(),
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
-            ),
+                      Text(
+                        _totalComentarios.toString(),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600]),
+                      ),
                       SizedBox(
                         width: 5,
                       ),
@@ -359,11 +366,13 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       SizedBox(
                         width: 10,
                       ),
-      Text(
-        _totalLoves.toString(),
-        style: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
-      ),
+                      Text(
+                        _totalLoves.toString(),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600]),
+                      ),
                       SizedBox(
                         width: 5,
                       ),

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:traveloaxaca/models/lugar.dart';
-import 'package:traveloaxaca/pages/place_details.dart';
-import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ListCard extends StatelessWidget {
-  final Lugar? d;
+class ListCardCompania extends StatelessWidget {
+  final Compania? d;
   final String? tag;
   final Color? color;
-  const ListCard(
+  const ListCardCompania(
       {Key? key, @required this.d, @required this.tag, @required this.color})
       : super(key: key);
 
@@ -34,7 +32,7 @@ class ListCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   margin:
-                      EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
+                  EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
                   alignment: Alignment.topLeft,
                   height: 120,
                   child: Padding(
@@ -142,12 +140,12 @@ class ListCard extends StatelessWidget {
                         child: (d!.primeraimagen !=null)
                             ? CustomCacheImage(imageUrl: d!.primeraimagen!)
                             : Image.asset(
-                                "assets/images/no-image.png",
-                              ))),
+                          "assets/images/no-image.png",
+                        ))),
               ))
         ],
       ),
-      onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag!)),
+      //onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag!)),
     );
   }
 
@@ -156,10 +154,13 @@ class ListCard extends StatelessWidget {
   }
 }
 
-class ListCard1 extends StatelessWidget {
-  final Lugar? d;
+class ListCardCompaniaCerca extends StatelessWidget {
+  final Compania? d;
   final String? tag;
-  const ListCard1({Key? key, @required this.d, this.tag}) : super(key: key);
+  final Color? color;
+  const ListCardCompaniaCerca(
+      {Key? key, @required this.d, @required this.tag, @required this.color})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -167,23 +168,25 @@ class ListCard1 extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Container(
+            // color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(top: 5, bottom: 5),
+            padding: EdgeInsets.only(top: 15, bottom: 0),
             //color: Colors.grey[200],
             child: Stack(
               children: <Widget>[
                 Container(
-                  margin:
-                      EdgeInsets.only(top: 5, left: 30, right: 10, bottom: 5),
-                  alignment: Alignment.topLeft,
-                  height: 150,
+                  //  color: Colors.green,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: color,
                     borderRadius: BorderRadius.circular(5),
                   ),
+                  margin:
+                  EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
+                  alignment: Alignment.topLeft,
+                  height: 120,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 30, left: 110),
+                    padding: const EdgeInsets.only(top: 15, left: 135),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,32 +196,35 @@ class ListCard1 extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         SizedBox(
                           height: 5,
                         ),
                         Row(
                           children: [
-                            Icon(
-                              Icons.map,
-                              size: 12,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              width: 3,
-                            ),
-                            Expanded(
-                              child: Text(
-                                d!.direccion!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.grey[700]),
+
+                            RatingBar.builder(
+                              // ignoreGestures: true,
+                              itemSize: 20,
+                              initialRating: d!.rating!,
+                              ignoreGestures: true,
+                              direction: Axis.horizontal,
+                              allowHalfRating: false,
+                              itemCount: 5,
+                              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                              itemBuilder: (context, _) => Icon(
+                                Icons.star,
+                                color: Colors.amber,
                               ),
+                              onRatingUpdate: (rating) {
+                                //_rating = rating;
+                                //print(rating);
+                              },
                             ),
+                            Text("("+ d!.comentario.toString() +")")
                           ],
                         ),
                         Container(
@@ -233,12 +239,15 @@ class ListCard1 extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Icon(
-                              LineIcons.heart,
+                              FontAwesomeIcons.heart,
                               size: 18,
-                              color: Colors.orangeAccent,
+                              color: Colors.red,
+                            ),
+                            SizedBox(
+                              width: 10,
                             ),
                             Text(
-                              '',
+                              d!.love.toString(),
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
@@ -246,12 +255,15 @@ class ListCard1 extends StatelessWidget {
                               width: 20,
                             ),
                             Icon(
-                              LineIcons.comment,
+                              FontAwesomeIcons.comment,
                               size: 18,
-                              color: Colors.grey[700],
+                              color: Colors.blue,
+                            ),
+                            SizedBox(
+                              width: 10,
                             ),
                             Text(
-                              'comment',
+                              d!.comentario.toString(),
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
@@ -266,7 +278,8 @@ class ListCard1 extends StatelessWidget {
             ),
           ),
           Positioned(
-              top: MediaQuery.of(context).size.height * 0.031,
+              top: 40,
+              bottom: 30,
               left: 10,
               child: Hero(
                 tag: tag!,
@@ -275,11 +288,19 @@ class ListCard1 extends StatelessWidget {
                     width: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: CustomCacheImage(imageUrl: d!.primeraimagen!))),
+                        child: (d!.primeraimagen !=null)
+                            ? CustomCacheImage(imageUrl: d!.primeraimagen!)
+                            : Image.asset(
+                          "assets/images/no-image.png",
+                        ))),
               ))
         ],
       ),
-      onTap: () => nextScreen(context, PlaceDetails(data: d, tag: "yt")),
+      //onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag!)),
     );
+  }
+
+  requireStringNotNull(String? definitelyString) {
+    print(definitelyString!.length);
   }
 }

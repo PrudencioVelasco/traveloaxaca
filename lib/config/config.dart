@@ -6,9 +6,8 @@ class Config {
   final String countryName = 'Bangladesh';
   final String splashIcon = 'assets/images/splash.png';
   final String supportEmail = 'prudencio.vepa@gmail.com';
-  final String privacyPolicyUrl =
-      'https://www.freeprivacypolicy.com/pri************';
-  final String ourWebsiteUrl = 'https://codecanyon.net/user/mrblab24/portfolio';
+  final String privacyPolicyUrl = '';
+  final String ourWebsiteUrl = '';
   final String iOSAppId = '000000000';
 
   final String specialState1 = 'Sylhet';
@@ -40,4 +39,8 @@ class Config {
   final String placeMarkerIcon = 'assets/images/lugar.png';
   final String destinationMarkerIcon =
       'assets/images/destination_map_marker.png';
+  final String baseUrlDir = 'https://api.mapbox.com/directions/v5';
+  final String baseUrlGeo = 'https://api.mapbox.com/geocoding/v5';
+  final String apiKey =
+      'sk.eyJ1IjoiZHVndWVyIiwiYSI6ImNrd3puampxZTB3am0zMnE5dXp3cXpjcXcifQ.hZUrbDidn2hDJIvMSs3aPQ';
 }

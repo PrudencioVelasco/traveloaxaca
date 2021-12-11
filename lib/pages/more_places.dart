@@ -206,7 +206,7 @@ class _ListItem extends StatelessWidget {
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(5),
                               topRight: Radius.circular(5)),
-                          child: (d.primeraimagen!.isNotEmpty)
+                          child: (d.primeraimagen!=null)
                               ? CustomCacheImage(imageUrl: d.primeraimagen)
                               : Image.asset(
                             "assets/images/no-image.png",

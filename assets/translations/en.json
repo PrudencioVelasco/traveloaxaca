@@ -74,9 +74,7 @@
     "something is wrong. please try again." : "Something is wrong. Please try again.",
 
 
-    "sign in" : "Sign In",
-    "cancel" : "Cancel",
-    
+    "sign in" : "Sign In", 
     "no sign in title" : "Sign in first to access this feature",
     "no sign in subtitle" : "You haven't signed in yet. Please sign in to unlock this feature",
 
@@ -131,8 +129,7 @@
     "search":"Search",
     "explorer":"Explorer",
     "events":"Events",
-    "number":"Number",
-    "map":"Map",
+    "number":"Number", 
     "category places":"Category Places", 
     "search others places":"Search others places",
     "not found": "Not Found",
@@ -176,5 +173,12 @@
     "sort by": "Sort by",
     "reactions": "Reactions",
     "clean": "Clean",
-    "loading...": "Loading..."
+    "loading...": "Loading...",
+    "AGENCIA DE TOURS": "Tours Agency",
+    "TIENDA DE ARTESANIAS": "Artesanias Shop",
+    "TIENDA DE MEZCAL": "Mezcal Shop",
+    "TOURS": "Tours",
+    "nearby": "nearby",
+    "map": "Map",
+    "list": "List"
 }

@@ -42,7 +42,6 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
   @override
   Widget build(BuildContext context) {
     return Column(
-
       // padding: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
       children: <Widget>[
         Container(
@@ -67,8 +66,7 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.arrow_forward),
-                      onPressed: () => nextScreen(
-                          context,TodosToursPage()),
+                      onPressed: () => nextScreen(context, TodosToursPage()),
                     )
                   ],
                 ),
@@ -76,7 +74,7 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
-                  height: 220,
+                  height: 240,
                   //color: Colors.green,
                   width: MediaQuery.of(context).size.width,
                   child: ListView.builder(
@@ -103,6 +101,8 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
         nextScreen(context, DetalleTourPage(tour: item));
       },
       child: Card(
+        semanticContainer: true,
+
         //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10), // if you need this
@@ -113,65 +113,71 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
         ),
         margin: EdgeInsets.all(5),
         elevation: 10,
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Column(
-
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              CachedNetworkImage(
-                imageUrl: (item!.imagenestour!.toList().isNotEmpty)
-                    ? item.imagenestour!.toList().first.url.toString()
-                    : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
-                placeholder: (context, url) => CircularProgressIndicator(),
-                width: 150,
-                height: 150,
-                fit: BoxFit.cover,
+              Row(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: (item!.imagenestour!.toList().isNotEmpty)
+                        ? item.imagenestour!.toList().first.url.toString()
+                        : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  width: 150,
-                  // height: 120,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      item.nombre!,
-                      style: TextStyle(
-                        fontSize: 18,
-                        // fontWeight: FontWeight.normal,
+              Row(
+                children: [
+                  Container(
+                    width: 150,
+                    height: 50,
+                    //color: Colors.green,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        item.nombre!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  width: 150,
-                  height: 80,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: RatingBar.builder(
-                      // ignoreGestures: true,
-                      itemSize: 20,
-                      initialRating: item.rating!,
-                      ignoreGestures: true,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 5,
-                      itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) => Icon(
-                        Icons.star,
-                        color: Colors.amber,
+              Container(
+                //color: Colors.blueAccent,
+                height: 25,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: RatingBar.builder(
+                        // ignoreGestures: true,
+                        itemSize: 20,
+                        initialRating: item.rating!,
+                        ignoreGestures: true,
+                        direction: Axis.horizontal,
+                        allowHalfRating: false,
+                        itemCount: 5,
+                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {
+                          //_rating = rating;
+                          //print(rating);
+                        },
                       ),
-                      onRatingUpdate: (rating) {
-                        //_rating = rating;
-                        //print(rating);
-                      },
                     ),
-                  ),
+                  ],
                 ),
               ),
             ]),

@@ -16,8 +16,14 @@ class Compania {
   String? logotipo;
   String? paginaweb;
   String? nombre;
+  int? love;
+  int? comentario;
+  double? rating;
+  String? primeraimagen;
   String? actividad;
   String? direccion;
+  double? latitud;
+  double? longitud;
   String? correo;
   String? contacto;
   List<Compania> toList = [];
@@ -29,8 +35,14 @@ class Compania {
     this.logotipo,
     this.paginaweb,
     this.nombre,
+    this.love,
+    this.comentario,
+    this.rating,
+    this.primeraimagen,
     this.actividad,
     this.direccion,
+    this.latitud,
+    this.longitud,
     this.correo,
     this.contacto,
   });
@@ -43,8 +55,26 @@ class Compania {
         logotipo: json["logotipo"],
         paginaweb: json["paginaweb"],
         nombre: json["nombre"],
+        love: json["love"],
+        comentario: json["comentario"],
+        rating: json["rating"] is String
+            ? double.parse(json["rating"])
+            : isInteger(json["rating"])
+                ? json["rating"].toDouble()
+                : json["rating"],
+        primeraimagen: json["primeraimagen"],
         actividad: json["actividad"],
         direccion: json["direccion"],
+        latitud: json["latitud"] is String
+            ? double.parse(json["latitud"])
+            : isInteger(json["latitud"])
+                ? json["latitud"].toDouble()
+                : json["latitud"],
+        longitud: json["longitud"] is String
+            ? double.parse(json["longitud"])
+            : isInteger(json["longitud"])
+                ? json["longitud"].toDouble()
+                : json["longitud"],
         correo: json["correo"],
         contacto: json["contacto"],
       );
@@ -62,9 +92,17 @@ class Compania {
         "logotipo": logotipo,
         "paginaweb": paginaweb,
         "nombre": nombre,
+        "love": love,
+        "comentario": comentario,
+        "rating": rating,
+        "primeraimagen": primeraimagen,
         "actividad": actividad,
         "direccion": direccion,
+        "latitud": latitud,
+        "longitud": longitud,
         "correo": correo,
         "contacto": contacto,
       };
+  static bool isInteger(num value) =>
+      value is int || value == value.roundToDouble();
 }

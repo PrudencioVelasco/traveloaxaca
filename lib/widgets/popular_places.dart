@@ -112,7 +112,7 @@ class ItemList extends StatelessWidget {
               tag: 'popular${d!.idlugar}',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: (d!.primeraimagen!.isNotEmpty)
+                child: (d!.primeraimagen != null)
                     ? CustomCacheImage(imageUrl: d!.primeraimagen)
                     : Image.asset(
                         "assets/images/no-image.jpg",
@@ -124,12 +124,14 @@ class ItemList extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 0, left: 0, right: 0),
                 child: Container(
-                  padding: EdgeInsets.only(left: 5, right: 5),
-                  color: Colors.black.withOpacity(0.5),
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.36,
+                  padding: EdgeInsets.only(left: 5, right: 5, top: 3),
+                  color: Colors.black.withOpacity(0.4),
                   child: Text(d!.nombre!,
                       maxLines: 2,
                       style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Colors.white),
                       overflow: TextOverflow.ellipsis),
