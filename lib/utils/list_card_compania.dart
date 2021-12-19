@@ -32,7 +32,7 @@ class ListCardCompania extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   margin:
-                  EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
+                      EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
                   alignment: Alignment.topLeft,
                   height: 120,
                   child: Padding(
@@ -137,11 +137,11 @@ class ListCardCompania extends StatelessWidget {
                     width: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: (d!.primeraimagen !=null)
+                        child: (d!.primeraimagen != null)
                             ? CustomCacheImage(imageUrl: d!.primeraimagen!)
                             : Image.asset(
-                          "assets/images/no-image.png",
-                        ))),
+                                "assets/images/no-image.png",
+                              ))),
               ))
         ],
       ),
@@ -171,7 +171,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
             // color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(top: 15, bottom: 0),
+            //padding: EdgeInsets.only(top: 15, bottom: 0),
             //color: Colors.grey[200],
             child: Stack(
               children: <Widget>[
@@ -182,7 +182,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   margin:
-                  EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
+                      EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
                   alignment: Alignment.topLeft,
                   height: 120,
                   child: Padding(
@@ -205,7 +205,6 @@ class ListCardCompaniaCerca extends StatelessWidget {
                         ),
                         Row(
                           children: [
-
                             RatingBar.builder(
                               // ignoreGestures: true,
                               itemSize: 20,
@@ -214,7 +213,8 @@ class ListCardCompaniaCerca extends StatelessWidget {
                               direction: Axis.horizontal,
                               allowHalfRating: false,
                               itemCount: 5,
-                              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                              itemPadding:
+                                  EdgeInsets.symmetric(horizontal: 4.0),
                               itemBuilder: (context, _) => Icon(
                                 Icons.star,
                                 color: Colors.amber,
@@ -224,7 +224,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
                                 //print(rating);
                               },
                             ),
-                            Text("("+ d!.comentario.toString() +")")
+                            Text("(" + d!.comentario.toString() + ")")
                           ],
                         ),
                         Container(
@@ -288,11 +288,11 @@ class ListCardCompaniaCerca extends StatelessWidget {
                     width: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: (d!.primeraimagen !=null)
+                        child: (d!.primeraimagen != null)
                             ? CustomCacheImage(imageUrl: d!.primeraimagen!)
                             : Image.asset(
-                          "assets/images/no-image.png",
-                        ))),
+                                "assets/images/no-image.png",
+                              ))),
               ))
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/src/provider.dart';
+import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
 import 'package:traveloaxaca/pages/buscar/permisogps.dart';
@@ -26,12 +27,24 @@ class BuscarLugarCategoriaPage extends StatefulWidget {
 
 class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-
+  final translator = GoogleTranslator();
+  String nombre = "";
   @override
   void initState() {
     Future.delayed(Duration())
         .then((value) => context.read<CompaniaBloc>().saerchInitialize());
     super.initState();
+  }
+
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
   }
 
   @override
@@ -115,8 +128,17 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
               height: 55,
               child: Expanded(
                 child: ListTile(
-                  title:
-                      Text(widget.nombre.toString().tr() + " " + "nearby".tr()),
+                  title: FutureBuilder(
+                      future: someFutureStringFunction(context, widget.nombre!),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(
+                              snapshot.data.toString() + " " + "nearby".tr());
+                        } else if (snapshot.hasError) {
+                          return Text("error");
+                        }
+                        return Text("loading...".tr());
+                      }),
                   leading: CircleAvatar(
                     child: Icon(FeatherIcons.mapPin),
                     backgroundColor: Colors.white,
@@ -240,7 +262,7 @@ class _AfterSearchUIState extends State<AfterSearchUI> {
               );
             else
               return ListView.separated(
-                padding: EdgeInsets.all(10),
+                //padding: EdgeInsets.all(10),
                 itemCount: snapshot.data.length,
                 separatorBuilder: (context, index) => SizedBox(
                   height: 5,

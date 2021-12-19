@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/models/atractivo.dart';

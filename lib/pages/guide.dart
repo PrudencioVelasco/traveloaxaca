@@ -45,6 +45,10 @@ class _GuiaPageState extends State<GuiaPage> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
+        title: Text(
+          widget.data!.nombre.toString(),
+          style: TextStyle(color: Colors.black),
+        ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         leading: IconButton(

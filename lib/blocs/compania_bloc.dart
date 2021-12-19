@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/models/compania.dart';
+import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/models/telefono.dart';
 

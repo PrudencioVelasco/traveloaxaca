@@ -29,7 +29,9 @@
     "estimated cost = " : "Estimated Cost = ",
     "distance = " : "Distance = ",
     "no hotels found" : "No Hotels Found",
+    "no places found" : "No Places Found",
     "no restaurants found" : "No Restaurants Found",
+    "we didn't find any nearby places in this area" : "We haven't found any nearby places in this area",
     "we didn't find any nearby hotels in this area" : "We haven't found any nearby hotels in this area",
     "we didn't find any nearby restaurants in this area" : "We haven't found any nearby restaurants in this area",
     "user reviews" : "User Reviews",
@@ -47,8 +49,7 @@
     "recent searchs" : "Recent Search(s)",
     "search for places" : "Search for places",
     "search-description" :  "You haven't search for any items yet.\n Try now - we will help you!",
-    "we have found" : "We have found",
-    "no places found" : "No places found",
+    "we have found" : "We have found", 
     "try again" : "Try again!",
 
 
@@ -173,12 +174,10 @@
     "sort by": "Sort by",
     "reactions": "Reactions",
     "clean": "Clean",
-    "loading...": "Loading...",
-    "AGENCIA DE TOURS": "Tours Agency",
-    "TIENDA DE ARTESANIAS": "Artesanias Shop",
-    "TIENDA DE MEZCAL": "Mezcal Shop",
-    "TOURS": "Tours",
+    "loading...": "Loading...", 
     "nearby": "nearby",
     "map": "Map",
-    "list": "List"
+    "list": "List",
+    "recently viewed":"Recently viewed",
+    "rate":"Rate"
 }

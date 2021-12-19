@@ -11,6 +11,7 @@ import 'package:traveloaxaca/pages/buscarNext.dart';
 import 'package:traveloaxaca/pages/tour/todos.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:translator/translator.dart';
 
 class BuscarPage extends StatefulWidget {
   BuscarPage({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class BuscarPage extends StatefulWidget {
 }
 
 class _BuscarPageState extends State<BuscarPage> {
+  final translator = GoogleTranslator();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   BuscarBloc _con = new BuscarBloc();
   List<Categoria?> _listasCategorias = [];
@@ -39,16 +41,22 @@ class _BuscarPageState extends State<BuscarPage> {
       // getData();
     });
     super.initState();
-    getAllCategorias();
     refresh();
   }
 
-  void getAllCategorias() async {
-    _listasCategorias = (await _categoriaBloc.obtenerTodascategoriasPrincipal());
-    refresh();
-  }
   void refresh() {
     setState(() {});
+  }
+
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
   }
 
   @override
@@ -57,8 +65,7 @@ class _BuscarPageState extends State<BuscarPage> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: RefreshIndicator(
-            onRefresh: () async{
-            },
+            onRefresh: () async {},
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -67,41 +74,51 @@ class _BuscarPageState extends State<BuscarPage> {
                       Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.only(top: 10,left: 15),
-                            child:  Text("search".tr(),
+                            margin: EdgeInsets.only(top: 30, left: 20),
+                            child: Text(
+                              "search".tr(),
                               style: TextStyle(
-                                  fontSize: 25,
+                                  fontSize: 30,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.grey[800]),
-                            ) ,
+                            ),
                           )
-
                         ],
                       )
                     ],
                   ),
                   Header(),
-                  Container(
-                    height: 80,
-                    margin:  EdgeInsets.only(left: 15, right: 15),
-                    width: MediaQuery.of(context).size.width,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: _listasCategorias.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return _chois(_listasCategorias[index],context);
-                      },
-                    ),
-                  ),
-
+                  FutureBuilder(
+                      future: _categoriaBloc.obtenerTodascategoriasPrincipal(),
+                      builder:
+                          (context, AsyncSnapshot<List<Categoria?>> snapshot) {
+                        if (snapshot.hasData) {
+                          return Container(
+                            height: 80,
+                            margin:
+                                EdgeInsets.only(left: 15, right: 15, top: 10),
+                            width: MediaQuery.of(context).size.width,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              physics: BouncingScrollPhysics(),
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return _chois(snapshot.data![index], context);
+                              },
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("Error");
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      }),
                 ],
               ),
             ),
           ),
-        )
-    );
+        ));
   }
 
   @override
@@ -117,43 +134,43 @@ class _BuscarPageState extends State<BuscarPage> {
           pressElevation: 5,
           shape: RoundedRectangleBorder(
               side: BorderSide(),
-              borderRadius:
-              BorderRadius.all(Radius.circular(20))),
-          label: Text(
-            item!.nombreclasificacion!,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          selected: _selectIndex==item.idclasificacion,
+              borderRadius: BorderRadius.all(Radius.circular(20))),
+          label: FutureBuilder(
+              future:
+                  someFutureStringFunction(context, item!.nombreclasificacion!),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data.toString().toUpperCase());
+                } else if (snapshot.hasError) {
+                  return Text("error");
+                }
+                return Text("loading...".tr());
+              }),
+          selected: _selectIndex == item.idclasificacion,
           padding: EdgeInsets.all(13),
           labelStyle: TextStyle(color: Colors.black54),
           backgroundColor: Colors.white,
           onSelected: (bool value) {
             setState(() {
-              _selectIndex=item.idclasificacion;
-              if(item.idclasificacion == 13){
+              _selectIndex = item.idclasificacion;
+              if (item.idclasificacion == 13) {
+                nextScreen(context, TodosToursPage());
+              } else {
+                // nextScreen(context, PermisoGpsPage(
                 nextScreen(
-                    context,TodosToursPage());
-              }else {
-               // nextScreen(context, PermisoGpsPage(
-                nextScreen(context, BuscarLugarCategoriaPage(
-                  nombre: item.nombreclasificacion,
-                  idclasificacion: item.idclasificacion,));
+                    context,
+                    BuscarLugarCategoriaPage(
+                      nombre: item.nombreclasificacion,
+                      idclasificacion: item.idclasificacion,
+                    ));
               }
-              });
+            });
           },
         ),
       ),
-
     );
   }
-
 }
-
-
-
 
 class Header extends StatelessWidget {
   const Header({Key? key}) : super(key: key);
@@ -162,19 +179,17 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 20),
+        padding:
+            const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
         child: Column(
           children: [
-
             InkWell(
               child: Container(
-
                 alignment: Alignment.centerLeft,
                 margin: EdgeInsets.only(left: 5, right: 5),
                 padding: EdgeInsets.only(left: 15, right: 15),
-                height: 45,
+                height: 55,
                 width: MediaQuery.of(context).size.width,
-
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   border: Border.all(color: Colors.grey, width: 1.5),
@@ -211,5 +226,3 @@ class Header extends StatelessWidget {
     );
   }
 }
-
-

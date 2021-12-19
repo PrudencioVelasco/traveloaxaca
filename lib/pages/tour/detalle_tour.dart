@@ -53,9 +53,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
   int _lastVisible = 0;
   int _totalComentarios = 0;
   String _textlove = "love".tr();
-  String _textcomentario = "view reviews".tr();
+  String _textcomentario = "comments".tr();
   String _textVer = "view".tr();
-  String _textReviews = "reviews".tr();
+  String _textReviews = "comments".tr();
   Compania? _compania = new Compania();
   List<Telefono>? _telefono = [];
   bool? _hasData;
@@ -145,7 +145,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
     setState(() => _hasData = true);
     if (_lastVisible == 0) {
       _listComentarios = (await _commentsBloc.obtenerComentariosTour(
-          widget.tour!.idtour!, 0, 10));
+          widget.tour!.idtour!, 0, 5));
     }
     if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
       int total = (await _commentsBloc.obtenerComentariosTour(
@@ -355,6 +355,19 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
                               TextButton.icon(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.favorite,
+                                    color: Colors.grey[600],
+                                  ),
+                                  label: Text(
+                                    _totalLoves.toString() + " " + _textlove,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey[600]),
+                                  )),
+                              TextButton.icon(
                                   onPressed: () {
                                     nextScreen(
                                         context,
@@ -370,19 +383,6 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                     _totalComentarios.toString() +
                                         " " +
                                         _textcomentario,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.grey[600]),
-                                  )),
-                              TextButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.favorite,
-                                    color: Colors.grey[600],
-                                  ),
-                                  label: Text(
-                                    _totalLoves.toString() + " " + _textlove,
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -435,53 +435,13 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Container(
-                                alignment: AlignmentDirectional.centerEnd,
-                                //color: Colors.green,
-                                child: Text(
-                                  'from',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15),
-                                ).tr(),
-                              ),
-                            )
-                          ]),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
+                            if (widget.tour!.precioxpersona! > 0)
                               Expanded(
                                 child: Container(
-                                  //  padding: EdgeInsets.only(right: 10),
                                   alignment: AlignmentDirectional.centerEnd,
-                                  // color: Colors.red,
+                                  //color: Colors.green,
                                   child: Text(
-                                    NumberFormat.currency(locale: 'es_419')
-                                        .format(widget.tour!.precioxpersona!),
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  //  padding: EdgeInsets.only(right: 10),
-                                  alignment: AlignmentDirectional.centerEnd,
-                                  // color: Colors.red,
-                                  child: Text(
-                                    'per person',
+                                    'from',
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500,
@@ -489,8 +449,51 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                   ).tr(),
                                 ),
                               )
-                            ],
-                          ),
+                          ]),
+                          if (widget.tour!.precioxpersona! > 0)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    //  padding: EdgeInsets.only(right: 10),
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    // color: Colors.red,
+                                    child: Text(
+                                      NumberFormat.currency(locale: 'es_419')
+                                          .format(widget.tour!.precioxpersona!),
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          if (widget.tour!.precioxpersona! > 0)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    //  padding: EdgeInsets.only(right: 10),
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    // color: Colors.red,
+                                    child: Text(
+                                      'per person',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15),
+                                    ).tr(),
+                                  ),
+                                )
+                              ],
+                            ),
                           SizedBox(
                             height: 20,
                           ),
@@ -717,111 +720,136 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                           SizedBox(
                             height: 30,
                           ),
-                          Card(
-                            child: Container(
-                              height: 100,
-                              color: Colors.white,
-                              child: Row(
-                                children: [
-                                  Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: Expanded(
-                                        child: Image.asset(
-                                            "assets/images/hotel.png"),
-                                        flex: 2,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      padding: EdgeInsets.only(top: 5),
-                                      alignment: Alignment.topLeft,
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            flex: 5,
-                                            child: ListTile(
-                                              title: Text(
-                                                (_compania != null)
-                                                    ? _compania!.nombre
-                                                        .toString()
-                                                    : '',
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              subtitle: Text(
-                                                (_compania != null)
-                                                    ? _compania!.direccion
-                                                        .toString()
-                                                    : '',
-                                                maxLines: 3,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                          FutureBuilder(
+                            future: _companiaBloc
+                                .detalleCompania(widget.tour!.idcompania!),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Compania?> snapshot) {
+                              if (snapshot.hasData) {
+                                return Card(
+                                  child: Container(
+                                    height: 100,
+                                    color: Colors.white,
+                                    child: Row(
+                                      children: [
+                                        Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10),
+                                            child: Expanded(
+                                              child: Image.asset(
+                                                  "assets/images/hotel.png"),
+                                              flex: 2,
                                             ),
                                           ),
-                                          Expanded(
-                                            flex: 5,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.only(top: 5),
+                                            alignment: Alignment.topLeft,
+                                            child: Column(
                                               children: [
-                                                if (_compania != null)
-                                                  if (_compania!.paginaweb !=
-                                                      null)
-                                                    TextButton.icon(
-                                                      icon: Icon(
-                                                        FontAwesomeIcons.globe,
-                                                      ),
-                                                      onPressed: () async {
-                                                        String url = _compania!
-                                                            .paginaweb
-                                                            .toString();
-                                                        if (await canLaunch(
-                                                            url))
-                                                          await launch(url);
-                                                        else
-                                                          // can't launch url, there is some error
-                                                          throw "Could not launch $url";
-                                                      },
-                                                      label: Text("Web"),
+                                                Expanded(
+                                                  flex: 5,
+                                                  child: ListTile(
+                                                    title: Text(
+                                                      (snapshot.data != null)
+                                                          ? snapshot
+                                                              .data!.nombre
+                                                              .toString()
+                                                          : '',
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
-                                                SizedBox(
-                                                  width: 8,
-                                                ),
-                                                if (_telefono != null)
-                                                  TextButton.icon(
-                                                    icon: Icon(Icons.call),
-                                                    onPressed: () {
-                                                      String numero = "+52" +
-                                                          _telefono!.first
-                                                              .numerotelefono
-                                                              .toString();
-                                                      launch('tel://$numero');
-                                                    },
-                                                    label: Text("call").tr(),
+                                                    subtitle: Text(
+                                                      (snapshot.data != null)
+                                                          ? snapshot
+                                                              .data!.direccion
+                                                              .toString()
+                                                          : '',
+                                                      maxLines: 3,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                SizedBox(
-                                                  width: 8,
+                                                ),
+                                                Expanded(
+                                                  flex: 5,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      if (snapshot.data != null)
+                                                        if (snapshot.data!
+                                                                .paginaweb !=
+                                                            null)
+                                                          TextButton.icon(
+                                                            icon: Icon(
+                                                              FontAwesomeIcons
+                                                                  .globe,
+                                                            ),
+                                                            onPressed:
+                                                                () async {
+                                                              String url =
+                                                                  snapshot.data!
+                                                                      .paginaweb
+                                                                      .toString();
+                                                              if (await canLaunch(
+                                                                  url))
+                                                                await launch(
+                                                                    url);
+                                                              else
+                                                                // can't launch url, there is some error
+                                                                throw "Could not launch $url";
+                                                            },
+                                                            label: Text("Web"),
+                                                          ),
+                                                      SizedBox(
+                                                        width: 8,
+                                                      ),
+                                                      if (_telefono != null)
+                                                        TextButton.icon(
+                                                          icon:
+                                                              Icon(Icons.call),
+                                                          onPressed: () {
+                                                            String numero = "+52" +
+                                                                _telefono!.first
+                                                                    .numerotelefono
+                                                                    .toString();
+                                                            launch(
+                                                                'tel://$numero');
+                                                          },
+                                                          label:
+                                                              Text("call").tr(),
+                                                        ),
+                                                      SizedBox(
+                                                        width: 8,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                          flex: 8,
+                                        ),
+                                      ],
                                     ),
-                                    flex: 8,
+                                    //padding: EdgeInsets.all(10),
                                   ),
-                                ],
-                              ),
-                              //padding: EdgeInsets.all(10),
-                            ),
-                            elevation: 4,
-                            margin: EdgeInsets.all(10),
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
+                                  elevation: 4,
+                                  margin: EdgeInsets.all(10),
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text("Error");
+                              } else {
+                                return CircularProgressIndicator();
+                              }
+                            },
                           ),
                           SizedBox(
                             height: 15,
@@ -887,7 +915,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                               ),
                               Expanded(
                                 child: ElevatedButton.icon(
-                                  label: Text('write a review').tr(),
+                                  label: Text('write a comment').tr(),
                                   icon: Icon(Icons.add_comment_rounded),
                                   style: ElevatedButton.styleFrom(
                                     primary: Colors.white,
@@ -1200,7 +1228,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                               ),
                             ],
                           ),
-                          if (_totalComentarios >= 10)
+                          if (_totalComentarios >= 5)
                             Row(
                               children: <Widget>[
                                 Expanded(

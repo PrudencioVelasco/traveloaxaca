@@ -31,6 +31,7 @@
     "no hotels found" : "No se encontraron hoteles",
     "no restaurants found" : "No se encontraron restaurantes",
     "we didn't find any nearby hotels in this area" : "No hemos encontrado ningún hotel cercano en esta área",
+    "we didn't find any nearby places in this area" : "No hemos encontrado ningún lugares cercano en esta área",
     "we didn't find any nearby restaurants in this area" : "No hemos encontrado ningún restaurante cercano en esta área",
     "user reviews" : "Opiniones de los usuarios",
 
@@ -47,7 +48,7 @@
     "recent searchs" : "Búsquedas recientes",
     "search for places" : "Buscar lugares",
     "search-description" :  "Aún no has buscado ningún artículo.\n Pruébalo ahora, ¡te ayudaremos!",
-    "we have found" : "Nosotras hemos encontrado",
+    "we have found" : "Nosotros hemos encontrado",
     "no places found" : "No se encontraron lugares",
     "try again" : "¡Inténtalo de nuevo!",
 
@@ -100,7 +101,7 @@
     "general setting" : "Ajustes generales",
     "login" : "Iniciar sesión",
     "get notifications" : "Recibir notificaciones",
-    "contact us" : "Contacta con nosotras",
+    "contact us" : "Contacta con nosotros",
     "rate this app" : "Califica esta aplicación",
     "licence" : "Licencia",
     "privacy policy" : "Política de privacidad",
@@ -176,11 +177,9 @@
     "sort by": "Ordenar por",
     "reactions": "Reacciones",
     "clean": "Limpiar",
-    "loading...": "Cargando...",
-    "AGENCIA DE TOURS": "Agencias de Tours",
-    "TIENDA DE ARTESANIAS": "Tiendas de Artesanias",
-    "TIENDA DE MEZCAL": "Tiendas de Mezcal",
-    "TOURS": "Tours",
+    "loading...": "Cargando...", 
     "nearby": "Cercano", 
-    "list": "Lista"
+    "list": "Lista",
+    "recently viewed":"Recientemente visto",
+    "rate":"Calificacion"
 }

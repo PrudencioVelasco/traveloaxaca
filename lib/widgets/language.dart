@@ -33,15 +33,14 @@ class _LanguagePopupState extends State<LanguagePopup> {
           leading: Icon(Icons.language),
           title: Text(d),
           onTap: () async {
-            if (index == 0) {
-              //onPressed: () => MyApp.of(context).setLocale(Locale.fromSubtags(languageCode: 'de')),
-
-              context.setLocale(Locale('en'));
-            } else {
-              context.setLocale(Locale('es'));
-            }
-
-            Navigator.pop(context);
+            setState(() {
+              if (index == 0) {
+                context.setLocale(Locale('en'));
+              } else {
+                context.setLocale(Locale('es'));
+              }
+              Navigator.pop(context);
+            });
           },
         ),
         Divider()

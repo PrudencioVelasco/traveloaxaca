@@ -9,42 +9,32 @@ part 'mi_ubicacion_event.dart';
 part 'mi_ubicacion_state.dart';
 
 class MiUbicacionBloc extends Bloc<MiUbicacionEvent, MiUbicacionState> {
-
   MiUbicacionBloc() : super(MiUbicacionState());
 
   // Geolocator
-     final _geolocator = new Geolocator();
+  final _geolocator = new Geolocator();
   StreamSubscription<Position>? _positionSubscription;
 
-
   void iniciarSeguimiento() {
+    final locationOptions =
+        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
-    final locationOptions = LocationOptions(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 10
-    );
-
-    _positionSubscription = Geolocator.getPositionStream(distanceFilter: 10,desiredAccuracy:  LocationAccuracy.high).listen(( Position position ) {
+    _positionSubscription = Geolocator.getPositionStream(
+            distanceFilter: 10, desiredAccuracy: LocationAccuracy.high)
+        .listen((Position position) {
       final nuevaUbicacion = new LatLng(position.latitude, position.longitude);
-      add( OnUbicacionCambio( nuevaUbicacion ) );
+      add(OnUbicacionCambio(nuevaUbicacion));
     });
-
   }
 
   void cancelarSeguimiento() {
     _positionSubscription?.cancel();
   }
 
-
   @override
-  Stream<MiUbicacionState> mapEventToState( MiUbicacionEvent event ) async* {
-
-    if ( event is OnUbicacionCambio ) {
-      yield state.copyWith(
-        existeUbicacion: true,
-        ubicacion: event.ubicacion
-      );
+  Stream<MiUbicacionState> mapEventToState(MiUbicacionEvent event) async* {
+    if (event is OnUbicacionCambio) {
+      yield state.copyWith(existeUbicacion: true, ubicacion: event.ubicacion);
     }
-
   }
 }

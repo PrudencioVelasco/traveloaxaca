@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/response_api.dart';

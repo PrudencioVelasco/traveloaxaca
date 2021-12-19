@@ -41,7 +41,7 @@ class PopularPlacesBloc with ChangeNotifier {
     }
   }
 
-  Future<List<Imagen>?> obtenerImagenesLugar(int idLugar) async {
+  Future<List<Imagen?>> obtenerImagenesLugar(int idLugar) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
@@ -59,11 +59,11 @@ class PopularPlacesBloc with ChangeNotifier {
       return img.toList;
     } catch (error) {
       print('Error: $error');
-      return null;
+      return [];
     }
   }
 
-  Future<List<Lugar>?>? obtenerLugaresDentroLugar(int idLugar) async {
+  Future<List<Lugar?>> obtenerLugaresDentroLugar(int idLugar) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {

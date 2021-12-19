@@ -243,8 +243,9 @@ class _CommentsPageState extends State<CommentsPage> {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-                widget.collectionName == 'places' ? 'user reviews' : 'comments')
-            .tr(),
+          widget.lugar.nombre.toString(),
+          style: TextStyle(color: Colors.black),
+        ),
         titleSpacing: 0,
         actions: [
           IconButton(
@@ -500,9 +501,16 @@ class _CommentsPageState extends State<CommentsPage> {
                         side: BorderSide(),
                         borderRadius: BorderRadius.all(Radius.circular(20))),
                   ),
-                  onPressed: () {
-                    nextScreen(
-                        context, AgregarComentarioPage(lugar: widget.lugar));
+                  onPressed: () async {
+                    final _signInBlocProvider =
+                        Provider.of<SignInBloc>(context, listen: false);
+                    final autenticado = await _signInBlocProvider.isLoggedIn();
+                    if (autenticado == true) {
+                      nextScreen(
+                          context, AgregarComentarioPage(lugar: widget.lugar));
+                    } else {
+                      openSignInDialog(context);
+                    }
                   },
                 ),
               ),

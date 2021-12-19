@@ -12,18 +12,18 @@ import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
 import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/love_bloc.dart';
+import 'package:traveloaxaca/blocs/lugar_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/blocs/search_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/pages/buscar.dart';
-import 'package:traveloaxaca/pages/buscarNext.dart';
 import 'package:traveloaxaca/pages/loading_page.dart';
+import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:traveloaxaca/utils/acceso_gps_page.dart';
 
 void main() async {
@@ -97,6 +97,7 @@ class MyApp extends StatelessWidget {
             create: (context) => BusquedaNextBloc()),
         ChangeNotifierProvider<CompaniaBloc>(
             create: (context) => CompaniaBloc()),
+        ChangeNotifierProvider<LugarBloc>(create: (context) => LugarBloc()),
       ],
       child: GestureDetector(
         onTap: () {
@@ -123,22 +124,19 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(
                   color: Colors.grey[800],
                 ),
-
-                brightness:
-                    Platform.isAndroid ? Brightness.dark : Brightness.light,
-                textTheme: TextTheme(
-                    headline6: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        color: Colors.grey[900],
-                        fontWeight: FontWeight.w500)),
               )),
+          darkTheme: ThemeData(
+            //Se indica que el tema tiene un brillo oscuro
+            brightness: Brightness.dark,
+            primarySwatch: Colors.pink,
+          ),
           title: 'Travel Oaxaca',
           debugShowCheckedModeBanner: false,
           home: LoadingPage(),
           routes: {
-          //  'mapa'      : ( _ ) => MapaPage(),
-            'principal_buscar'   : ( _ ) => BuscarPage(),
-            'acceso_gps': ( _ ) => AccesoGpsPage(),
+            'perfil': (_) => PerfilPage(),
+            'principal_buscar': (_) => BuscarPage(),
+            'acceso_gps': (_) => AccesoGpsPage(),
           },
         ),
       ),

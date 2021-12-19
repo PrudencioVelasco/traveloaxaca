@@ -50,9 +50,9 @@ class _PerfilPageState extends State<PerfilPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // final sb = context.watch<SignInBloc>();
+    final sb = context.watch<SignInBloc>();
     //  final sb = context.watch<SignInBloc>()
-    final sb = Provider.of<SignInBloc>(context, listen: true);
+    // final sb = Provider.of<SignInBloc>(context, listen: true);
 
     return Scaffold(
       appBar: AppBar(

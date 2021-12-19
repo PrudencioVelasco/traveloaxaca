@@ -5,7 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/src/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:translator/translator.dart';
+import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
+import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/pages/buscar/mapa.dart';
 import 'package:traveloaxaca/pages/tour/todos.dart';
@@ -13,6 +16,7 @@ import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/list_card_compania.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class MiUbicacionPage extends StatefulWidget {
   final int? idclasificacion;
@@ -44,15 +48,47 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
     {"id": 2, "nombre": "more loves".tr()},
   ];
   List<Compania?> _listaCompania = [];
+  List<Actividad?> _listActividad = [];
+  List<MultiSelectItem<Actividad>> _items = [];
   CompaniaBloc _companiaBloc = new CompaniaBloc();
+  ActividadBloc _actividadBloc = new ActividadBloc();
+  List<String> selectedReportList = [];
+  List<Actividad?> _selectedAnimals2 = [];
+  List<Actividad?> _listaActividad = [];
+  List<String?> _filters = [];
+  List _myActivities = [];
+  bool mapa = false;
+  bool? _isSelected;
+  final translator = GoogleTranslator();
+  int _choiceIndex = 0;
+  int _selectedIndex = 0;
+  final _multiSelectKey = GlobalKey<FormFieldState>();
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _companiaBloc.init(context, refresh);
+      _actividadBloc.init(context, refresh);
     });
     allCompanias();
-
+    allActividades();
+    allActividades2();
     refresh();
+  }
+
+  Future allActividades2() async {
+    _listActividad = await _actividadBloc.obtenerActividades();
+  }
+
+  Future allActividades() async {
+    List<Actividad?> data = await _actividadBloc.obtenerActividades();
+    final _items1 = data
+        .map((animal) =>
+            MultiSelectItem<Actividad>(animal!, animal.nombreactividad!))
+        .toList();
+    setState(() {
+      _items = _items1;
+      // _listaActividad = data;
+    });
   }
 
   void refresh() {
@@ -84,6 +120,17 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
     return await _companiaBloc.getData(widget.idclasificacion!);
   }
 
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -92,10 +139,22 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return <Widget>[
           SliverAppBar(
-            title: Text(
-              widget.nombreclasificacion.toString().tr(),
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
+            title: FutureBuilder(
+                future: someFutureStringFunction(
+                    context, widget.nombreclasificacion!),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data.toString().toUpperCase() +
+                          " " +
+                          "nearby".toUpperCase().tr(),
+                      style: TextStyle(color: Colors.black),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("error");
+                  }
+                  return Text("loading...".tr());
+                }),
             pinned: true,
             floating: true,
             forceElevated: innerBoxIsScrolled,
@@ -103,8 +162,8 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
         ];
       },
       body: Container(
-        alignment: Alignment.center,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Column(
@@ -114,37 +173,38 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(children: <Widget>[
-                      ToggleSwitch(
-                        minWidth: 90.0,
-                        initialLabelIndex: 1,
-                        cornerRadius: 20.0,
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        totalSwitches: 2,
-                        labels: ['list'.tr(), 'map'.tr()],
-                        icons: [FontAwesomeIcons.list, FontAwesomeIcons.map],
-                        activeBgColors: [
-                          [Colors.blue],
-                          [Colors.pink]
-                        ],
-                        onToggle: (index) {
-                          print('switched to: $index');
-                          if (index == 1) {
+                      Container(
+                        margin: EdgeInsets.only(right: 8, left: 8),
+                        child: ElevatedButton(
+                          onPressed: () {
                             nextScreen(
                                 context,
                                 MapaPage(
                                     idclasificacion: widget.idclasificacion,
                                     nombreclasificacion:
                                         widget.nombreclasificacion));
-                          }
-                          setState(() {});
-                        },
+                          },
+                          child: Text("map".tr()),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Colors.black,
+                            //onSurface: Colors.red,
+                            //shadowColor: Colors.grey,
+                            padding: EdgeInsets.all(10.0),
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                          ),
+                        ),
                       ),
                       Container(
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            modalActivity(context);
+                          },
                           child: Text("activity".tr()),
                           style: ElevatedButton.styleFrom(
                             primary: Colors.white,
@@ -221,47 +281,6 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                               );
                             },
                           )),
-            /* Expanded(
-                 child: FutureBuilder(
-                  future: context.watch<CompaniaBloc>().getData(widget.idclasificacion!),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length == 0)
-                        return EmptyPage(
-                          icon: FeatherIcons.clipboard,
-                          message: 'no places found'.tr(),
-                          message1: "try again".tr(),
-                        );
-                      else
-                        return ListView.separated(
-                          padding: EdgeInsets.all(10),
-                          itemCount: snapshot.data.length,
-                          separatorBuilder: (context, index) => SizedBox(
-                            height: 5,
-                          ),
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListCardCompaniaCerca(
-                              d: snapshot.data[index],
-                              tag: "search$index",
-                              color: Colors.white,
-                            );
-                          },
-                        );
-                    }
-                    return ListView.separated(
-                      padding: EdgeInsets.all(15),
-                      itemCount: 5,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          SizedBox(
-                        height: 10,
-                      ),
-                      itemBuilder: (BuildContext context, int index) {
-                        return LoadingCard(height: 120);
-                      },
-                    );
-                  },
-              ),
-               ),*/
           ],
         ),
       ),
@@ -277,14 +296,16 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    margin: EdgeInsets.only(top: 5, bottom: 5),
-                    height: 5,
-                    width: 150,
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(40)),
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      margin: EdgeInsets.only(top: 5, bottom: 5),
+                      height: 5,
+                      width: 150,
+                      decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(40)),
+                    ),
                   ),
                   SizedBox(
                     height: 30,
@@ -304,7 +325,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               isExpanded: true,
-                              hint: Text("sort by").tr(),
+                              hint: Text("rate").tr(),
                               isDense: true,
                               items: _listaRating.map((Map value) {
                                 return DropdownMenuItem(
@@ -423,5 +444,219 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
             ),
           );
         });
+  }
+
+  modalActivity(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  margin: EdgeInsets.only(top: 5, bottom: 5),
+                  height: 5,
+                  width: 150,
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(40)),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Container(
+                  // color: Colors.green,
+                  height: 300,
+                  padding: new EdgeInsets.only(bottom: 10),
+                  child: ListView(scrollDirection: Axis.vertical, children: [
+                    Container(
+                      child: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                              child: getFilterChipsWidgets(setState, context)),
+                        ],
+                      ),
+                    ),
+                  ]),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 10, right: 10),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: ElevatedButton(
+                          child: Text("clean").tr(),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Colors.black,
+                            onSurface: Colors.black,
+                            //shadowColor: Colors.grey,
+                            padding: EdgeInsets.all(10.0),
+                            elevation: 2,
+
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context, true);
+                            //btnCancelar();
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          child: Text("filter").tr(),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Colors.black,
+                            onSurface: Colors.black,
+                            //shadowColor: Colors.grey,
+                            padding: EdgeInsets.all(10.0),
+                            elevation: 2,
+
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                          ),
+                          onPressed: () {
+                            //btnBuscar();
+                            //Navigator.pop(context, true);
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            );
+          });
+        });
+  }
+
+  Widget getFilterChipsWidgets(StateSetter setState, BuildContext context) {
+    List<Widget> tags_list = [];
+    for (var i = 0; i < _listActividad.length; i++) {
+      FilterChip item = new FilterChip(
+        label: FutureBuilder(
+            future: someFutureStringFunction(
+                context, _listActividad[i]!.nombreactividad!),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  snapshot.data.toString(),
+                  style: TextStyle(color: Colors.black),
+                );
+              } else if (snapshot.hasError) {
+                return Text("error");
+              }
+              return Text("loading...".tr());
+            }),
+        labelStyle: TextStyle(color: Colors.black),
+        selected: _selectedIndex == _listActividad[i]!.idtipoactividad,
+        onSelected: (bool value) {
+          setState(() {
+            if (value) {
+              _selectedIndex = _listActividad[i]!.idtipoactividad!;
+            }
+          });
+        },
+        pressElevation: 15,
+        selectedColor: Colors.grey[400],
+        backgroundColor: Colors.transparent,
+        shape: StadiumBorder(side: BorderSide()),
+      );
+      tags_list.add(
+        Container(
+          margin: EdgeInsets.all(2),
+          child: item,
+        ),
+      );
+    }
+    return Wrap(children: tags_list);
+  }
+
+  Widget _conQuienVisito(Actividad? item) {
+    return StatefulBuilder(
+      builder: (context, setStateChild) {
+        return InkWell(
+          child: Container(
+            padding: EdgeInsets.all(5),
+            alignment: Alignment.topCenter,
+            margin: EdgeInsets.only(top: 0),
+            child: ChoiceChip(
+              elevation: 5,
+              pressElevation: 5,
+              label: Text(item!.nombreactividad!),
+              selected: _selectedIndex == item.idtipoactividad,
+              selectedColor: Colors.red,
+              padding: EdgeInsets.all(10),
+              labelStyle:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              backgroundColor: Colors.grey[500],
+              onSelected: (bool selected) {
+                setStateChild(() {
+                  if (selected) {
+                    _selectedIndex = item.idtipoactividad!;
+                    print(_selectedIndex);
+                  }
+                });
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildChoiceChips() {
+    return Container(
+      height: MediaQuery.of(context).size.height / 4,
+      child: ListView.builder(
+        itemCount: _listActividad.length,
+        itemBuilder: (BuildContext context, int index) {
+          return FilterChip(
+            backgroundColor: Colors.tealAccent[200],
+            avatar: CircleAvatar(
+              backgroundColor: Colors.cyan,
+              child: Text(
+                _listActividad[index]!.nombreactividad!.toUpperCase(),
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            label: Text(
+              _listActividad[index]!.nombreactividad!,
+            ),
+            selected: _filters.contains(_listActividad[index]!.idtipoactividad),
+            selectedColor: Colors.purpleAccent,
+            onSelected: (bool selected) {
+              setState(() {
+                if (selected) {
+                  _filters
+                      .add(_listActividad[index]!.idtipoactividad.toString());
+                } else {
+                  _filters.removeWhere((name) {
+                    return name ==
+                        _listActividad[index]!.idtipoactividad.toString();
+                  });
+                }
+              });
+            },
+          );
+        },
+      ),
+    );
   }
 }

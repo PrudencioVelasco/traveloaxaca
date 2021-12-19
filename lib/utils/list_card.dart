@@ -23,7 +23,7 @@ class ListCard extends StatelessWidget {
             // color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(top: 15, bottom: 0),
+            // padding: EdgeInsets.only(top: 15, bottom: 0),
             //color: Colors.grey[200],
             child: Stack(
               children: <Widget>[
@@ -139,7 +139,7 @@ class ListCard extends StatelessWidget {
                     width: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: (d!.primeraimagen !=null)
+                        child: (d!.primeraimagen != null)
                             ? CustomCacheImage(imageUrl: d!.primeraimagen!)
                             : Image.asset(
                                 "assets/images/no-image.png",

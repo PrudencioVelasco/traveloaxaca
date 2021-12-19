@@ -8,6 +8,7 @@ import 'package:traveloaxaca/utils/list_card.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/snacbar.dart';
 import 'package:easy_localization/easy_localization.dart';
+
 class BuscarNextPage extends StatefulWidget {
   const BuscarNextPage({Key? key}) : super(key: key);
 
@@ -16,13 +17,12 @@ class BuscarNextPage extends StatefulWidget {
 }
 
 class _BuscarNextPageState extends State<BuscarNextPage> {
-
   var scaffoldKey = GlobalKey<ScaffoldState>();
-
 
   @override
   void initState() {
-    Future.delayed(Duration()).then((value) => context.read<BusquedaNextBloc>().saerchInitialize());
+    Future.delayed(Duration())
+        .then((value) => context.read<BusquedaNextBloc>().saerchInitialize());
     super.initState();
   }
 
@@ -83,9 +83,9 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
                 ),
                 textInputAction: TextInputAction.search,
                 onFieldSubmitted: (value) {
-                  if(value == ''){
+                  if (value == '') {
                     openSnacbar(scaffoldKey, 'Type something!');
-                  }else{
+                  } else {
                     context.read<BusquedaNextBloc>().setSearchText(value);
                     context.read<BusquedaNextBloc>().addToSearchList(value);
                   }
@@ -125,9 +125,6 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
   }
 }
 
-
-
-
 class SuggestionsUI extends StatelessWidget {
   const SuggestionsUI({Key? key}) : super(key: key);
 
@@ -137,35 +134,35 @@ class SuggestionsUI extends StatelessWidget {
     return Expanded(
       child: sb.recentSearchData.isEmpty
           ? EmptyPage(
-        icon: Icons.search,
-        message: 'search for places'.tr(),
-        message1: "search-description".tr(),
-      )
-
+              icon: Icons.search,
+              message: 'search for places'.tr(),
+              message1: "search-description".tr(),
+            )
           : ListView.builder(
-        itemCount: sb.recentSearchData.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(sb.recentSearchData[index], style: TextStyle(
-                fontSize: 17
-            ),),
-            leading: Icon(CupertinoIcons.time_solid),
-            trailing: IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () {
-                context
-                    .read<BusquedaNextBloc>()
-                    .removeFromSearchList(sb.recentSearchData[index]);
+              itemCount: sb.recentSearchData.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Text(
+                    sb.recentSearchData[index],
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  leading: Icon(CupertinoIcons.time_solid),
+                  trailing: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      context
+                          .read<BusquedaNextBloc>()
+                          .removeFromSearchList(sb.recentSearchData[index]);
+                    },
+                  ),
+                  onTap: () {
+                    context
+                        .read<BusquedaNextBloc>()
+                        .setSearchText(sb.recentSearchData[index]);
+                  },
+                );
               },
             ),
-            onTap: () {
-              context
-                  .read<BusquedaNextBloc>()
-                  .setSearchText(sb.recentSearchData[index]);
-            },
-          );
-        },
-      ),
     );
   }
 }
@@ -188,7 +185,7 @@ class AfterSearchUI extends StatelessWidget {
               );
             else
               return ListView.separated(
-                padding: EdgeInsets.all(10),
+                // padding: EdgeInsets.all(10),
                 itemCount: snapshot.data.length,
                 separatorBuilder: (context, index) => SizedBox(
                   height: 5,

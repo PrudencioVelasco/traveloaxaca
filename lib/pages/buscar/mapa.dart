@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart' as locat;
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:async';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/blocs/mi_ubicacion/mi_ubicacion_bloc.dart';
@@ -14,8 +17,22 @@ import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/mapabusqueda.dart';
 import 'package:traveloaxaca/services/traffic_service.dart';
-import 'package:traveloaxaca/utils/convert_map_icon.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_map/flutter_map.dart' as fluttermap;
+import 'package:latlong2/latlong.dart' as latlong;
+
+const MAPBOX_ACCESS_TOKEN =
+    "sk.eyJ1IjoiZHVndWVyIiwiYSI6ImNrd3puampxZTB3am0zMnE5dXp3cXpjcXcifQ.hZUrbDidn2hDJIvMSs3aPQ";
+const MAPBOX_STYLE = "mapbox/streets-v11";
+const MARKER_cOLOR = Color(0xFF3DC5A7);
+final myLocation = LatLng(16.28127274045661, -97.8204067527212);
+const MARKET_SIZE_EXPANDED = 55.0;
+const MARKET_SIZE_SHRINK = 38.0;
+String distancia(int minutos) {
+  var d = Duration(minutes: minutos);
+  List<String> parts = d.toString().split(':');
+  return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+}
 
 class MapaPage extends StatefulWidget {
   final int? idclasificacion;
@@ -31,82 +48,109 @@ class MapaPage extends StatefulWidget {
   _MapaPageState createState() => _MapaPageState();
 }
 
-class _MapaPageState extends State<MapaPage> {
+class _MapaPageState extends State<MapaPage>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _animationController;
   RutasBloc _rutasBloc = new RutasBloc();
-  GoogleMapController? _controller;
+  fluttermap.MapController? _controller;
   List<CompaniaMapa> _alldata = [];
-  PageController? _pageController;
   int? prevPage;
-  List _markers = [];
-  Uint8List? _customMarkerIcon;
-  List<Lugar?> _lugares = [];
+  List<fluttermap.Marker> _marketList = [];
   List<Compania?> _listaCompania = [];
   CompaniaBloc _companiaBloc = new CompaniaBloc();
-  MiUbicacionBloc _miUbicacionBloc = new MiUbicacionBloc();
-  Completer<GoogleMapController> _controllerPunto = Completer();
   final trafficService = new TrafficService();
-  Position? _currentPosition;
   double _latitudInicial = 0;
   double _longitudInicial = 0;
+  int selectIndex = 0;
+  bool presionado = false;
+  CompaniaMapa? detalleCompania;
+  latlong.LatLng? _center;
+  Position? currentLocation;
+  bool cargando = true;
   @override
   void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _animationController!.repeat();
     Future.delayed(Duration(milliseconds: 0)).then((value) async {
       // context.read<AdsBloc>().initiateAds();
     });
     super.initState();
-    _pageController = PageController(initialPage: 1, viewportFraction: 0.8)
-      ..addListener(_onScroll);
-    setMarkerIcon();
-    getData().then((value) {
-      animateCameraAfterInitialization();
-      _addMarker();
-    });
-    latitudLongitudInicial();
+    getUserLocation()
+        .then((value) => getData().then((value) => _buildMarkrs()));
+    //getData().then((value) => _buildMarkrs());
+    refresh();
+    //latitudLongitudInicial();
   }
 
-  latitudLongitudInicial() async {
-    var position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    if (!position.latitude.isNaN && !position.longitude.isNaN) {
+  Future<Position?> locateUser() async {
+    final permisoGPS = await Permission.location.isGranted;
+    // GPS está activo
+    final gpsActivo = await Geolocator.isLocationServiceEnabled();
+
+    if (permisoGPS && gpsActivo) {
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } else {
+      return null;
+    }
+  }
+
+  Future getUserLocation() async {
+    currentLocation = await locateUser();
+    if (currentLocation != null) {
       setState(() {
-        _latitudInicial = position.latitude;
-        _longitudInicial = position.longitude;
+        _center = latlong.LatLng(
+            currentLocation!.latitude, currentLocation!.longitude);
+        cargando = false;
+      });
+    } else {
+      setState(() {
+        cargando = false;
       });
     }
   }
 
-  Uint8List? _sourceIcon;
-  Uint8List? _destinationIcon;
-  setMarkerIcon() async {
-    _customMarkerIcon = await getBytesFromAsset(Config().hotelPinIcon, 100);
+  Future<double> obtenerLatitud() async {
+    currentLocation = await locateUser();
+    return currentLocation!.latitude;
   }
 
-  _setMarkerIcons() async {
-    _sourceIcon = await getBytesFromAsset(Config().drivingMarkerIcon, 110);
-    _destinationIcon =
-        await getBytesFromAsset(Config().destinationMarkerIcon, 110);
+  Future<double> obtenerLongitud() async {
+    currentLocation = await locateUser();
+    return currentLocation!.longitude;
   }
 
-  _addMarker() {
-    for (var data in _alldata) {
+  @override
+  void dispose() {
+    _animationController!.dispose();
+    super.dispose();
+  }
+
+  _buildMarkrs() {
+    for (var i = 0; i < _alldata.length; i++) {
       setState(() {
-        _markers.add(Marker(
-            markerId: MarkerId(data.nombre!),
-            position: LatLng(data.latitud!, data.longitud!),
-            //infoWindow: InfoWindow(title: data.nombre, snippet: data.direccion),
-            icon: BitmapDescriptor.defaultMarker,
-            onTap: () {
-              _onCardTapIcono(data);
-            }));
+        _marketList.add(fluttermap.Marker(
+          point: latlong.LatLng(_alldata[i].latitud!, _alldata[i].longitud!),
+          height: MARKET_SIZE_EXPANDED,
+          width: MARKET_SIZE_EXPANDED,
+          builder: (_) {
+            return GestureDetector(
+              onTap: () {
+                selectIndex = i;
+                setState(() {
+                  detalleCompania = _alldata[i];
+                });
+              },
+              child: LocationMarket(
+                selected: selectIndex == i,
+              ),
+            );
+          },
+        ));
       });
     }
-  }
-
-  void _onScroll() {
-    if (_pageController!.page!.toInt() != prevPage) {
-      prevPage = _pageController!.page!.toInt();
-      moveCamera();
-    }
+    // return _marketList;
   }
 
   void refresh() {
@@ -116,22 +160,16 @@ class _MapaPageState extends State<MapaPage> {
   }
 
   Future getData() async {
-    // final inicio = _miUbicacionBloc.state.ubicacion;
-    /*var position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    final trafficResponse = await trafficService.getCoordsInicioYDestino2(
-        position.latitude, position.longitude, 15.667251, -96.4921985);
-    final geometry = trafficResponse.routes![0]!.geometry;
-    final duracion = trafficResponse.routes![0]!.duration;
-    final distancia = trafficResponse.routes![0]!.distance;*/
-
     _listaCompania = await _companiaBloc.getData(widget.idclasificacion!);
     if (_listaCompania.length == 0) {
       openEmptyDialog();
     } else {
       for (var item in _listaCompania) {
         final trafficResponse = await trafficService.getCoordsInicioYDestino2(
-            _latitudInicial, _longitudInicial, item!.latitud!, item.longitud!);
+            _center!.latitude,
+            _center!.longitude,
+            item!.latitud!,
+            item.longitud!);
         CompaniaMapa d = CompaniaMapa(
           item.idcompania!,
           item.rfc ?? '',
@@ -172,9 +210,9 @@ class _MapaPageState extends State<MapaPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Text("we didn't find any nearby hotels in this area").tr(),
+            content: Text("we didn't find any nearby places in this area").tr(),
             title: Text(
-              'no hotels found',
+              'no places found',
               style: TextStyle(fontWeight: FontWeight.w700),
             ).tr(),
             actions: <Widget>[
@@ -189,353 +227,6 @@ class _MapaPageState extends State<MapaPage> {
         });
   }
 
-  _hotelList(index) {
-    return AnimatedBuilder(
-        animation: _pageController!,
-        builder: (BuildContext context, Widget? widget) {
-          double value = 1;
-          if (_pageController!.position.haveDimensions) {
-            value = (_pageController!.page! - index);
-            value = (1 - (value.abs() * 0.3) + 0.06).clamp(0.0, 1.0);
-          }
-          return Center(
-            child: SizedBox(
-              height: Curves.easeInOut.transform(value) * 140.0,
-              width: Curves.easeInOut.transform(value) * 350.0,
-              child: widget,
-            ),
-          );
-        },
-        child: InkWell(
-          onTap: () {
-            _onCardTap(index);
-          },
-          child: Container(
-            margin: EdgeInsets.only(left: 5, right: 5),
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: <BoxShadow>[
-                  BoxShadow(color: Colors.grey, blurRadius: 5)
-                ]),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                    margin: EdgeInsets.only(
-                      right: 10,
-                    ),
-                    padding: EdgeInsets.all(15),
-                    height: MediaQuery.of(context).size.height,
-                    width: 110,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(width: 0.5, color: Colors.grey)),
-                    child: Image.asset(Config().placeMarkerIcon)),
-                Flexible(
-                  child: Wrap(
-                    children: [
-                      Container(
-                        height: 10,
-                      ),
-                      Text(
-                        '${_alldata[index].nombre}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        _alldata[index].direccion!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black54),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            height: 20,
-                            width: 100,
-                            child: RatingBar.builder(
-                              // ignoreGestures: true,
-                              itemSize: 18,
-                              initialRating: _alldata[index].rating!,
-                              ignoreGestures: true,
-                              direction: Axis.horizontal,
-                              allowHalfRating: false,
-                              itemCount: 5,
-                              itemPadding:
-                                  EdgeInsets.symmetric(horizontal: 0.0),
-                              itemBuilder: (context, _) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              onRatingUpdate: (rating) {
-                                //_rating = rating;
-                                //print(rating);
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                              '${(_alldata[index].tiempo! / 60).floor()} minutos',
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black54))
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }
-
-  _onCardTapIcono(CompaniaMapa row) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Container(
-              height: 500,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: 15, top: 10, right: 5),
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.orangeAccent,
-                    child: Row(
-                      children: <Widget>[
-                        Flexible(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              '${row.nombre}',
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.location_on,
-                              color: Colors.orangeAccent,
-                              size: 25,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Text(
-                                row.direccion!,
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                child: Icon(
-                                  Icons.book,
-                                  color: Colors.orangeAccent,
-                                  size: 25,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  row.actividad!,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  maxLines: 8,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.justify,
-                                ),
-                              )
-                            ]),
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.timer,
-                              color: Colors.orangeAccent,
-                              size: 25,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                                child: Text(
-                                    '${(row.tiempo! / 60).floor()} minutos',
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black54))),
-                          ],
-                        ),
-                        Divider(),
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  Container(
-                    alignment: Alignment.bottomRight,
-                    height: 50,
-                    child: TextButton(
-                      child: Text('Close'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  _onCardTap(index) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Container(
-              height: 500,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: 15, top: 10, right: 5),
-                    height: 200,
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.orangeAccent,
-                    child: Row(
-                      children: <Widget>[
-                        Flexible(
-                          flex: 1,
-                          child: Image(
-                            image: AssetImage(Config().hotelIcon),
-                            height: 120,
-                            width: 120,
-                          ),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              '${_alldata[index].nombre}',
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.location_on,
-                              color: Colors.orangeAccent,
-                              size: 25,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Text(
-                                _alldata[index].direccion!,
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                child: Icon(
-                                  Icons.book,
-                                  color: Colors.orangeAccent,
-                                  size: 25,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  _alldata[index].actividad!,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  maxLines: 8,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.justify,
-                                ),
-                              )
-                            ]),
-                        Divider(),
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  Container(
-                    alignment: Alignment.bottomRight,
-                    height: 50,
-                    child: TextButton(
-                      child: Text('Close'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -545,128 +236,134 @@ class _MapaPageState extends State<MapaPage> {
           style: TextStyle(color: Colors.black, fontSize: 15),
         ),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: GoogleMap(
-                compassEnabled: false,
-                zoomControlsEnabled: false,
-                myLocationButtonEnabled: false,
-                mapType: MapType.normal,
-                initialCameraPosition: Config().initialCameraPosition,
-                markers: Set.from(_markers),
-                onMapCreated: mapCreated,
-              ),
-            ),
-            _alldata.isEmpty
-                ? Container()
-                : Positioned(
-                    bottom: 10.0,
-                    child: Container(
-                      height: 200.0,
-                      width: MediaQuery.of(context).size.width,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: _alldata.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _hotelList(index);
+      body: Stack(
+        children: <Widget>[
+          (cargando)
+              ? Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                )
+              : (!cargando && _center == null)
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                  : fluttermap.FlutterMap(
+                      options: fluttermap.MapOptions(
+                        minZoom: 5,
+                        maxZoom: 18,
+                        zoom: 13,
+                        center: _center,
+                      ),
+                      nonRotatedLayers: [
+                        fluttermap.TileLayerOptions(
+                          urlTemplate:
+                              'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                          additionalOptions: {
+                            'accessToken': MAPBOX_ACCESS_TOKEN,
+                            'id': MAPBOX_STYLE
+                          },
+                        ),
+                        fluttermap.MarkerLayerOptions(
+                          markers: _marketList,
+                        ),
+                        fluttermap.MarkerLayerOptions(
+                          markers: [
+                            fluttermap.Marker(
+                              width: 60,
+                              height: 60,
+                              point: latlong.LatLng(
+                                  _center!.latitude, _center!.longitude),
+                              builder: (_) {
+                                return MyLocationMarket(_animationController!);
+                              },
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+          detalleCompania == null
+              ? Container()
+              : FlotanteCompania(alldata: detalleCompania!),
+          Positioned(
+              top: 15,
+              left: 10,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(right: 8, left: 8),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
                         },
+                        child: Text("list".tr()),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          onPrimary: Colors.black,
+                          onSurface: Colors.black,
+                          //shadowColor: Colors.grey,
+                          padding: EdgeInsets.all(10.0),
+                          elevation: 4,
+
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                        ),
                       ),
                     ),
-                  ),
-            Positioned(
-                top: 15,
-                left: 10,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Container(
-                        // width: MediaQuery.of(context).size.width * 0.80,
-                        child: ToggleSwitch(
-                          minWidth: 90.0,
-                          initialLabelIndex: 1,
-                          cornerRadius: 20.0,
-                          activeFgColor: Colors.white,
-                          inactiveBgColor: Colors.grey,
-                          inactiveFgColor: Colors.white,
-                          totalSwitches: 2,
-                          labels: ['list', 'map'],
-                          icons: [FontAwesomeIcons.list, FontAwesomeIcons.map],
-                          activeBgColors: [
-                            [Colors.blue],
-                            [Colors.pink]
-                          ],
-                          onToggle: (index) {
-                            print('switched to: $index');
-                            if (index == 0) {
-                              Navigator.pop(context, true);
-                              //nextScreen(context, MapaPage(idclasificacion: widget.idclasificacion, nombreclasificacion: widget.nombreclasificacion));
-                            }
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: Text("activity".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(right: 8, left: 8),
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text("activity".tr()),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          onPrimary: Colors.black,
+                          onSurface: Colors.black,
+                          //shadowColor: Colors.grey,
+                          padding: EdgeInsets.all(10.0),
+                          elevation: 4,
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // modalSortBy();
-                          },
-                          child: Text("sort by".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(right: 8, left: 8),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // modalSortBy();
+                        },
+                        child: Text("sort by".tr()),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          onPrimary: Colors.black,
+                          onSurface: Colors.black,
+                          //shadowColor: Colors.grey,
+                          padding: EdgeInsets.all(10.0),
+                          elevation: 4,
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
                         ),
                       ),
-                    ],
-                  ),
-                )),
-            _alldata.isEmpty
-                ? Align(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
-                  )
-                : Container()
-          ],
-        ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
       ),
     );
   }
@@ -676,22 +373,214 @@ class _MapaPageState extends State<MapaPage> {
       _controller = controller;
     });
   }
+}
 
-  void animateCameraAfterInitialization() async {
-    final GoogleMapController control = await _controllerPunto.future;
-    control.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(_latitudInicial, _longitudInicial),
-      zoom: 13,
-    )));
+class FlotanteCompania extends StatelessWidget {
+  const FlotanteCompania({
+    Key? key,
+    required CompaniaMapa alldata,
+  })  : _alldata = alldata,
+        super(key: key);
+
+  final CompaniaMapa _alldata;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+        left: 0,
+        right: 0,
+        bottom: 20,
+        height: MediaQuery.of(context).size.height * 0.25,
+        child: MapItemDetails(companiaMapa: _alldata));
   }
+}
 
-  moveCamera() {
-    _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(_alldata[_pageController!.page!.toInt()].latitud!,
-            _alldata[_pageController!.page!.toInt()].longitud!),
-        zoom: 15,
-        bearing: 90.0,
-        tilt: 45.0)));
+class LocationMarket extends StatelessWidget {
+  const LocationMarket({Key? key, this.selected = false}) : super(key: key);
+  final bool selected;
+  @override
+  Widget build(BuildContext context) {
+    final size = (selected) ? MARKET_SIZE_EXPANDED : MARKET_SIZE_SHRINK;
+    return Center(
+      child: AnimatedContainer(
+        height: size,
+        width: size,
+        duration: Duration(milliseconds: 400),
+        child: Image.asset('assets/images/destination_map_marker.png'),
+      ),
+    );
+  }
+}
+
+class MyLocationMarket extends AnimatedWidget {
+  const MyLocationMarket(Animation<double> animation, {Key? key})
+      : super(key: key, listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    final value = (listenable as Animation<double>).value;
+    final newValue = lerpDouble(0.5, 1.0, value);
+    final size = 50;
+    return Center(
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              width: size * newValue!,
+              height: size * newValue,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: MARKER_cOLOR.withOpacity(0.5),
+              ),
+            ),
+          ),
+          Center(
+            child: Container(
+              height: 20,
+              width: 20,
+              decoration: BoxDecoration(
+                color: MARKER_cOLOR,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MapItemDetails extends StatelessWidget {
+  const MapItemDetails({Key? key, required this.companiaMapa})
+      : super(key: key);
+  final CompaniaMapa companiaMapa;
+  @override
+  Widget build(BuildContext context) {
+    final _style = TextStyle(color: Colors.grey[700], fontSize: 20);
+    return Padding(
+      padding: EdgeInsets.all(
+        15.0,
+      ),
+      child: Card(
+        margin: EdgeInsets.zero,
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(
+                        right: 10,
+                      ),
+                      padding: EdgeInsets.all(15),
+                      height: MediaQuery.of(context).size.height,
+                      width: 110,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(width: 0.5, color: Colors.grey)),
+                      child: Image.asset(Config().placeMarkerIcon)),
+                  Flexible(
+                    child: Wrap(
+                      children: [
+                        Container(
+                          height: 10,
+                        ),
+                        Text(
+                          companiaMapa.nombre.toString(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          companiaMapa.direccion.toString(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black54),
+                        ),
+                        Expanded(
+                          child: Column(
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                //   crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 20,
+                                      width: 90,
+                                      child: RatingBar.builder(
+                                        // ignoreGestures: true,
+                                        itemSize: 20,
+                                        initialRating: companiaMapa.rating!,
+                                        minRating: companiaMapa.rating!,
+                                        maxRating: companiaMapa.rating!,
+                                        ignoreGestures: true,
+                                        direction: Axis.horizontal,
+                                        allowHalfRating: false,
+                                        itemCount: 5,
+                                        itemPadding: EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        itemBuilder: (context, _) => Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                        ),
+                                        onRatingUpdate: (rating) {
+                                          //_rating = rating;
+                                          //print(rating);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            //crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                //crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                      child: Container(
+                                    child: Text(
+                                      'Duración: ${distancia((companiaMapa.tiempo! / 60).floor())} minutos',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black54),
+                                    ),
+                                  )),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            MaterialButton(
+              padding: EdgeInsets.zero,
+              color: MARKER_cOLOR,
+              elevation: 6,
+              onPressed: () {},
+              child: Text("Visitar"),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 /*import 'package:dio/dio.dart';

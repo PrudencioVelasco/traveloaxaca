@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
@@ -22,7 +21,8 @@ class TourBloc with ChangeNotifier {
     // iniciarValor();
     refresh();
   }
-  List<String> _recentSearchData=[];
+
+  List<String> _recentSearchData = [];
   bool _contar = false;
   bool get contarcomentario => _contar;
   bool _contarlove = false;
@@ -183,13 +183,15 @@ class TourBloc with ChangeNotifier {
   Future guardarRecientesTour(int idtour) async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _recentSearchData.add(idtour.toString());
-    await sp.setStringList("tour_recent_key",_recentSearchData);
+    await sp.setStringList("tour_recent_key", _recentSearchData);
   }
+
   Future obtenerRecientesTour() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _recentSearchData = sp.getStringList('tour_recent_key') ?? [];
   }
-  Future eliminarDeRecientesTour (String value) async {
+
+  Future eliminarDeRecientesTour(String value) async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _recentSearchData.remove(value);
     await sp.setStringList('recent_search_data', _recentSearchData);

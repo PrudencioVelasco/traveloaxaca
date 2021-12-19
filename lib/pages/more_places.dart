@@ -79,8 +79,8 @@ class _MorePlacesPageState extends State<MorePlacesPage> {
 
   @override
   void dispose() {
-    _controller!.removeListener(_scrollListener);
     super.dispose();
+    _controller!.removeListener(_scrollListener);
   }
 
   void _scrollListener() {
@@ -203,14 +203,15 @@ class _ListItem extends StatelessWidget {
                     child: Hero(
                       tag: tag,
                       child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5)),
-                          child: (d.primeraimagen!=null)
-                              ? CustomCacheImage(imageUrl: d.primeraimagen)
-                              : Image.asset(
-                            "assets/images/no-image.png",
-                          ),),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            topRight: Radius.circular(5)),
+                        child: (d.primeraimagen != null)
+                            ? CustomCacheImage(imageUrl: d.primeraimagen)
+                            : Image.asset(
+                                "assets/images/no-image.png",
+                              ),
+                      ),
                     )),
                 Container(
                   padding: EdgeInsets.all(15),
@@ -278,7 +279,9 @@ class _ListItem extends StatelessWidget {
                           Text(
                             d.love.toString(),
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600]),
                           ),
                           SizedBox(
                             width: 10,
@@ -294,7 +297,9 @@ class _ListItem extends StatelessWidget {
                           Text(
                             d.comentario.toString(),
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600]),
                           ),
                         ],
                       )
