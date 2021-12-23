@@ -63,13 +63,13 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
               alignment: Alignment.center,
               height: 56,
               width: w,
-              decoration: BoxDecoration(color: Colors.white),
+              //  decoration: BoxDecoration(color: Colors.white),
               child: TextFormField(
                 autofocus: true,
                 controller: context.watch<CompaniaBloc>().textfieldCtrl,
                 style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[800],
+                    color: Colors.grey[600],
                     fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -77,15 +77,15 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
                   hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[800]),
+                      color: Colors.grey[600]),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 15),
                     child: IconButton(
                       icon: Icon(
                         Icons.keyboard_backspace,
-                        color: Colors.grey[800],
+                        color: Colors.grey[600],
                       ),
-                      color: Colors.grey[800],
+                      color: Colors.grey[600],
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -132,8 +132,9 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
                       future: someFutureStringFunction(context, widget.nombre!),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          return Text(
-                              snapshot.data.toString() + " " + "nearby".tr());
+                          return Text(snapshot.data.toString().toUpperCase() +
+                              " " +
+                              "nearby".tr().toUpperCase());
                         } else if (snapshot.hasError) {
                           return Text("error");
                         }
@@ -161,10 +162,7 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
                     ? ''
                     : 'we have found',
                 textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.headline6,
               ).tr(),
             ),
             context.watch<CompaniaBloc>().searchStarted == false
@@ -268,7 +266,7 @@ class _AfterSearchUIState extends State<AfterSearchUI> {
                   height: 5,
                 ),
                 itemBuilder: (BuildContext context, int index) {
-                  return ListCardCompania(
+                  return ListCardCompaniaCerca(
                     d: snapshot.data[index],
                     tag: "search$index",
                     color: Colors.white,

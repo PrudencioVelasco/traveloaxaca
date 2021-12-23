@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:traveloaxaca/blocs/search_bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/list_card.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';

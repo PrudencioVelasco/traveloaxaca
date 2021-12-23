@@ -30,7 +30,6 @@ import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
-import 'package:traveloaxaca/widgets/comment_count_nuevo.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -57,7 +56,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
   String _textVer = "view".tr();
   String _textReviews = "comments".tr();
   Compania? _compania = new Compania();
-  List<Telefono>? _telefono = [];
+  List<Telefono?> _telefono = [];
   bool? _hasData;
   List<ComentarioTour?> _listComentarios = [];
   ScrollController? controller;
@@ -308,14 +307,8 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
               height: _showAppbar ? 56.0 : 00,
               duration: Duration(milliseconds: 200),
               child: AppBar(
-                title: Text(
-                  widget.tour!.nombre!.toString(),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+                title: Text(widget.tour!.nombre!.toString(),
+                    style: Theme.of(context).textTheme.headline6),
                 actions: [
                   IconButton(
                       onPressed: () {
@@ -339,9 +332,6 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                 child: SingleChildScrollView(
               controller: _scrollViewController,
               child: Container(
-                color: Colors.white,
-
-                // padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
                     Container(
@@ -396,10 +386,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                               Expanded(
                                   child: Text(
                                 widget.tour!.nombre.toString(),
-                                style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.grey[800]),
+                                style: Theme.of(context).textTheme.headline1,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               )),
@@ -443,7 +430,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                   child: Text(
                                     'from',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        //color: Colors.black,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 15),
                                   ).tr(),
@@ -486,7 +473,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                     child: Text(
                                       'per person',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          //   color: Colors.black,
                                           fontWeight: FontWeight.w500,
                                           fontSize: 15),
                                     ).tr(),
@@ -502,7 +489,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                             height: 2,
                             width: width,
                             decoration: BoxDecoration(
-                                color: Colors.grey[300],
+                                color: Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(40)),
                           ),
                           Row(
@@ -558,7 +545,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                 height: 3,
                                 width: 150,
                                 decoration: BoxDecoration(
-                                    color: Colors.grey[300],
+                                    color: Theme.of(context).primaryColor,
                                     borderRadius: BorderRadius.circular(40)),
                               ),
                             ],
@@ -579,7 +566,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                         textAlign: TextAlign.justify,
                                         fontSize: FontSize(16.0),
                                         // fontWeight: FontWeight.w500,
-                                        color: Colors.black,
+                                        //  color: Colors.black,
                                         textOverflow: TextOverflow.ellipsis,
                                       ),
                                     },
@@ -652,7 +639,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                 height: 3,
                                 width: 150,
                                 decoration: BoxDecoration(
-                                    color: Colors.grey[300],
+                                    color: Theme.of(context).primaryColor,
                                     borderRadius: BorderRadius.circular(40)),
                               ),
                             ],
@@ -673,7 +660,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                         textAlign: TextAlign.justify,
                                         fontSize: FontSize(16.0),
                                         // fontWeight: FontWeight.w500,
-                                        color: Colors.black,
+                                        // color: Colors.black,
                                         textOverflow: TextOverflow.ellipsis,
                                       ),
                                     },
@@ -729,7 +716,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                 return Card(
                                   child: Container(
                                     height: 100,
-                                    color: Colors.white,
+                                    // color: Colors.white,
                                     child: Row(
                                       children: [
                                         Center(
@@ -807,13 +794,13 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                                       SizedBox(
                                                         width: 8,
                                                       ),
-                                                      if (_telefono != null)
+                                                      if (_telefono.length > 0)
                                                         TextButton.icon(
                                                           icon:
                                                               Icon(Icons.call),
                                                           onPressed: () {
                                                             String numero = "+52" +
-                                                                _telefono!.first
+                                                                _telefono.first!
                                                                     .numerotelefono
                                                                     .toString();
                                                             launch(
@@ -880,7 +867,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                 height: 3,
                                 width: 150,
                                 decoration: BoxDecoration(
-                                    color: Colors.grey[300],
+                                    color: Theme.of(context).primaryColor,
                                     borderRadius: BorderRadius.circular(40)),
                               ),
                             ],
@@ -990,7 +977,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                                   //  padding: EdgeInsets.only(
                                                   //      top: 5, bottom: 5),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    //color: Colors.white,
                                                     border: Border(
                                                       bottom: BorderSide(
                                                           width: 1,

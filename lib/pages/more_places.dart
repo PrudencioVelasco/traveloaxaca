@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
@@ -79,8 +79,10 @@ class _MorePlacesPageState extends State<MorePlacesPage> {
 
   @override
   void dispose() {
+    if (_controller != null) {
+      _controller!.removeListener(_scrollListener);
+    }
     super.dispose();
-    _controller!.removeListener(_scrollListener);
   }
 
   void _scrollListener() {
@@ -254,18 +256,30 @@ class _ListItem extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Icon(
-                            CupertinoIcons.time,
-                            size: 16,
-                            color: Colors.grey[700],
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "Fecha",
-                            style: TextStyle(
-                                fontSize: 13, color: Colors.grey[700]),
+                          Container(
+                            // height: 150,
+                            // color: Colors.green,
+                            padding: EdgeInsets.only(bottom: 4),
+                            //margin: EdgeInsets.only(bottom: 60),
+                            child: RatingBar.builder(
+                              // ignoreGestures: true,
+                              itemSize: 20,
+                              initialRating: d.rating!,
+                              ignoreGestures: true,
+                              direction: Axis.horizontal,
+                              allowHalfRating: false,
+                              itemCount: 5,
+                              itemPadding:
+                                  EdgeInsets.symmetric(horizontal: 4.0),
+                              itemBuilder: (context, _) => Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              onRatingUpdate: (rating) {
+                                //_rating = rating;
+                                //print(rating);
+                              },
+                            ),
                           ),
                           Spacer(),
                           Icon(

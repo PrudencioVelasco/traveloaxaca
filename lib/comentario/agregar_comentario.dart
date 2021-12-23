@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/conquien_visito_bloc.dart';
 import 'package:traveloaxaca/models/conquien_visitaste.dart';
@@ -35,6 +36,8 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
   String _errorClaseVisita = "";
   bool _isAlwaysShown = true;
   bool _showTrackOnHover = false;
+  final translator = GoogleTranslator();
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +64,16 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
     refresh();
   }
 
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
+  }
   /*@override
   void dispose() {
     _scrollViewController.dispose();
@@ -242,8 +255,6 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.black));
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -304,15 +315,10 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                   icon: Icon(Icons.save_alt_rounded),
                 ),*/
           ],
-          backgroundColor: Colors.white,
-          title: Text(
-            widget.lugar!.nombre.toString(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            ),
-          ),
+          // backgroundColor: Colors.white,
+          title: Text(widget.lugar!.nombre.toString(),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline6),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -326,7 +332,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                   children: [
                     Text('how would you rate your experience',
                         style: TextStyle(
-                          color: Colors.black,
+                          // color: Colors.black,
                           fontSize: 16,
                         )).tr(),
                     Container(
@@ -353,7 +359,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                     Text(
                       'how would you rate your experience',
                       style: TextStyle(
-                        color: Colors.black,
+                        // color: Colors.black,
                         fontSize: 16,
                       ),
                     ).tr(),
@@ -373,27 +379,38 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                     Text(
                       'what kind of visit was this',
                       style: TextStyle(
-                        color: Colors.black,
+                        // color: Colors.black,
                         fontSize: 16,
                       ),
                     ).tr(),
                     SizedBox(
                       height: 10,
                     ),
-                    Container(
-                      height: 60,
-                      //color: Colors.white,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        itemCount: _listaconquienvisito.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _conQuienVisito(_listaconquienvisito[index]);
-                        },
-                      ),
-                    ),
+                    FutureBuilder(
+                        future: _conQuienVisitoBloc.obtenerConQuienVisito(),
+                        builder: (context,
+                            AsyncSnapshot<List<ConquienVisito?>> snapshot) {
+                          if (snapshot.hasData) {
+                            return Container(
+                              height: 60,
+                              //color: Colors.white,
+                              width: MediaQuery.of(context).size.width,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return _conQuienVisito(snapshot.data![index]);
+                                },
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text("Error");
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        }),
                     if (_errorClaseVisita.isNotEmpty)
                       Text(
                         _errorClaseVisita,
@@ -409,14 +426,14 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                     Text(
                       'when did you visit',
                       style: TextStyle(
-                        color: Colors.black,
+                        //  color: Colors.black,
                         fontSize: 16,
                       ),
                     ).tr(),
                     ElevatedButton.icon(
                       icon: Icon(
                         Icons.keyboard_arrow_down,
-                        color: Colors.white,
+                        //  color: Colors.white,
                         size: 24.0,
                       ),
                       style: ElevatedButton.styleFrom(
@@ -429,9 +446,10 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                       label: Text(
                         "${selectedDate.toLocal()}".split(' ')[0],
                         style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          //color: Colors.white
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -529,7 +547,16 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
         child: ChoiceChip(
           elevation: 5,
           pressElevation: 5,
-          label: Text(item!.nombre!),
+          label: FutureBuilder(
+              future: someFutureStringFunction(context, item!.nombre!),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data.toString().toUpperCase());
+                } else if (snapshot.hasError) {
+                  return Text("error");
+                }
+                return Text("loading...".tr());
+              }),
           selected: _selectedIndex == item.idconquienvisito,
           selectedColor: Colors.green[600],
           padding: EdgeInsets.all(10),

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/src/provider.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
@@ -11,7 +8,6 @@ import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/pages/buscar/mapa.dart';
-import 'package:traveloaxaca/pages/tour/todos.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/list_card_compania.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
@@ -147,8 +143,8 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                     return Text(
                       snapshot.data.toString().toUpperCase() +
                           " " +
-                          "nearby".toUpperCase().tr(),
-                      style: TextStyle(color: Colors.black),
+                          "nearby".tr().toUpperCase(),
+                      style: Theme.of(context).textTheme.headline6,
                     );
                   } else if (snapshot.hasError) {
                     return Text("error");
@@ -318,7 +314,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                           padding: const EdgeInsets.only(right: 16.0),
                           child: Icon(
                             Icons.sort,
-                            color: Color(0xff808080),
+                            // color: Color(0xff808080),
                           ),
                         ),
                         Expanded(
@@ -330,9 +326,9 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                               items: _listaRating.map((Map value) {
                                 return DropdownMenuItem(
                                   value: value["id"].toString(),
-                                  child: Text(value["nombre"].toString(),
-                                      style: TextStyle(
-                                          color: textColor, fontSize: 16)),
+                                  child: Text(
+                                    value["nombre"].toString(),
+                                  ),
                                 );
                               }).toList(),
                               value: _sortValue,
@@ -355,7 +351,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                           padding: const EdgeInsets.only(right: 16.0),
                           child: Icon(
                             Icons.sort_by_alpha,
-                            color: Color(0xff808080),
+                            //  color: Color(0xff808080),
                           ),
                         ),
                         Expanded(
@@ -367,8 +363,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                                 return DropdownMenuItem(
                                   value: value["id"].toString(),
                                   child: Text(value["nombre"].toString(),
-                                      style: TextStyle(
-                                          color: textColor, fontSize: 16)),
+                                      style: TextStyle(fontSize: 16)),
                                 );
                               }).toList(),
                               value: _ascValue,
@@ -471,7 +466,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                 ),
                 Container(
                   // color: Colors.green,
-                  height: 300,
+                  height: MediaQuery.of(context).size.height * 0.42,
                   padding: new EdgeInsets.only(bottom: 10),
                   child: ListView(scrollDirection: Axis.vertical, children: [
                     Container(
@@ -557,14 +552,12 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
               if (snapshot.hasData) {
                 return Text(
                   snapshot.data.toString(),
-                  style: TextStyle(color: Colors.black),
                 );
               } else if (snapshot.hasError) {
                 return Text("error");
               }
               return Text("loading...".tr());
             }),
-        labelStyle: TextStyle(color: Colors.black),
         selected: _selectedIndex == _listActividad[i]!.idtipoactividad,
         onSelected: (bool value) {
           setState(() {

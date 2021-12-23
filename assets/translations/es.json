@@ -126,7 +126,7 @@
     "ubication":"Ubicacion",
     "turistics routers":"Rutas Turisticas",
 
-    "divertion":"Diversion",
+    "divertion":"Diversión",
     "activity":"Actividad",
     "attractive turistic":"Atractivo Turistico",
     "category":"Categoria",
@@ -181,5 +181,15 @@
     "nearby": "Cercano", 
     "list": "Lista",
     "recently viewed":"Recientemente visto",
-    "rate":"Calificacion"
+    "rate":"Calificación",
+    "closed":"Cerrado",
+    "open now":"Abierto ahora",
+    "schedule":"Horario",
+    "monday":"Lunes",
+    "tuesday":"Martes",
+    "wednesday":"Miercoles",
+    "thursday":"Jueves",
+    "friday":"Viernes",
+    "saturday":"Sabado",
+    "sunday":"Domingo"
 }

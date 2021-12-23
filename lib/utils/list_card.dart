@@ -23,14 +23,18 @@ class ListCard extends StatelessWidget {
             // color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
-            // padding: EdgeInsets.only(top: 15, bottom: 0),
+            margin: EdgeInsets.only(right: 10, left: 10),
             //color: Colors.grey[200],
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(5),
+            ),
             child: Stack(
               children: <Widget>[
                 Container(
                   //  color: Colors.green,
                   decoration: BoxDecoration(
-                    color: color,
+                    // color: color,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   margin:

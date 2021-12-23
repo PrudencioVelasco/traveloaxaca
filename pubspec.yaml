@@ -91,6 +91,10 @@ dependencies:
   permission_handler: ^8.3.0
   flutter_map: ^0.14.0
   multi_select_flutter: ^4.0.0
+  sp_util: ^2.0.3
+  oktoast: ^3.1.5
+  device_info_plus: ^3.2.0
+  map_launcher: ^2.1.1
   
 
 dev_dependencies:

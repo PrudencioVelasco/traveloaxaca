@@ -1,20 +1,14 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as locat;
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
-import 'package:traveloaxaca/blocs/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/compania.dart';
-import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/mapabusqueda.dart';
 import 'package:traveloaxaca/services/traffic_service.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -231,10 +225,8 @@ class _MapaPageState extends State<MapaPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.nombreclasificacion.toString(),
-          style: TextStyle(color: Colors.black, fontSize: 15),
-        ),
+        title: Text(widget.nombreclasificacion.toString(),
+            style: Theme.of(context).textTheme.headline6),
       ),
       body: Stack(
         children: <Widget>[

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/conquien_visito_bloc.dart';
 import 'package:traveloaxaca/models/conquien_visitaste.dart';
@@ -37,6 +37,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
   String _errorClaseVisita = "";
   bool _isAlwaysShown = true;
   bool _showTrackOnHover = false;
+  final translator = GoogleTranslator();
   @override
   void initState() {
     super.initState();
@@ -58,7 +59,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
     }
   }
 
-  getAllConQuienVisito() async {
+  Future getAllConQuienVisito() async {
     _listaconquienvisito = await _conQuienVisitoBloc.obtenerConQuienVisito();
     refresh();
   }
@@ -242,6 +243,17 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
     });
   }
 
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -306,14 +318,11 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                   icon: Icon(Icons.save_alt_rounded),
                 ),*/
           ],
-          backgroundColor: Colors.white,
+//backgroundColor: Colors.white,
           title: Text(
             widget.tour!.nombre.toString(),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            ),
+            style: Theme.of(context).textTheme.headline6,
           ),
         ),
         body: SingleChildScrollView(
@@ -328,7 +337,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                   children: [
                     Text('how would you rate your experience',
                         style: TextStyle(
-                          color: Colors.black,
+                          // color: Colors.black,
                           fontSize: 16,
                         )).tr(),
                     Container(
@@ -355,7 +364,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                     Text(
                       'how would you rate your experience',
                       style: TextStyle(
-                        color: Colors.black,
+                        // color: Colors.black,
                         fontSize: 16,
                       ),
                     ).tr(),
@@ -375,27 +384,38 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                     Text(
                       'what kind of visit was this',
                       style: TextStyle(
-                        color: Colors.black,
+                        //color: Colors.black,
                         fontSize: 16,
                       ),
                     ).tr(),
                     SizedBox(
                       height: 10,
                     ),
-                    Container(
-                      height: 60,
-                      //color: Colors.white,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        itemCount: _listaconquienvisito.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _conQuienVisito(_listaconquienvisito[index]);
-                        },
-                      ),
-                    ),
+                    FutureBuilder(
+                        future: _conQuienVisitoBloc.obtenerConQuienVisito(),
+                        builder: (context,
+                            AsyncSnapshot<List<ConquienVisito?>> snapshot) {
+                          if (snapshot.hasData) {
+                            return Container(
+                              height: 60,
+                              //color: Colors.white,
+                              width: MediaQuery.of(context).size.width,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return _conQuienVisito(snapshot.data![index]);
+                                },
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text("Error");
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        }),
                     if (_errorClaseVisita.isNotEmpty)
                       Text(
                         _errorClaseVisita,
@@ -411,7 +431,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                     Text(
                       'when did you visit',
                       style: TextStyle(
-                        color: Colors.black,
+                        // color: Colors.black,
                         fontSize: 16,
                       ),
                     ).tr(),
@@ -531,7 +551,16 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
         child: ChoiceChip(
           elevation: 5,
           pressElevation: 5,
-          label: Text(item!.nombre!),
+          label: FutureBuilder(
+              future: someFutureStringFunction(context, item!.nombre!),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data.toString().toUpperCase());
+                } else if (snapshot.hasError) {
+                  return Text("error");
+                }
+                return Text("loading...".tr());
+              }),
           selected: _selectedIndex == item.idconquienvisito,
           selectedColor: Colors.green[600],
           padding: EdgeInsets.all(10),

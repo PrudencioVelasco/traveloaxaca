@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -62,63 +61,61 @@ class _BuscarPageState extends State<BuscarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {},
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Row(
+      child: RefreshIndicator(
+        onRefresh: () async {},
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: [
+                  Column(
                     children: [
-                      Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 30, left: 20),
-                            child: Text(
-                              "search".tr(),
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey[800]),
-                            ),
-                          )
-                        ],
+                      Container(
+                        margin: EdgeInsets.only(top: 30, left: 20),
+                        child: Text(
+                          "search".tr(),
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       )
                     ],
-                  ),
-                  Header(),
-                  FutureBuilder(
-                      future: _categoriaBloc.obtenerTodascategoriasPrincipal(),
-                      builder:
-                          (context, AsyncSnapshot<List<Categoria?>> snapshot) {
-                        if (snapshot.hasData) {
-                          return Container(
-                            height: 80,
-                            margin:
-                                EdgeInsets.only(left: 15, right: 15, top: 10),
-                            width: MediaQuery.of(context).size.width,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              physics: BouncingScrollPhysics(),
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return _chois(snapshot.data![index], context);
-                              },
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text("Error");
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-                      }),
+                  )
                 ],
               ),
-            ),
+              Header(),
+              FutureBuilder(
+                  future: _categoriaBloc.obtenerTodascategoriasPrincipal(),
+                  builder: (context, AsyncSnapshot<List<Categoria?>> snapshot) {
+                    if (snapshot.hasData) {
+                      return Container(
+                        height: 80,
+                        margin: EdgeInsets.only(left: 15, right: 15, top: 10),
+                        width: MediaQuery.of(context).size.width,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          physics: BouncingScrollPhysics(),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _chois(snapshot.data![index], context);
+                          },
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text("Error");
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  }),
+            ],
           ),
-        ));
+        ),
+      ),
+    ));
   }
 
   @override
@@ -133,7 +130,7 @@ class _BuscarPageState extends State<BuscarPage> {
           elevation: 4,
           pressElevation: 5,
           shape: RoundedRectangleBorder(
-              side: BorderSide(),
+              side: BorderSide(color: Colors.grey, width: 2),
               borderRadius: BorderRadius.all(Radius.circular(20))),
           label: FutureBuilder(
               future:
@@ -148,8 +145,10 @@ class _BuscarPageState extends State<BuscarPage> {
               }),
           selected: _selectIndex == item.idclasificacion,
           padding: EdgeInsets.all(13),
-          labelStyle: TextStyle(color: Colors.black54),
+          labelStyle:
+              TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           backgroundColor: Colors.white,
+          selectedColor: Colors.white,
           onSelected: (bool value) {
             setState(() {
               _selectIndex = item.idclasificacion;

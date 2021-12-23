@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -26,7 +25,6 @@ import 'package:traveloaxaca/models/sitiosinteres.dart';
 import 'package:traveloaxaca/pages/comments.dart';
 import 'package:traveloaxaca/pages/guide.dart';
 import 'package:traveloaxaca/pages/hotel.dart';
-import 'package:traveloaxaca/pages/otras_opciones.dart';
 import 'package:traveloaxaca/pages/restaurante.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
@@ -234,7 +232,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     final double width = MediaQuery.of(context).size.width;
     final orientation = MediaQuery.of(context).orientation;
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +291,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                               ).tr()
                             : Text(
                                 "like",
-                                style: TextStyle(color: Colors.grey[600]),
+                                style: Theme.of(context).textTheme.subtitle1,
                               ).tr(),
                       ),
                       TextButton.icon(
@@ -314,7 +312,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                             _totalComentarios.toString() +
                                 " " +
                                 _textcomentario,
-                            style: TextStyle(color: Colors.grey[600])),
+                            style: Theme.of(context).textTheme.subtitle1),
                       ),
                     ],
                   ),
@@ -329,36 +327,29 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       Expanded(
                           child: Text(
                         widget.data!.direccion!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
+                        style: Theme.of(context).textTheme.subtitle1,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       )),
                     ],
                   ),
-                  Text(widget.data!.nombre!,
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.grey[800])),
+                  Text(
+                    widget.data!.nombre!,
+                    style: Theme.of(context).textTheme.headline1,
+                  ),
                   Container(
                     margin: EdgeInsets.only(top: 8, bottom: 8),
                     height: 3,
                     width: 150,
                     decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(40)),
                   ),
                   Row(
                     children: <Widget>[
                       Text(
                         _totalLoves.toString(),
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[600]),
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
                       SizedBox(
                         width: 5,
@@ -373,10 +364,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       ),
                       Text(
                         _totalComentarios.toString(),
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[600]),
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
                       SizedBox(
                         width: 5,
@@ -415,11 +403,11 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           )).tr(),
                       Container(
                         padding: EdgeInsets.only(top: 10, bottom: 10),
-                        margin: EdgeInsets.only(top: 5, bottom: 5),
+                        margin: EdgeInsets.only(top: 5, bottom: 10),
                         height: 3,
                         width: 150,
                         decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.circular(40)),
                       ),
                       listaOpciones(
@@ -451,7 +439,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           height: 3,
                           width: 100,
                           decoration: BoxDecoration(
-                              color: Colors.grey[300],
+                              color: Theme.of(context).primaryColor,
                               borderRadius: BorderRadius.circular(40)),
                         ),
                         Container(
@@ -492,7 +480,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           height: 3,
                           width: 150,
                           decoration: BoxDecoration(
-                              color: Colors.grey[300],
+                              color: Theme.of(context).primaryColor,
                               borderRadius: BorderRadius.circular(40)),
                         ),
                         Container(
@@ -555,7 +543,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                   textAlign: TextAlign.justify,
                                   fontSize: FontSize(16.0),
                                   // fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                                  // color: Colors.black,
                                   textOverflow: TextOverflow.ellipsis,
                                 ),
                               },
@@ -653,7 +641,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                     height: 3,
                     width: width,
                     decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(40)),
                   ),
                   Text('contribute',
@@ -912,6 +900,7 @@ class listaOpciones extends StatelessWidget {
                           ]),
                       child: Icon(
                         LineIcons.mapMarked,
+                        color: Colors.black,
                         size: 30,
                       ),
                     ),
@@ -950,6 +939,7 @@ class listaOpciones extends StatelessWidget {
                           ]),
                       child: Icon(
                         LineIcons.hotel,
+                        color: Colors.black,
                         size: 30,
                       ),
                     ),
@@ -992,6 +982,7 @@ class listaOpciones extends StatelessWidget {
                           ]),
                       child: Icon(
                         Icons.restaurant_menu,
+                        color: Colors.black,
                         size: 30,
                       ),
                     ),
@@ -1034,6 +1025,7 @@ class listaOpciones extends StatelessWidget {
                           ]),
                       child: Icon(
                         LineIcons.comments,
+                        color: Colors.black,
                         size: 30,
                       ),
                     ),

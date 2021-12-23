@@ -143,7 +143,9 @@ class _FeaturedItemList extends StatelessWidget {
                         child: Text(
                           d!.nombre!,
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -160,7 +162,9 @@ class _FeaturedItemList extends StatelessWidget {
                             child: Text(
                               d!.direccion!,
                               style: TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w400),
+                                  fontSize: 13,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

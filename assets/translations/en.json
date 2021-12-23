@@ -179,5 +179,15 @@
     "map": "Map",
     "list": "List",
     "recently viewed":"Recently viewed",
-    "rate":"Rate"
+    "rate":"Rate",
+    "closed":"Closed",
+    "open now":"Open now",
+    "schedule":"Schedule",
+    "monday":"Monday",
+    "tuesday":"Tuesday",
+    "wednesday":"Wednesday",
+    "thursday":"Thursday",
+    "friday":"Friday",
+    "saturday":"Saturday",
+    "sunday":"Sunday"
 }

@@ -23,14 +23,11 @@ class _MasInformacionPageState extends State<MasInformacionPage> {
           },
           icon: Icon(Icons.arrow_back),
         ),
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         title: Text(
           widget.nombre.toString(),
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-          ),
+          style: Theme.of(context).textTheme.headline6,
         ),
       ),
       body: SingleChildScrollView(
@@ -59,7 +56,7 @@ class _MasInformacionPageState extends State<MasInformacionPage> {
                                   textAlign: TextAlign.justify,
                                   fontSize: FontSize(16.0),
                                   // fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                                  // color: Colors.black,
                                   //textOverflow: TextOverflow.ellipsis,
                                 ),
                               },

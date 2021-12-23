@@ -1,20 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/tour/detalle_tour.dart';
-import 'package:traveloaxaca/utils/empty.dart';
-import 'package:traveloaxaca/utils/list_card.dart';
-import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
-import 'package:traveloaxaca/utils/snacbar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 List<String> allNames = ["ahmed", "ali", "john", "user"];
 var mainColor = Color(0xff1B3954);
@@ -97,7 +90,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                   width: double.infinity,
                   height: 40,
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      // color: Colors.white,
                       borderRadius: BorderRadius.circular(5)),
                   child: Center(
                     child: TextField(
@@ -164,7 +157,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                                 child: Text(
                                   "loading...",
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      //  color: Colors.black,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600),
                                 ).tr(),
@@ -250,7 +243,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  //  color: Colors.black87,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -407,7 +400,6 @@ class TodosToursPageState extends State<TodosToursPage> {
               title: Center(
                   child: Text(
                 "Filter",
-                style: TextStyle(color: mainColor),
               )),
               content: SingleChildScrollView(
                 child: Column(
@@ -420,7 +412,6 @@ class TodosToursPageState extends State<TodosToursPage> {
                             padding: const EdgeInsets.only(right: 16.0),
                             child: Icon(
                               Icons.sort,
-                              color: Color(0xff808080),
                             ),
                           ),
                           Expanded(
@@ -433,8 +424,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                                   return DropdownMenuItem(
                                     value: value["id"].toString(),
                                     child: Text(value["nombre"].toString(),
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 16)),
+                                        style: TextStyle(fontSize: 16)),
                                   );
                                 }).toList(),
                                 value: _sortValue,
@@ -457,7 +447,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                             padding: const EdgeInsets.only(right: 16.0),
                             child: Icon(
                               Icons.sort_by_alpha,
-                              color: Color(0xff808080),
+                              // color: Color(0xff808080),
                             ),
                           ),
                           Expanded(
@@ -469,8 +459,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                                   return DropdownMenuItem(
                                     value: value["id"].toString(),
                                     child: Text(value["nombre"].toString(),
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 16)),
+                                        style: TextStyle(fontSize: 16)),
                                   );
                                 }).toList(),
                                 value: _ascValue,

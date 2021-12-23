@@ -13,12 +13,14 @@ class ImagenCompany {
   int? idimagencompania;
   int? idcompania;
   String? nombreimagen;
+  String? url;
   int? tipousuario;
   List<ImagenCompany> toList = [];
   ImagenCompany({
     this.idimagencompania,
     this.idcompania,
     this.nombreimagen,
+    this.url,
     this.tipousuario,
   });
 
@@ -26,6 +28,7 @@ class ImagenCompany {
         idimagencompania: json["idimagencompania"],
         idcompania: json["idcompania"],
         nombreimagen: json["nombreimagen"],
+        url: json["url"],
         tipousuario: json["tipousuario"],
       );
   ImagenCompany.fromJsonToList(List<dynamic> jsonList) {
@@ -38,6 +41,7 @@ class ImagenCompany {
         "idimagencompania": idimagencompania,
         "idcompania": idcompania,
         "nombreimagen": nombreimagen,
+        "url": url,
         "tipousuario": tipousuario,
       };
 }

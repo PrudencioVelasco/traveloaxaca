@@ -63,38 +63,38 @@ class _ExplorarState extends State<Explorar> {
       ),
     );
     return Scaffold(
-        backgroundColor: Colors.white,
+        //  backgroundColor: Colors.white,
         body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              _featuredBloc.onRefresh();
-              _popularPlacesBloc.onRefresh();
-              _rutasBloc.onRefresh();
-              _categoriaBloc.onRefresh();
-              context.read<LugarBloc>().onRefresh();
-              //context.read<SpecialStateOneBloc>().onRefresh(mounted);
-              //context.read<SpecialStateTwoBloc>().onRefresh(mounted);
-              //context.read<RecommandedPlacesBloc>().onRefresh(mounted);
-            },
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Header(),
-                  Featured(),
-                  PopularPlaces(),
-                  //RutaPage(),
-                  CategoriaPrincipalPage(),
-                  RecienVisitadoPage(),
-                  // CategoriaPage(),
-                  //RecentPlaces(),
-                  //SpecialStateOne(),
-                  //SpecialStateTwo(),
-                  //RecommendedPlaces()
-                ],
-              ),
-            ),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          _featuredBloc.onRefresh();
+          _popularPlacesBloc.onRefresh();
+          _rutasBloc.onRefresh();
+          _categoriaBloc.onRefresh();
+          context.read<LugarBloc>().onRefresh();
+          //context.read<SpecialStateOneBloc>().onRefresh(mounted);
+          //context.read<SpecialStateTwoBloc>().onRefresh(mounted);
+          //context.read<RecommandedPlacesBloc>().onRefresh(mounted);
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Header(),
+              Featured(),
+              PopularPlaces(),
+              //RutaPage(),
+              CategoriaPrincipalPage(),
+              RecienVisitadoPage(),
+              // CategoriaPage(),
+              //RecentPlaces(),
+              //SpecialStateOne(),
+              //SpecialStateTwo(),
+              //RecommendedPlaces()
+            ],
           ),
-        ));
+        ),
+      ),
+    ));
   }
 
   @override

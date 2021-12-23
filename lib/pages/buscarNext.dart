@@ -42,7 +42,7 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
               alignment: Alignment.center,
               height: 56,
               width: w,
-              decoration: BoxDecoration(color: Colors.white),
+              // decoration: BoxDecoration(color: Colors.white),
               child: TextFormField(
                 autofocus: true,
                 controller: context.watch<BusquedaNextBloc>().textfieldCtrl,
@@ -56,15 +56,15 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
                   hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[800]),
+                      color: Colors.grey[600]),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 15),
                     child: IconButton(
                       icon: Icon(
                         Icons.keyboard_backspace,
-                        color: Colors.grey[800],
+                        //   color: Colors.grey[800],
                       ),
-                      color: Colors.grey[800],
+                      color: Colors.grey[600],
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -73,7 +73,7 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       Icons.close,
-                      color: Colors.grey[800],
+                      color: Colors.grey[600],
                       size: 25,
                     ),
                     onPressed: () {
@@ -109,10 +109,7 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
                     ? 'recent searchs'
                     : 'we have found',
                 textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.headline6,
               ).tr(),
             ),
             context.watch<BusquedaNextBloc>().searchStarted == false

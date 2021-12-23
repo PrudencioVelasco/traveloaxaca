@@ -47,7 +47,7 @@ class TrafficService {
   Future<DrivingResponse> getCoordsInicioYDestino2(double inicioLatitud,
       double inicioLongitud, double finalLatitud, double finalLongitud) async {
     final coordString =
-        '${inicioLongitud},${inicioLatitud};${finalLongitud},${finalLatitud}';
+        '$inicioLongitud,$inicioLatitud;$finalLongitud,$finalLatitud';
     final url = '${Config().baseUrlDir}/mapbox/driving/$coordString';
 
     final resp = await this._dio.get(url, queryParameters: {
@@ -64,7 +64,7 @@ class TrafficService {
   }
 
   Future<SearchResponse> getResultadosPorQuery(
-      String busqueda, LatLng proximidad) async {
+      String busqueda, double latitud, double longitud) async {
     print('Buscando!!!!!');
 
     final url = '${Config().baseUrlGeo}/mapbox.places/$busqueda.json';
@@ -73,8 +73,9 @@ class TrafficService {
       final resp = await this._dio.get(url, queryParameters: {
         'access_token': Config().apiKey,
         'autocomplete': 'true',
-        'proximity': '${proximidad.longitude},${proximidad.latitude}',
+        'proximity': '$longitud,$latitud',
         'language': 'es',
+        'limit': '10'
       });
 
       final searchResponse = searchResponseFromJson(resp.data);
@@ -88,7 +89,8 @@ class TrafficService {
   void getSugerenciasPorQuery(String busqueda, LatLng proximidad) {
     debouncer.value = '';
     debouncer.onValue = (value) async {
-      final resultados = await this.getResultadosPorQuery(value, proximidad);
+      final resultados = await this.getResultadosPorQuery(
+          value, proximidad.latitude, proximidad.longitude);
       this._sugerenciasStreamController.add(resultados);
     };
 

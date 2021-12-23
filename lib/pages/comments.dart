@@ -244,7 +244,7 @@ class _CommentsPageState extends State<CommentsPage> {
         centerTitle: false,
         title: Text(
           widget.lugar.nombre.toString(),
-          style: TextStyle(color: Colors.black),
+          style: Theme.of(context).textTheme.headline6,
         ),
         titleSpacing: 0,
         actions: [
@@ -289,7 +289,7 @@ class _CommentsPageState extends State<CommentsPage> {
                           return Container(
                               padding: EdgeInsets.only(top: 5, bottom: 5),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                // color: Colors.white,
                                 border: Border(
                                   bottom: BorderSide(
                                       width: 1, color: Colors.grey.shade300),
@@ -481,7 +481,7 @@ class _CommentsPageState extends State<CommentsPage> {
               height: 65,
               padding: EdgeInsets.only(top: 8, bottom: 10, right: 20, left: 20),
               width: double.infinity,
-              color: Colors.white,
+              // color: Colors.white,
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.grey[200],

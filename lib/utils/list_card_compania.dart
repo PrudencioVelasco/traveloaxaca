@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:traveloaxaca/models/compania.dart';
+import 'package:traveloaxaca/pages/compania/detalle_compania.dart';
+import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -168,7 +170,11 @@ class ListCardCompaniaCerca extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Container(
-            // color: Colors.red,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            //  color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
             //padding: EdgeInsets.only(top: 15, bottom: 0),
@@ -178,7 +184,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
                 Container(
                   //  color: Colors.green,
                   decoration: BoxDecoration(
-                    color: color,
+                    //color: Colors.red,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   margin:
@@ -296,7 +302,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
               ))
         ],
       ),
-      //onTap: () => nextScreen(context, PlaceDetails(data: d, tag: tag!)),
+      onTap: () => nextScreen(context, DetalleCompaniaPage(compania: d)),
     );
   }
 

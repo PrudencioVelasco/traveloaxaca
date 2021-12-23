@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/causa_reporte_bloc.dart';
-import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/models/causa_reporte.dart';
 import 'package:traveloaxaca/models/comentario_tour.dart';
@@ -32,6 +32,7 @@ class _ReportarComentarioTourPageState
   CausaReporteBloc _causaReporteBloc = new CausaReporteBloc();
   List<CausaReporte?> _causaReporte = [];
   TourBloc _tourBloc = new TourBloc();
+  final translator = GoogleTranslator();
 
   @override
   void initState() {
@@ -65,6 +66,17 @@ class _ReportarComentarioTourPageState
       ctrlComentario.clear();
       _id = 0;
     });
+  }
+
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
   }
 
   Future agregarReporteComentarioLugar() async {
@@ -165,14 +177,11 @@ class _ReportarComentarioTourPageState
               ),
             ),
           ],
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           title: Text(
             widget.comentario!.userName.toString(),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            ),
+            style: Theme.of(context).textTheme.headline6,
           ),
         ),
         body: SingleChildScrollView(
@@ -201,34 +210,58 @@ class _ReportarComentarioTourPageState
                   height: 10,
                 ),
                 Container(
-                  // color: Colors.red,
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: _causaReporte.length,
-                            itemBuilder: (ctx, index) {
-                              return RadioListTile<String>(
-                                  title: Text(
-                                    "${_causaReporte[index]!.nombrecausareporte}",
-                                    maxLines: 2,
-                                  ),
-                                  value: _causaReporte[index]!
-                                      .idcausareporte!
-                                      .toString(),
-                                  groupValue: _id.toString(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _radioItem = _causaReporte[index]!
-                                          .nombrecausareporte!;
-                                      _id =
-                                          _causaReporte[index]!.idcausareporte!;
-                                    });
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FutureBuilder(
+                          future: _causaReporteBloc.causasReportes(),
+                          builder: (context,
+                              AsyncSnapshot<List<CausaReporte?>> snapshot) {
+                            if (snapshot.hasData) {
+                              return ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data!.length,
+                                  itemBuilder: (ctx, index) {
+                                    return RadioListTile<String>(
+                                        title: FutureBuilder(
+                                            future: someFutureStringFunction(
+                                                context,
+                                                snapshot.data![index]!
+                                                    .nombrecausareporte
+                                                    .toString()),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Text(
+                                                  snapshot.data.toString(),
+                                                  maxLines: 2,
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Text("error");
+                                              }
+                                              return Text("loading...".tr());
+                                            }),
+                                        value: snapshot
+                                            .data![index]!.idcausareporte!
+                                            .toString(),
+                                        groupValue: _id.toString(),
+                                        onChanged: (val) {
+                                          setState(() {
+                                            _radioItem = snapshot.data![index]!
+                                                .nombrecausareporte!;
+                                            _id = snapshot
+                                                .data![index]!.idcausareporte!;
+                                          });
+                                        });
                                   });
-                            })
-                      ]),
+                            } else if (snapshot.hasError) {
+                              return Text("Error");
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          }),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 10,

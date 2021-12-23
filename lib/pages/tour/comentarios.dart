@@ -243,7 +243,8 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-                widget.collectionName == 'places' ? 'user reviews' : 'comments')
+                widget.collectionName == 'places' ? 'user reviews' : 'comments',
+                style: Theme.of(context).textTheme.headline6)
             .tr(),
         titleSpacing: 0,
         actions: [
@@ -288,7 +289,7 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                           return Container(
                               padding: EdgeInsets.only(top: 5, bottom: 5),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                // color: Colors.white,
                                 border: Border(
                                   bottom: BorderSide(
                                       width: 1, color: Colors.grey.shade300),
@@ -480,7 +481,7 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
               height: 65,
               padding: EdgeInsets.only(top: 8, bottom: 10, right: 20, left: 20),
               width: double.infinity,
-              color: Colors.white,
+              //  color: Colors.white,
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.grey[200],

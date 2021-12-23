@@ -12,6 +12,7 @@ class Horario {
   int? idhorario;
   int? idcompania;
   int? iddia;
+  String? nombredia;
   String? horainicial;
   String? horafinal;
   List<Horario> toList = [];
@@ -19,6 +20,7 @@ class Horario {
     this.idhorario,
     this.idcompania,
     this.iddia,
+    this.nombredia,
     this.horainicial,
     this.horafinal,
   });
@@ -27,6 +29,7 @@ class Horario {
         idhorario: json["idhorario"],
         idcompania: json["idcompania"],
         iddia: json["iddia"],
+        nombredia: json["nombredia"],
         horainicial: json["horainicial"],
         horafinal: json["horafinal"],
       );
@@ -40,6 +43,7 @@ class Horario {
         "idhorario": idhorario,
         "idcompania": idcompania,
         "iddia": iddia,
+        "nombredia": nombredia,
         "horainicial": horainicial,
         "horafinal": horafinal,
       };

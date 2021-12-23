@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:http/http.dart' as http;
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
+import 'package:traveloaxaca/models/comentario_compania.dart';
 import 'package:traveloaxaca/models/comentario_tour.dart';
 import 'package:traveloaxaca/models/comment.dart';
 import 'package:traveloaxaca/models/response_api.dart';
@@ -127,6 +128,30 @@ class CommentsBloc extends ChangeNotifier {
     await totalComentariosLugar(idlugar);
   }
 
+  Future<ResponseApi?> eliminarCommentarioCompania(
+      int idcomentario, int idlugar) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    String? token = await _signInBloc.getToken();
+    try {
+      Uri url = Uri.http(_url, '$_api/eliminarComentarioCompania');
+      String bodyParams = json.encode({
+        'idcomentario': idcomentario,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8',
+        'x-token': token!
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      return responseApi;
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   Future<List<Comentario?>> obtenerComentariosPorLugar(
       int idLugar, int idcomentario, int limite) async {
     String _url = Environment.API_DELIVERY;
@@ -201,6 +226,34 @@ class CommentsBloc extends ChangeNotifier {
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
       ComentarioTour comentario =
           ComentarioTour.fromJsonToList(responseApi.data);
+
+      return comentario.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  Future<List<ComentarioCompania?>> obtenerComentariosCompania(
+      int idtour, int idcomentario, int limite) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerComentariosCompania');
+      String bodyParams = json.encode({
+        'idtour': idtour,
+        'idcomentario': (idcomentario == 0) ? '' : idcomentario,
+        'limite': (limite == 0) ? '' : limite,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      ComentarioCompania comentario =
+          ComentarioCompania.fromJsonToList(responseApi.data);
 
       return comentario.toList;
     } catch (error) {

@@ -43,4 +43,5 @@ class Config {
   final String baseUrlGeo = 'https://api.mapbox.com/geocoding/v5';
   final String apiKey =
       'sk.eyJ1IjoiZHVndWVyIiwiYSI6ImNrd3puampxZTB3am0zMnE5dXp3cXpjcXcifQ.hZUrbDidn2hDJIvMSs3aPQ';
+  final String mapBoxStyle = "mapbox/streets-v11";
 }

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/models/compania.dart';
-import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/models/horario.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/models/telefono.dart';
 
@@ -111,7 +111,7 @@ class CompaniaBloc with ChangeNotifier {
     }
   }
 
-  Future<List<Telefono>?> obtenerTelefonosCompania(int idcompania) async {
+  Future<List<Telefono?>> obtenerTelefonosCompania(int idcompania) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/telefono';
     try {
@@ -128,7 +128,49 @@ class CompaniaBloc with ChangeNotifier {
       return telefono.toList;
     } catch (error) {
       print('Error: $error');
-      return null;
+      return [];
+    }
+  }
+
+  Future<List<Horario?>> obtenerHorarioCompania(int idcompania) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/horario';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerHorario');
+      String bodyParams = json.encode({'idcompania': idcompania});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Horario horario = Horario.fromJsonToList(responseApi.data);
+      return horario.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  Future<List<Horario?>> obtenerHorarioCompaniaFiltrado(int idcompania) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/horario';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerHorarioFiltrado');
+      String bodyParams = json.encode({'idcompania': idcompania});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Horario horario = Horario.fromJsonToList(responseApi.data);
+      return horario.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
     }
   }
 

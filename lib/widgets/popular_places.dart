@@ -54,9 +54,10 @@ class _PopularPlaces extends State<PopularPlaces> {
               Text(
                 'popular places',
                 style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.grey[800]),
+                  fontSize: 25,
+                  fontWeight: FontWeight.w700,
+                  //color: Colors.grey[800]
+                ),
               ).tr(),
               Spacer(),
               IconButton(

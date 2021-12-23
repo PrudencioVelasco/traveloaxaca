@@ -77,7 +77,12 @@ class _PermisoGpsPageState extends State<PermisoGpsPage>
       return '';
     } else if (!permisoGPS) {
       Navigator.pushReplacement(
-          context, navegarMapaFadeIn(context, AccesoGpsPage()));
+          context,
+          navegarMapaFadeIn(
+              context,
+              AccesoGpsPage(
+                  idclasificacion: widget.idclasificacion,
+                  nombre: widget.nombre)));
       return 'Es necesario el permiso de GPS';
     } else {
       return 'Active el GPS';

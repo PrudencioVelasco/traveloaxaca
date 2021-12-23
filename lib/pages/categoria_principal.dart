@@ -59,9 +59,9 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                     Text(
                       'best tours',
                       style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey[800]),
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ).tr(),
                     Spacer(),
                     IconButton(

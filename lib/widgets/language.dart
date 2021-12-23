@@ -14,7 +14,10 @@ class _LanguagePopupState extends State<LanguagePopup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('select language').tr(),
+        title: Text(
+          'select language',
+          style: Theme.of(context).textTheme.headline6,
+        ).tr(),
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(15),

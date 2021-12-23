@@ -65,9 +65,9 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
                       Text(
                         'recently viewed',
                         style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey[800]),
+                          fontSize: 25,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ).tr(),
                     ],
                   ),

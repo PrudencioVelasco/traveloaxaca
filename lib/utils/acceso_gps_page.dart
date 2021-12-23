@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
 
 class AccesoGpsPage extends StatefulWidget {
+  final String? nombre;
+  final int? idclasificacion;
+  const AccesoGpsPage(
+      {Key? key, required this.nombre, required this.idclasificacion})
+      : super(key: key);
   @override
   _AccesoGpsPageState createState() => _AccesoGpsPageState();
 }
@@ -26,7 +32,11 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed && !popup) {
       if (await Permission.location.isGranted) {
-        Navigator.pushReplacementNamed(context, 'principal_buscar');
+        await Navigator.of(context).pushReplacement(new MaterialPageRoute(
+            settings: RouteSettings(name: 'principal_buscar'),
+            builder: (context) => MiUbicacionPage(
+                nombreclasificacion: widget.nombre,
+                idclasificacion: widget.idclasificacion)));
       }
     }
   }
@@ -61,7 +71,12 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
   Future accesoGPS(PermissionStatus status) async {
     switch (status) {
       case PermissionStatus.granted:
-        await Navigator.pushReplacementNamed(context, 'principal_buscar');
+        await Navigator.of(context).pushReplacement(new MaterialPageRoute(
+            settings: RouteSettings(name: 'principal_buscar'),
+            builder: (context) => MiUbicacionPage(
+                nombreclasificacion: widget.nombre,
+                idclasificacion: widget.idclasificacion)));
+
         break;
 
       // case PermissionStatus.undetermined:
