@@ -5,6 +5,7 @@ import 'package:traveloaxaca/blocs/buscar_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/pages/buscar/buscar_lugar.dart';
 import 'package:traveloaxaca/pages/buscar/buscar_lugar_categoria.dart';
 import 'package:traveloaxaca/pages/buscarNext.dart';
 import 'package:traveloaxaca/pages/tour/todos.dart';
@@ -154,6 +155,13 @@ class _BuscarPageState extends State<BuscarPage> {
               _selectIndex = item.idclasificacion;
               if (item.idclasificacion == 13) {
                 nextScreen(context, TodosToursPage());
+              } else if (item.idclasificacion == 16) {
+                nextScreen(
+                    context,
+                    BuscarLugarPage(
+                      nombre: item.nombreclasificacion,
+                      idclasificacion: item.idclasificacion,
+                    ));
               } else {
                 // nextScreen(context, PermisoGpsPage(
                 nextScreen(

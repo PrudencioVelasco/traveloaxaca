@@ -3,6 +3,8 @@
 //     final lugar = lugarFromJson(jsonString);
 import 'dart:convert';
 
+import 'package:traveloaxaca/models/actividad.dart';
+
 Lugar lugarFromJson(String str) => Lugar.fromJson(json.decode(str));
 
 String lugarToJson(Lugar data) => json.encode(data.toJson());
@@ -24,7 +26,7 @@ class Lugar {
   //String? actividades;
   int? principal;
   //List<Imagen?> imagenes = [];
-  //List<Actividad?> actividades = [];
+  List<Actividad?>? actividades = [];
   List<Lugar> toList = [];
   int? numero;
   Lugar({
@@ -42,7 +44,7 @@ class Lugar {
     this.primeraimagen,
     this.nombreclasificacion,
     // required this.imagenes,
-    //required this.actividades,
+    this.actividades,
     this.principal,
     this.numero,
   });
@@ -66,13 +68,17 @@ class Lugar {
         resena: json["resena"],
         love: json["love"],
         comentario: json["comentario"],
-    rating: json["rating"] is String
-        ? double.parse(json["rating"])
-        : isInteger(json["rating"])
-        ? json["rating"].toDouble()
-        : json["rating"],
+        rating: json["rating"] is String
+            ? double.parse(json["rating"])
+            : isInteger(json["rating"])
+                ? json["rating"].toDouble()
+                : json["rating"],
         primeraimagen: json["primeraimagen"],
         nombreclasificacion: json["nombreclasificacion"],
+        actividades: (json["actividades"] == null || json["actividades"] == '')
+            ? []
+            : List<Actividad>.from(jsonDecode(json["actividades"].toString())
+                .map((model) => Actividad.fromJson(model))),
         numero: json["numero"],
         //imagenes: json["imagenes"],
         /*actividades: json["actividades"] == null
@@ -108,6 +114,9 @@ class Lugar {
         "rating": rating,
         "primeraimagen": primeraimagen,
         "nombreclasificacion": nombreclasificacion,
+        "imagenestour": (actividades!.length > 0)
+            ? actividades!.map((e) => e!.toJson()).toList()
+            : [],
         "principal": principal,
         "numero": numero,
       };

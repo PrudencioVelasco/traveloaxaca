@@ -225,7 +225,10 @@ class _MapaPageState extends State<MapaPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.nombreclasificacion.toString(),
+        title: Text(
+            widget.nombreclasificacion.toString() +
+                " " +
+                "nearby".tr().toUpperCase(),
             style: Theme.of(context).textTheme.headline6),
       ),
       body: Stack(

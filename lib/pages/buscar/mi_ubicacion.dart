@@ -40,7 +40,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
     {"id": 5, "nombre": "5 start".tr()},
   ];
   List<Map> _listaComLove = [
-    {"id": 1, "nombre": "more reviews".tr()},
+    {"id": 1, "nombre": "more comments".tr()},
     {"id": 2, "nombre": "more loves".tr()},
   ];
   List<Compania?> _listaCompania = [];
@@ -264,7 +264,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                             message1: "try again".tr(),
                           )
                         : ListView.separated(
-                            padding: EdgeInsets.all(10),
+                            // padding: EdgeInsets.all(10),
                             itemCount: _listaCompania.length,
                             separatorBuilder: (context, index) => SizedBox(
                               height: 5,

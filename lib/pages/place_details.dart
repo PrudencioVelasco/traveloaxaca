@@ -25,7 +25,7 @@ import 'package:traveloaxaca/models/sitiosinteres.dart';
 import 'package:traveloaxaca/pages/comments.dart';
 import 'package:traveloaxaca/pages/guide.dart';
 import 'package:traveloaxaca/pages/hotel.dart';
-import 'package:traveloaxaca/pages/restaurante.dart';
+import 'package:traveloaxaca/pages/restaurant.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
@@ -205,12 +205,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       // if (ib.hasInternet == false) {
       //   openToast(context, 'no internet'.tr());
       // } else {
-      nextScreen(
-          context,
-          CommentsPage(
-            lugar: widget.data!,
-            collectionName: "places",
-          ));
+      nextScreen(context, AgregarComentarioPage(lugar: widget.data));
       // }
     } else {
       openSignInDialog(context);
@@ -695,8 +690,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                     BorderRadius.all(Radius.circular(20))),
                           ),
                           onPressed: () {
-                            nextScreen(context,
-                                AgregarComentarioPage(lugar: widget.data));
+                            agregarComentarioClick();
                           },
                         ),
                       )
@@ -996,7 +990,7 @@ class listaOpciones extends StatelessWidget {
                   ])),
           onTap: () => nextScreen(
               context,
-              RestaurantePage(
+              RestaurantPage(
                 placeData: lugar,
               )),
         ),

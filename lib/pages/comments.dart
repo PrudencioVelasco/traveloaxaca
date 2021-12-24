@@ -325,7 +325,7 @@ class _CommentsPageState extends State<CommentsPage> {
                                               _listComentarios[index]!
                                                   .userName!,
                                               style: TextStyle(
-                                                  color: Colors.black,
+                                                  //color: Colors.black,
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w600),
                                               overflow: TextOverflow.ellipsis,

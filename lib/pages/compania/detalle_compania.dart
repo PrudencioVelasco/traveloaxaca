@@ -247,6 +247,19 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                             )),
                           ],
                         ),
+                        if (widget.compania!.direccion != "")
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                  child: Text(
+                                widget.compania!.direccion.toString(),
+                                style: Theme.of(context).textTheme.bodyText2,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              )),
+                            ],
+                          ),
                         Row(children: [
                           // Expanded(
                           Container(

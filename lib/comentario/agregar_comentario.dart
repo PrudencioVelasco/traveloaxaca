@@ -357,7 +357,7 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
                       height: 20,
                     ),
                     Text(
-                      'how would you rate your experience',
+                      'write your experience',
                       style: TextStyle(
                         // color: Colors.black,
                         fontSize: 16,

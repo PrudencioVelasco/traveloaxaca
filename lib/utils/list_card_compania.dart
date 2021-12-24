@@ -177,6 +177,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
             //  color: Colors.red,
             alignment: Alignment.bottomRight,
             width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.only(right: 10, left: 10),
             //padding: EdgeInsets.only(top: 15, bottom: 0),
             //color: Colors.grey[200],
             child: Stack(

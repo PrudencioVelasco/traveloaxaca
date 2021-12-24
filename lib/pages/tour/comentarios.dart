@@ -325,7 +325,7 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                                               _listComentarios[index]!
                                                   .userName!,
                                               style: TextStyle(
-                                                  color: Colors.black,
+                                                  //   color: Colors.black,
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w600),
                                               overflow: TextOverflow.ellipsis,
@@ -344,7 +344,7 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                                                     .toString(),
                                                 style: TextStyle(
                                                     color: Colors.grey[500],
-                                                    fontSize: 11,
+                                                    fontSize: 10,
                                                     fontWeight:
                                                         FontWeight.w500)),
                                           ],

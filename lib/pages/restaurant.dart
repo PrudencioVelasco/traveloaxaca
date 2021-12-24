@@ -1,36 +1,38 @@
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:traveloaxaca/config/config.dart';
-import 'package:traveloaxaca/models/hotel.dart';
 import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/models/restaurant.dart';
+import 'package:flutter_map/flutter_map.dart' as fluttermap;
+import 'package:latlong2/latlong.dart' as latlong;
 import 'package:traveloaxaca/models/search_response.dart';
 import 'package:traveloaxaca/services/traffic_service.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_map/flutter_map.dart' as fluttermap;
-import 'package:latlong2/latlong.dart' as latlong;
-import 'package:map_launcher/map_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 const MARKER_cOLOR = Color(0xFF3DC5A7);
 const MARKET_SIZE_EXPANDED = 55.0;
 const MARKET_SIZE_SHRINK = 38.0;
 
-class HotelPage extends StatefulWidget {
+class RestaurantPage extends StatefulWidget {
   final Lugar? placeData;
-  HotelPage({Key? key, required this.placeData}) : super(key: key);
+  RestaurantPage({Key? key, required this.placeData}) : super(key: key);
 
-  _HotelPageState createState() => _HotelPageState();
+  @override
+  _RestaurantPageState createState() => _RestaurantPageState();
 }
 
-class _HotelPageState extends State<HotelPage>
+class _RestaurantPageState extends State<RestaurantPage>
     with SingleTickerProviderStateMixin {
-  List<Hotel> _alldata = [];
+  List<Restaurant> _alldata = [];
   PageController? _pageController;
   TrafficService _trafficService = new TrafficService();
   int? prevPage;
   List _markers = [];
   Uint8List? _customMarkerIcon;
-  Hotel? detalleCompania;
+  Restaurant? detalleCompania;
   int selectIndex = 0;
 
   List<fluttermap.Marker> _marketList = [];
@@ -47,46 +49,24 @@ class _HotelPageState extends State<HotelPage>
     getData(context).then((value) => _buildMarkrs());
   }
 
-  void openEmptyDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        // context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: Text("we didn't find any nearby hotels in this area").tr(),
-            title: Text(
-              'no hotels found',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ).tr(),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  child: Text('OK'))
-            ],
-          );
-        });
-  }
-
   Future getData(context) async {
     double latitud = widget.placeData!.latitud!;
     double longitud = widget.placeData!.longitud!;
-    SearchResponse response =
-        await _trafficService.getResultadosPorQuery('hotel', latitud, longitud);
+    SearchResponse response = await _trafficService.getResultadosPorQuery(
+        'restaurant', latitud, longitud);
 
     if (response.features == null) {
-      openEmptyDialog(context);
+      openEmptyDialog();
     } else {
       for (var item in response.features!) {
-        Hotel d = Hotel(
+        Restaurant d = Restaurant(
           item != null ? item.textEs! : '',
           item != null ? item.placeName! : '',
           item!.center![1] ?? 0,
           item.center![0] ?? 0,
           0,
           0,
+          false,
         );
         _alldata.add(d);
       }
@@ -108,7 +88,7 @@ class _HotelPageState extends State<HotelPage>
                   detalleCompania = _alldata[i];
                 });
               },
-              child: LocationMarket(
+              child: LocationMarketRestaurant(
                 selected: selectIndex == i,
               ),
             );
@@ -131,11 +111,34 @@ class _HotelPageState extends State<HotelPage>
     super.dispose();
   }
 
+  void openEmptyDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content:
+                Text("we didn't find any nearby restaurants in this area").tr(),
+            title: Text(
+              'no restaurants found',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ).tr(),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("nearby hotels".tr(),
+        title: Text("nearby restaurants".tr(),
             style: Theme.of(context).textTheme.headline6),
       ),
       body: Stack(
@@ -164,7 +167,7 @@ class _HotelPageState extends State<HotelPage>
           ),
           detalleCompania == null
               ? Container()
-              : FlotanteCompania(alldata: detalleCompania!),
+              : FlotanteCompaniaRestaurant(alldata: detalleCompania!),
           Positioned(
               top: 15,
               left: 10,
@@ -181,14 +184,14 @@ class _HotelPageState extends State<HotelPage>
   }
 }
 
-class FlotanteCompania extends StatelessWidget {
-  const FlotanteCompania({
+class FlotanteCompaniaRestaurant extends StatelessWidget {
+  const FlotanteCompaniaRestaurant({
     Key? key,
-    required Hotel alldata,
+    required Restaurant alldata,
   })  : _alldata = alldata,
         super(key: key);
 
-  final Hotel _alldata;
+  final Restaurant _alldata;
 
   @override
   Widget build(BuildContext context) {
@@ -197,12 +200,13 @@ class FlotanteCompania extends StatelessWidget {
         right: 0,
         bottom: 20,
         height: MediaQuery.of(context).size.height * 0.25,
-        child: MapItemDetails(companiaMapa: _alldata));
+        child: MapItemDetailsRestaurant(companiaMapa: _alldata));
   }
 }
 
-class LocationMarket extends StatelessWidget {
-  const LocationMarket({Key? key, this.selected = false}) : super(key: key);
+class LocationMarketRestaurant extends StatelessWidget {
+  const LocationMarketRestaurant({Key? key, this.selected = false})
+      : super(key: key);
   final bool selected;
   @override
   Widget build(BuildContext context) {
@@ -212,16 +216,16 @@ class LocationMarket extends StatelessWidget {
         height: size,
         width: size,
         duration: Duration(milliseconds: 400),
-        child: Image.asset('assets/images/hotel_pin.png'),
+        child: Image.asset('assets/images/restaurant_pin.png'),
       ),
     );
   }
 }
 
-class MapItemDetails extends StatelessWidget {
-  const MapItemDetails({Key? key, required this.companiaMapa})
+class MapItemDetailsRestaurant extends StatelessWidget {
+  const MapItemDetailsRestaurant({Key? key, required this.companiaMapa})
       : super(key: key);
-  final Hotel companiaMapa;
+  final Restaurant companiaMapa;
 
   openMapsSheet(BuildContext context) async {
     final availableMaps = await MapLauncher.installedMaps;
@@ -278,7 +282,7 @@ class MapItemDetails extends StatelessWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           border: Border.all(width: 0.5, color: Colors.grey)),
-                      child: Image.asset('assets/images/hotel.png')),
+                      child: Image.asset('assets/images/restaurant.png')),
                   Flexible(
                     child: Wrap(
                       children: [

@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/tour/detalle_tour.dart';
+import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -69,7 +71,7 @@ class TodosToursPageState extends State<TodosToursPage> {
     {"id": 5, "nombre": "5 start".tr()},
   ];
   List<Map> _listaComLove = [
-    {"id": 1, "nombre": "more reviews".tr()},
+    {"id": 1, "nombre": "more comments".tr()},
     {"id": 2, "nombre": "more loves".tr()},
   ];
   @override
@@ -78,57 +80,49 @@ class TodosToursPageState extends State<TodosToursPage> {
     final double itemHeight = (size.height - kToolbarHeight - 24);
     final double itemWidt = size.width / 2;
     return Scaffold(
-      body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                forceElevated: true,
-                elevation: 4,
-                floating: true,
-                snap: true,
-                title: Container(
-                  width: double.infinity,
-                  height: 40,
-                  decoration: BoxDecoration(
-                      // color: Colors.white,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Center(
-                    child: TextField(
-                      controller: _textsearch,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.clear),
-                            onPressed: () {
-                              btnCancelar();
-                            },
-                          ),
-                          hintText: 'Search...',
-                          border: InputBorder.none),
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (value) {
-                        setState(() {
-                          _parametro = value;
-                        });
-                        btnBuscar();
+        appBar: AppBar(
+          title: Container(
+            width: double.infinity,
+            height: 40,
+            decoration: BoxDecoration(
+                // color: Colors.white,
+                borderRadius: BorderRadius.circular(5)),
+            child: Center(
+              child: TextField(
+                controller: _textsearch,
+                decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        btnCancelar();
                       },
                     ),
-                  ),
-                ),
-                actions: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.filter_list,
-                    ),
-                    onPressed: () {
-                      showFilterDialog(context);
-                    },
-                  ),
-                ],
+                    hintText: 'Search...',
+                    border: InputBorder.none),
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) {
+                  setState(() {
+                    _parametro = value;
+                  });
+                  btnBuscar();
+                },
               ),
-            ];
-          },
-          body: Container(
+            ),
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.filter_list,
+              ),
+              onPressed: () {
+                showFilterDialog(context);
+              },
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Container(
             margin: EdgeInsets.only(left: 10, right: 10),
             child: Column(
               children: [
@@ -168,11 +162,25 @@ class TodosToursPageState extends State<TodosToursPage> {
                       ],
                     ),
                   ),
-                if (!cargando) _cartas()
+                if (!cargando)
+                  if (_listaTours.length > 0)
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child: _cartas(),
+                    )
+                  else
+                    Container(
+                      padding: EdgeInsets.only(top: 20),
+                      child: EmptyPage(
+                        icon: FeatherIcons.clipboard,
+                        message: 'no places found'.tr(),
+                        message1: "try again".tr(),
+                      ),
+                    )
               ],
             ),
-          )),
-    );
+          ),
+        ));
   }
 
   Widget _cartas() {
@@ -191,7 +199,6 @@ class TodosToursPageState extends State<TodosToursPage> {
             nextScreen(context, DetalleTourPage(tour: _listaTours[index]));
           },
           child: Card(
-
               // semanticContainer: true,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -399,7 +406,7 @@ class TodosToursPageState extends State<TodosToursPage> {
             return AlertDialog(
               title: Center(
                   child: Text(
-                "Filter",
+                "filter".tr(),
               )),
               content: SingleChildScrollView(
                 child: Column(

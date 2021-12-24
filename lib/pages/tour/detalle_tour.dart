@@ -291,6 +291,22 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
     _getData();
   }
 
+  agregarComentarioClick() async {
+    final _signInBlocProvider = Provider.of<SignInBloc>(context, listen: false);
+    //  final ib = Provider.of<InternetBloc>(context, listen: false);
+    final autenticado = await _signInBlocProvider.isLoggedIn();
+    if (autenticado == true) {
+      // await ib.checkInternet();
+      // if (ib.hasInternet == false) {
+      //   openToast(context, 'no internet'.tr());
+      // } else {
+      nextScreen(context, AgregarComentarioTourPage(tour: widget.tour));
+      // }
+    } else {
+      openSignInDialog(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -408,6 +424,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                     direction: Axis.horizontal,
                                     allowHalfRating: false,
                                     itemCount: 5,
+
                                     itemPadding:
                                         EdgeInsets.symmetric(horizontal: 0.0),
                                     itemBuilder: (context, _) => Icon(
@@ -723,8 +740,35 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                           child: Padding(
                                             padding: EdgeInsets.all(10),
                                             child: Expanded(
-                                              child: Image.asset(
-                                                  "assets/images/hotel.png"),
+                                              child: (snapshot.data!.logotipo ==
+                                                      "")
+                                                  ? Image.asset(
+                                                      "assets/images/no-imagen-company.jpg")
+                                                  : Image.network(
+                                                      snapshot.data!.logotipo!,
+                                                      fit: BoxFit.fill,
+                                                      loadingBuilder: (BuildContext
+                                                              context,
+                                                          Widget child,
+                                                          ImageChunkEvent?
+                                                              loadingProgress) {
+                                                        if (loadingProgress ==
+                                                            null) return child;
+                                                        return Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            value: loadingProgress
+                                                                        .expectedTotalBytes !=
+                                                                    null
+                                                                ? loadingProgress
+                                                                        .cumulativeBytesLoaded /
+                                                                    loadingProgress
+                                                                        .expectedTotalBytes!
+                                                                : null,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
                                               flex: 2,
                                             ),
                                           ),
@@ -918,10 +962,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                             Radius.circular(20))),
                                   ),
                                   onPressed: () {
-                                    nextScreen(
-                                        context,
-                                        AgregarComentarioTourPage(
-                                            tour: widget.tour));
+                                    agregarComentarioClick();
                                   },
                                 ),
                               )
@@ -1025,8 +1066,6 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                                                           index]!
                                                                       .userName!,
                                                                   style: TextStyle(
-                                                                      color: Colors
-                                                                          .black,
                                                                       fontSize:
                                                                           12,
                                                                       fontWeight:

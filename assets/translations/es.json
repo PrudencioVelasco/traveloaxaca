@@ -142,7 +142,8 @@
     "like":"Me gusta",
     "information":"Información",
     "post":"Publicar",
-    "how would you rate your experience":"¿Como calificarías tu experiencia??",
+    "write your experience":"Escrite tu experiencia",
+    "how would you rate your experience":"¿Como calificarías tu experiencia?",
     "what kind of visit was this":"¿Qué tipo de visita fue?",
     "when did you visit":"¿Cuándo fue tu visita?",
     "view reviews":"Ver opiniones",
@@ -166,8 +167,8 @@
     "call":"Llamar",
     "view":"Ver",
     "reviews":"Opiniones",
-    "more reviews": "With more reviews",
-    "more loves": "With more love",
+    "more comments": "Con mas comentarios",
+    "more loves": "Con mas me encanta",
     "1 start": "1 Estrella",
     "2 start": "2 Estrella",
     "3 start": "3 Estrella",
@@ -191,5 +192,6 @@
     "thursday":"Jueves",
     "friday":"Viernes",
     "saturday":"Sabado",
-    "sunday":"Domingo"
+    "sunday":"Domingo",
+    "visit":"Visitar"
 }

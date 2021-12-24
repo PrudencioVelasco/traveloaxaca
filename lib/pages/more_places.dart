@@ -190,16 +190,19 @@ class _ListItem extends StatelessWidget {
         margin: EdgeInsets.only(top: 5, bottom: 10),
         child: Container(
             decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(5),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                      color: Colors.grey, blurRadius: 10, offset: Offset(0, 3))
-                ]),
+                border: Border.all(color: Colors.grey, width: 2),
+                borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5)),
+                      color: Colors.white,
+                    ),
+                    //
                     height: 150,
                     width: MediaQuery.of(context).size.width,
                     child: Hero(

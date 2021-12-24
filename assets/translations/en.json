@@ -138,6 +138,7 @@
     "like":"Like",
     "information":"Information",
     "post":"Post",
+    "write your experience":"Write experience",
     "how would you rate your experience":"How would you rate your experience?",
     "what kind of visit was this":"What kind of visit was this?",
     "when did you visit":"When did you visit?",
@@ -162,8 +163,8 @@
     "call":"Call",
     "view":"View",
     "reviews":"Reviews",
-    "more reviews": "Con mas opiones",
-    "more loves": "Con mas me encanta",
+    "more comments": "With more comments",
+    "more loves": "With more love",
     "1 start": "1 Start",
     "2 start": "2 Start",
     "3 start": "3 Start",
@@ -189,5 +190,6 @@
     "thursday":"Thursday",
     "friday":"Friday",
     "saturday":"Saturday",
-    "sunday":"Sunday"
+    "sunday":"Sunday",
+    "visit":"Visit"
 }
