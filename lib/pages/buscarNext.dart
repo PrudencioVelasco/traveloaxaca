@@ -84,7 +84,7 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
                 textInputAction: TextInputAction.search,
                 onFieldSubmitted: (value) {
                   if (value == '') {
-                    openSnacbar(scaffoldKey, 'Type something!');
+                    openSnacbar(scaffoldKey, 'type something'.tr());
                   } else {
                     context.read<BusquedaNextBloc>().setSearchText(value);
                     context.read<BusquedaNextBloc>().addToSearchList(value);

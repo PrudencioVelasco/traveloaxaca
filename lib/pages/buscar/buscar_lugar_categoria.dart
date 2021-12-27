@@ -105,7 +105,7 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
                 textInputAction: TextInputAction.search,
                 onFieldSubmitted: (value) {
                   if (value == '') {
-                    openSnacbar(scaffoldKey, 'Type something!');
+                    openSnacbar(scaffoldKey, 'type something'.tr());
                   } else {
                     context.read<CompaniaBloc>().setSearchText(value);
 
@@ -270,6 +270,7 @@ class _AfterSearchUIState extends State<AfterSearchUI> {
                     d: snapshot.data[index],
                     tag: "search$index",
                     color: Colors.white,
+                    tipo: "",
                   );
                 },
               );

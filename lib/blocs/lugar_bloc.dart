@@ -78,6 +78,52 @@ class LugarBloc with ChangeNotifier {
     //return [];
   }
 
+  Future<List<Lugar?>> obtenerTodosLugares() async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/lugar';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerTodosLugares');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.get(url, headers: headers);
+      final dataresponse = json.decode(res.body);
+
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Lugar lugar = Lugar.fromJsonToList(responseApi.data);
+      return lugar.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  Future<Lugar?> obtenerDetalleLugar(int idlugar) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/lugar';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerDetalleLugar');
+      String bodyParams = json.encode({
+        'idlugar': idlugar,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Lugar lugar = Lugar.fromJson(responseApi.data);
+      return lugar;
+      // return lugar.toList;
+    } catch (error) {
+      print('Error: $error');
+      return null;
+    }
+  }
+
   saerchInitialize() {
     notifyListeners();
   }

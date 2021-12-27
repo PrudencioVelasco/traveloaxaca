@@ -39,7 +39,7 @@
     "write a review" : "Escribe una reseña",
     "no internet" : "¡Sin conexión a Internet!",
     "no comments found" : "No se encontraron comentarios",
-    "be the first to comment" : "Se la primera en comentar",
+    "be the first to comment" : "Se el primera en comentar",
 
     "recently added places" : "Lugares añadidos recientemente",
 
@@ -90,7 +90,7 @@
     
     "no content" : "No se encontraron contenidos",
     "delete?" : "¿Eliminar?",
-    "delete from database?" : "¿Quieres eliminar este artículo?",
+    "delete from database?" : "¿Quieres eliminarlo?",
 
 
     "notifications" : "Notificaciones",
@@ -123,7 +123,7 @@
     "buy now subtitle" : "Compre el código fuente completo aquí y cree la aplicación para su país",
     "restaurant": "Restaurante",
     "hotel":"Hotel",
-    "ubication":"Ubicacion",
+    "ubication":"Ubicación",
     "turistics routers":"Rutas Turisticas",
 
     "divertion":"Diversión",
@@ -153,7 +153,7 @@
     "you rated your experience 2 out of 5 tell us more":"Clificaste tu experiencia como 1 de 5. Cuéntanos mas.",
     "add note":"Agregar Nota",
     "motive":"Motivo",
-    "select a option":"Seleccionar un opcion",
+    "select a option":"Seleccionar un opción",
     "don not empty":"No puede estar vacio",
     "message":"Mensaje",
     "success":"Exito",
@@ -167,8 +167,8 @@
     "call":"Llamar",
     "view":"Ver",
     "reviews":"Opiniones",
-    "more comments": "Con mas comentarios",
-    "more loves": "Con mas me encanta",
+    "more comments": "Con más comentarios",
+    "more loves": "Con más me encanta",
     "1 start": "1 Estrella",
     "2 start": "2 Estrella",
     "3 start": "3 Estrella",
@@ -193,5 +193,7 @@
     "friday":"Viernes",
     "saturday":"Sabado",
     "sunday":"Domingo",
-    "visit":"Visitar"
+    "visit":"Visitar",
+    "minutes":"Minutos",
+    "type something": "Escriba algo!"
 }

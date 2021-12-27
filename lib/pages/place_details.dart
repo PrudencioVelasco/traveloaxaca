@@ -899,7 +899,7 @@ class listaOpciones extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'travel guide',
+                      'ubication',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

@@ -43,27 +43,19 @@ class ThemeProvider extends ChangeNotifier {
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
         secondary: isDarkMode ? Colours.dark_app_main : Colours.app_main,
       ),
-
+        primaryColorBrightness: isDarkMode ? Brightness.dark : Brightness.light,
+        primaryColorLight: isDarkMode ? Colours.dark_bg_color : Colors.white,
       indicatorColor: isDarkMode ? Colours.dark_app_main : Colours.app_main,
-      // 页面背景色
       scaffoldBackgroundColor:
           isDarkMode ? Colours.dark_bg_color : Colors.white,
-      // 主要用于Material背景色
       canvasColor: isDarkMode ? Colours.dark_material_bg : Colors.white,
-      // 文字选择色（输入框选择文字等）
-      // textSelectionColor: Colours.app_main.withAlpha(70),
-      // textSelectionHandleColor: Colours.app_main,
-      // 稳定版：1.23 变更(https://flutter.dev/docs/release/breaking-changes/text-selection-theme)
       textSelectionTheme: TextSelectionThemeData(
         selectionColor: Colours.app_main.withAlpha(70),
         selectionHandleColor: Colours.app_main,
         cursorColor: Colours.app_main,
       ),
-      //iconTheme: IconThemeData(color: Colors.grey[900]),
       fontFamily: 'Muli',
       textTheme: TextTheme(
-        // TextField输入文字颜色
-        //headline1 para titulo de lugares
         headline1: isDarkMode
             ? TextStyles.textDarkTituloLugar
             : TextStyles.textTituloLugar,
@@ -95,7 +87,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
       pageTransitionsTheme: NoTransitionsOnWeb(),
       visualDensity: VisualDensity
-          .standard, // https://github.com/flutter/flutter/issues/77142
+          .standard
     );
   }
 }

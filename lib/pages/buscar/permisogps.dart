@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:traveloaxaca/helpers/helpers.dart';
 import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
+import 'package:traveloaxaca/pages/buscar/mi_ubicacion_lugar.dart';
 import 'package:traveloaxaca/utils/acceso_gps_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -68,12 +69,18 @@ class _PermisoGpsPageState extends State<PermisoGpsPage>
 
     if (permisoGPS && gpsActivo) {
       Navigator.pushReplacement(
+        context,
+        navegarMapaFadeIn(
           context,
-          navegarMapaFadeIn(
-              context,
-              MiUbicacionPage(
+          (widget.idclasificacion == 16)
+              ? MiUbicacionLugarPage(
                   idclasificacion: widget.idclasificacion,
-                  nombreclasificacion: widget.nombre)));
+                  nombreclasificacion: widget.nombre)
+              : MiUbicacionPage(
+                  idclasificacion: widget.idclasificacion,
+                  nombreclasificacion: widget.nombre),
+        ),
+      );
       return '';
     } else if (!permisoGPS) {
       Navigator.pushReplacement(

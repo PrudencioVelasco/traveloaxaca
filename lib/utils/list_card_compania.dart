@@ -5,6 +5,13 @@ import 'package:traveloaxaca/pages/compania/detalle_compania.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+String distancia(int minutos) {
+  var d = Duration(minutes: minutos);
+  List<String> parts = d.toString().split(':');
+  return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+}
 
 class ListCardCompania extends StatelessWidget {
   final Compania? d;
@@ -160,8 +167,13 @@ class ListCardCompaniaCerca extends StatelessWidget {
   final Compania? d;
   final String? tag;
   final Color? color;
+  final String? tipo;
   const ListCardCompaniaCerca(
-      {Key? key, @required this.d, @required this.tag, @required this.color})
+      {Key? key,
+      required this.d,
+      required this.tag,
+      required this.color,
+      required this.tipo})
       : super(key: key);
 
   @override
@@ -210,67 +222,93 @@ class ListCardCompaniaCerca extends StatelessWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Row(
-                          children: [
-                            RatingBar.builder(
-                              // ignoreGestures: true,
-                              itemSize: 20,
-                              initialRating: d!.rating!,
-                              ignoreGestures: true,
-                              direction: Axis.horizontal,
-                              allowHalfRating: false,
-                              itemCount: 5,
-                              itemPadding:
-                                  EdgeInsets.symmetric(horizontal: 4.0),
-                              itemBuilder: (context, _) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
+                        if (tipo == "miubicacion")
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.drive_eta_outlined,
+                                size: 15,
+                                color: Colors.grey[400],
                               ),
-                              onRatingUpdate: (rating) {
-                                //_rating = rating;
-                                //print(rating);
-                              },
-                            ),
-                            Text("(" + d!.comentario.toString() + ")")
-                          ],
-                        ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${distancia((d!.duracion! / 60).floor())}' +
+                                      " " +
+                                      'minutes'.tr(),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.grey[700]),
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.mapMarker,
+                                size: 12,
+                                color: Colors.grey[400],
+                              ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  d!.direccion!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.grey[700]),
+                                ),
+                              ),
+                            ],
+                          ),
                         Container(
                           margin: EdgeInsets.only(top: 8, bottom: 20),
                           height: 2,
                           width: 120,
                           decoration: BoxDecoration(
-                              color: Colors.blueAccent,
+                              color: Colors.grey[400],
                               borderRadius: BorderRadius.circular(20)),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Icon(
-                              FontAwesomeIcons.heart,
-                              size: 18,
-                              color: Colors.red,
+                            Container(
+                              child: RatingBar.builder(
+                                // ignoreGestures: true,
+                                itemSize: 20,
+                                initialRating: d!.rating!,
+                                minRating: d!.rating!,
+                                maxRating: d!.rating!,
+                                ignoreGestures: true,
+                                direction: Axis.horizontal,
+                                allowHalfRating: false,
+                                itemCount: 5,
+                                itemPadding: EdgeInsets.symmetric(
+                                    horizontal: 4.0),
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                ),
+                                onRatingUpdate: (rating) {
+                                  //_rating = rating;
+                                  //print(rating);
+                                },
+                              ),
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
+
                             Text(
-                              d!.love.toString(),
-                              style: TextStyle(
-                                  fontSize: 13, color: Colors.grey[600]),
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Icon(
-                              FontAwesomeIcons.comment,
-                              size: 18,
-                              color: Colors.blue,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              d!.comentario.toString(),
+                            "("+ d!.comentario.toString()+")",
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),

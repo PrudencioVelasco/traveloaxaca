@@ -26,6 +26,7 @@ class Compania {
   double? longitud;
   String? correo;
   String? contacto;
+  double? duracion;
   List<Compania> toList = [];
   Compania({
     this.idclasificacion,
@@ -45,6 +46,7 @@ class Compania {
     this.longitud,
     this.correo,
     this.contacto,
+    this.duracion,
   });
 
   factory Compania.fromJson(Map<String, dynamic> json) => Compania(
@@ -77,6 +79,7 @@ class Compania {
                 : json["longitud"],
         correo: json["correo"],
         contacto: json["contacto"],
+        duracion: 0.0,
       );
   Compania.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
@@ -102,6 +105,7 @@ class Compania {
         "longitud": longitud,
         "correo": correo,
         "contacto": contacto,
+        "duracion": duracion,
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();

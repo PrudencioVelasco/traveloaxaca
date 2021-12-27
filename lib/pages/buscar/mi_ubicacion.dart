@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
@@ -13,6 +15,8 @@ import 'package:traveloaxaca/utils/list_card_compania.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:latlong2/latlong.dart' as latlong;
+import 'package:traveloaxaca/services/traffic_service.dart';
 
 class MiUbicacionPage extends StatefulWidget {
   final int? idclasificacion;
@@ -41,9 +45,14 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   ];
   List<Map> _listaComLove = [
     {"id": 1, "nombre": "more comments".tr()},
-    {"id": 2, "nombre": "more loves".tr()},
+   // {"id": 2, "nombre": "more loves".tr()},
   ];
+  String _parametro = "";
   List<Compania?> _listaCompania = [];
+  List<Compania?> _listaCompaniaSegundo = [];
+  List<Compania?> _listaCompaniaOriginal = [];
+  List<Compania?> _listaCompaniaPrincipal = [];
+
   List<Actividad?> _listActividad = [];
   List<MultiSelectItem<Actividad>> _items = [];
   CompaniaBloc _companiaBloc = new CompaniaBloc();
@@ -54,18 +63,25 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   List<String?> _filters = [];
   List _myActivities = [];
   bool mapa = false;
+  bool filtrando = false;
   bool? _isSelected;
   final translator = GoogleTranslator();
   int _choiceIndex = 0;
   int _selectedIndex = 0;
   final _multiSelectKey = GlobalKey<FormFieldState>();
+  latlong.LatLng? _center;
+  Position? currentLocation;
+  bool ubicado = false;
+  final trafficService = new TrafficService();
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _companiaBloc.init(context, refresh);
       _actividadBloc.init(context, refresh);
     });
-    allCompanias();
+    //allCompanias();
+    getUserLocation().then((value) => allCompanias());
+
     allActividades();
     allActividades2();
     refresh();
@@ -73,6 +89,34 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
 
   Future allActividades2() async {
     _listActividad = await _actividadBloc.obtenerActividades();
+  }
+
+  Future getUserLocation() async {
+    currentLocation = await locateUser();
+    if (currentLocation != null) {
+      setState(() {
+        _center = latlong.LatLng(
+            currentLocation!.latitude, currentLocation!.longitude);
+        ubicado = true;
+      });
+    } else {
+      setState(() {
+        ubicado = false;
+      });
+    }
+  }
+
+  Future<Position?> locateUser() async {
+    final permisoGPS = await Permission.location.isGranted;
+    // GPS está activo
+    final gpsActivo = await Geolocator.isLocationServiceEnabled();
+
+    if (permisoGPS && gpsActivo) {
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } else {
+      return null;
+    }
   }
 
   Future allActividades() async {
@@ -96,6 +140,47 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   Future allCompanias() async {
     _listaCompania = await _companiaBloc.getData(widget.idclasificacion!);
     if (_listaCompania.length > 0) {
+      for (var item in _listaCompania) {
+        if (item!.latitud != 0 && item.longitud != 0) {
+          final trafficResponse = await trafficService.getCoordsInicioYDestino2(
+              _center!.latitude,
+              _center!.longitude,
+              item.latitud!,
+              item.longitud!);
+          double? valor = (trafficResponse.code == "Ok")
+              ? trafficResponse.routes![0]!.duration
+              : 0.0;
+          if (valor != null && valor < 10800) {
+            _listaCompaniaSegundo.add(Compania(
+                idclasificacion: item.idclasificacion,
+                nombreclasificacion: item.nombreclasificacion,
+                idcompania: item.idcompania,
+                rfc: item.rfc,
+                logotipo: item.logotipo,
+                paginaweb: item.paginaweb,
+                nombre: item.nombre,
+                love: item.love,
+                comentario: item.comentario,
+                rating: item.rating,
+                primeraimagen: item.primeraimagen,
+                actividad: item.actividad,
+                direccion: item.direccion,
+                latitud: item.latitud,
+                longitud: item.longitud,
+                correo: item.correo,
+                contacto: item.contacto,
+                duracion: valor));
+            _listaCompaniaSegundo
+                .sort((a, b) => a!.duracion!.compareTo(b!.duracion!));
+          }
+        }
+      }
+      if(mounted){
+        setState(() {
+          _listaCompaniaOriginal = _listaCompaniaSegundo;
+          _listaCompaniaPrincipal = _listaCompaniaSegundo;
+        });
+      }
       if (mounted) {
         setState(() {
           cargando = false;
@@ -173,12 +258,15 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
                           onPressed: () {
+
                             nextScreen(
                                 context,
                                 MapaPage(
-                                    idclasificacion: widget.idclasificacion,
-                                    nombreclasificacion:
-                                        widget.nombreclasificacion));
+                                  idclasificacion: widget.idclasificacion,
+                                  nombreclasificacion:
+                                      widget.nombreclasificacion,
+                                  companias: _listaCompaniaSegundo,
+                                ));
                           },
                           child: Text("map".tr()),
                           style: ElevatedButton.styleFrom(
@@ -198,30 +286,8 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                       Container(
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
-                          onPressed: () {
-                            modalActivity(context);
-                          },
-                          child: Text("activity".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
-
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            modalSortBy();
+                          onPressed: ()  {
+                            modalSortBy(context);
                           },
                           child: Text("sort by".tr()),
                           style: ElevatedButton.styleFrom(
@@ -244,6 +310,18 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                 ),
               ],
             ),
+            if(filtrando && _listaCompaniaSegundo.length==0)
+              Expanded(
+                child: Column(
+                  children: [
+                    EmptyPage(
+                      icon: FeatherIcons.clipboard,
+                      message: 'no places found'.tr(),
+                      message1: "try again".tr(),
+                    ),
+                  ],
+                ),
+              ),
             Expanded(
                 child: (cargando)
                     ? ListView.separated(
@@ -265,279 +343,225 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                           )
                         : ListView.separated(
                             // padding: EdgeInsets.all(10),
-                            itemCount: _listaCompania.length,
+                            itemCount: _listaCompaniaSegundo.length,
                             separatorBuilder: (context, index) => SizedBox(
                               height: 5,
                             ),
                             itemBuilder: (BuildContext context, int index) {
                               return ListCardCompaniaCerca(
-                                d: _listaCompania[index],
+                                d: _listaCompaniaSegundo[index],
                                 tag: "search$index",
                                 color: Colors.white,
+                                tipo: "miubicacion",
                               );
                             },
-                          )),
+                          ),),
+
+
           ],
         ),
       ),
     ));
   }
-
-  modalSortBy() {
-    showModalBottomSheet(
+  void btnCancelar() async {
+    _listaCompaniaSegundo=[];
+    setState(() {
+      _ascValue = null;
+      _sortValue = null;
+      filtrando=false;
+      _listaCompaniaSegundo = _listaCompaniaPrincipal;
+    });
+  }
+ void btnBuscar(){
+   List<Compania?> filteredStrings = [];
+   _listaCompaniaSegundo = [];
+   int opcion = 0;
+   if (_sortValue != null) {
+     opcion = 0;
+     filteredStrings = _listaCompaniaOriginal
+         .where((item) =>
+     item!.rating == int.parse(_sortValue.toString()).toDouble())
+         .toList();
+   }
+   if (_ascValue != null) {
+     if (_ascValue!.toString() == "1") {
+       if (_sortValue != null) {
+         opcion = 0;
+         filteredStrings.sort((a, b) => a!.comentario!
+             .toInt()
+             .compareTo(b!.comentario!.toInt()));
+       } else {
+         opcion = 1;
+         _listaCompaniaOriginal.sort((a, b) => a!.comentario!
+             .toInt()
+             .compareTo(b!.comentario!.toInt()));
+       }
+     }
+   }
+   setState(() {
+     filtrando=true;
+     _listaCompaniaSegundo = (opcion == 1) ? _listaCompaniaOriginal : filteredStrings;
+   });
+ }
+  Future<void> modalSortBy(BuildContext context) {
+    return showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            margin: EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      margin: EdgeInsets.only(top: 5, bottom: 5),
-                      height: 5,
-                      width: 150,
-                      decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(40)),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 12, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Icon(
-                            Icons.sort,
-                            // color: Color(0xff808080),
-                          ),
-                        ),
-                        Expanded(
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text("rate").tr(),
-                              isDense: true,
-                              items: _listaRating.map((Map value) {
-                                return DropdownMenuItem(
-                                  value: value["id"].toString(),
-                                  child: Text(
-                                    value["nombre"].toString(),
-                                  ),
-                                );
-                              }).toList(),
-                              value: _sortValue,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _sortValue = newValue;
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 8, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Icon(
-                            Icons.sort_by_alpha,
-                            //  color: Color(0xff808080),
-                          ),
-                        ),
-                        Expanded(
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text("reactions").tr(),
-                              items: _listaComLove.map((Map value) {
-                                return DropdownMenuItem(
-                                  value: value["id"].toString(),
-                                  child: Text(value["nombre"].toString(),
-                                      style: TextStyle(fontSize: 16)),
-                                );
-                              }).toList(),
-                              value: _ascValue,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _ascValue = newValue;
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: ElevatedButton(
-                            child: Text("clean").tr(),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              onPrimary: Colors.black,
-                              onSurface: Colors.black,
-                              //shadowColor: Colors.grey,
-                              padding: EdgeInsets.all(10.0),
-                              elevation: 2,
+         return StatefulBuilder(builder: (context, setState) {
 
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide(),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context, true);
-                              //btnCancelar();
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          child: ElevatedButton(
-                            child: Text("filter").tr(),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              onPrimary: Colors.black,
-                              onSurface: Colors.black,
-                              //shadowColor: Colors.grey,
-                              padding: EdgeInsets.all(10.0),
-                              elevation: 2,
+         return  Container(
+             margin: EdgeInsets.all(20),
+             child: SingleChildScrollView(
+               child: Column(
+                 children: <Widget>[
+                   Center(
+                     child: Container(
+                       padding: EdgeInsets.only(top: 10, bottom: 10),
+                       margin: EdgeInsets.only(top: 5, bottom: 5),
+                       height: 5,
+                       width: 150,
+                       decoration: BoxDecoration(
+                           color: Colors.grey,
+                           borderRadius: BorderRadius.circular(40)),
+                     ),
+                   ),
+                   SizedBox(
+                     height: 30,
+                   ),
+                   Container(
+                     padding: EdgeInsets.only(top: 12, right: 10),
+                     child: Row(
+                       children: <Widget>[
+                         Padding(
+                           padding: const EdgeInsets.only(right: 16.0),
+                           child: Icon(
+                             Icons.sort,
+                             // color: Color(0xff808080),
+                           ),
+                         ),
+                         Expanded(
+                           child: DropdownButtonHideUnderline(
+                             child: DropdownButton<String>(
+                               isExpanded: true,
+                               hint: Text("rate").tr(),
+                               isDense: true,
+                               items: _listaRating.map((Map value) {
+                                 return DropdownMenuItem(
+                                   value: value["id"].toString(),
+                                   child: Text(
+                                     value["nombre"].toString(),
+                                   ),
+                                 );
+                               }).toList(),
+                               value: _sortValue,
+                               onChanged: (newValue) {
+                                 setState(() {
+                                   _sortValue = newValue;
+                                 });
+                               },
+                             ),
+                           ),
+                         )
+                       ],
+                     ),
+                   ),
+                   Container(
+                     padding: EdgeInsets.only(top: 8, right: 10),
+                     child: Row(
+                       children: <Widget>[
+                         Padding(
+                           padding: const EdgeInsets.only(right: 16.0),
+                           child: Icon(
+                             Icons.sort_by_alpha,
+                             //  color: Color(0xff808080),
+                           ),
+                         ),
+                         Expanded(
+                           child: DropdownButtonHideUnderline(
+                             child: DropdownButton<String>(
+                               isExpanded: true,
+                               hint: Text("reactions").tr(),
+                               items: _listaComLove.map((Map value) {
+                                 return DropdownMenuItem(
+                                   value: value["id"].toString(),
+                                   child: Text(value["nombre"].toString(),
+                                       style: TextStyle(fontSize: 16)),
+                                 );
+                               }).toList(),
+                               value: _ascValue,
+                               onChanged: (newValue) {
+                                 setState(() {
+                                   _ascValue = newValue;
+                                 });
+                               },
+                             ),
+                           ),
+                         )
+                       ],
+                     ),
+                   ),
+                   SizedBox(
+                     height: 20,
+                   ),
+                   Container(
+                     child: Row(
+                       children: <Widget>[
+                         Expanded(
+                           child: ElevatedButton(
+                             child: Text("clean").tr(),
+                             style: ElevatedButton.styleFrom(
+                               primary: Colors.white,
+                               onPrimary: Colors.black,
+                               onSurface: Colors.black,
+                               //shadowColor: Colors.grey,
+                               padding: EdgeInsets.all(10.0),
+                               elevation: 2,
 
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide(),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                            ),
-                            onPressed: () {
-                              //btnBuscar();
-                              //Navigator.pop(context, true);
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+                               shape: RoundedRectangleBorder(
+                                   side: BorderSide(),
+                                   borderRadius:
+                                   BorderRadius.all(Radius.circular(10))),
+                             ),
+                             onPressed: () {
+                               Navigator.pop(context, true);
+                               btnCancelar();
+                             },
+                           ),
+                         ),
+                         SizedBox(
+                           width: 8,
+                         ),
+                         Expanded(
+                           child: ElevatedButton(
+                             child: Text("filter").tr(),
+                             style: ElevatedButton.styleFrom(
+                               primary: Colors.white,
+                               onPrimary: Colors.black,
+                               onSurface: Colors.black,
+                               //shadowColor: Colors.grey,
+                               padding: EdgeInsets.all(10.0),
+                               elevation: 2,
 
-  modalActivity(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return Column(
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 5, bottom: 5),
-                  height: 5,
-                  width: 150,
-                  decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(40)),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Container(
-                  // color: Colors.green,
-                  height: MediaQuery.of(context).size.height * 0.42,
-                  padding: new EdgeInsets.only(bottom: 10),
-                  child: ListView(scrollDirection: Axis.vertical, children: [
-                    Container(
-                      child: Column(
-                        // crossAxisAlignment: CrossAxisAlignment.center,
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                              child: getFilterChipsWidgets(setState, context)),
-                        ],
-                      ),
-                    ),
-                  ]),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 10, right: 10),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: ElevatedButton(
-                          child: Text("clean").tr(),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 2,
+                               shape: RoundedRectangleBorder(
+                                   side: BorderSide(),
+                                   borderRadius:
+                                   BorderRadius.all(Radius.circular(10))),
+                             ),
+                             onPressed: () {
+                               btnBuscar();
+                               //Navigator.pop(context, true);
+                             },
+                           ),
+                         )
+                       ],
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+           );
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                            //btnCancelar();
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: ElevatedButton(
-                          child: Text("filter").tr(),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 2,
-
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                          ),
-                          onPressed: () {
-                            //btnBuscar();
-                            //Navigator.pop(context, true);
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            );
-          });
+         } );
         });
   }
 

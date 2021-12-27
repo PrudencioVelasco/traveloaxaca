@@ -12,10 +12,6 @@ import 'package:traveloaxaca/services/traffic_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-const MARKER_cOLOR = Color(0xFF3DC5A7);
-const MARKET_SIZE_EXPANDED = 55.0;
-const MARKET_SIZE_SHRINK = 38.0;
-
 class RestaurantPage extends StatefulWidget {
   final Lugar? placeData;
   RestaurantPage({Key? key, required this.placeData}) : super(key: key);
@@ -27,14 +23,14 @@ class RestaurantPage extends StatefulWidget {
 class _RestaurantPageState extends State<RestaurantPage>
     with SingleTickerProviderStateMixin {
   List<Restaurant> _alldata = [];
-  PageController? _pageController;
+  PageController _pageController = PageController();
   TrafficService _trafficService = new TrafficService();
   int? prevPage;
   List _markers = [];
   Uint8List? _customMarkerIcon;
   Restaurant? detalleCompania;
   int selectIndex = 0;
-
+  bool cargando = true;
   List<fluttermap.Marker> _marketList = [];
   AnimationController? _animationController;
   @override
@@ -46,10 +42,11 @@ class _RestaurantPageState extends State<RestaurantPage>
       // context.read<AdsBloc>().initiateAds();
     });
     super.initState();
-    getData(context).then((value) => _buildMarkrs());
+    getData();
+    refresh();
   }
 
-  Future getData(context) async {
+  Future getData() async {
     double latitud = widget.placeData!.latitud!;
     double longitud = widget.placeData!.longitud!;
     SearchResponse response = await _trafficService.getResultadosPorQuery(
@@ -71,21 +68,32 @@ class _RestaurantPageState extends State<RestaurantPage>
         _alldata.add(d);
       }
     }
+    setState(() {
+      if (mounted) {
+        cargando = false;
+      }
+    });
   }
 
-  _buildMarkrs() {
+  List<fluttermap.Marker> _buildMarkrs() {
+    final _marketList = <fluttermap.Marker>[];
     for (var i = 0; i < _alldata.length; i++) {
       setState(() {
         _marketList.add(fluttermap.Marker(
           point: latlong.LatLng(_alldata[i].lat, _alldata[i].lng),
-          height: MARKET_SIZE_EXPANDED,
-          width: MARKET_SIZE_EXPANDED,
+          height: Config().marketSizeExpanded,
+          width: Config().marketSizeExpanded,
           builder: (_) {
             return GestureDetector(
               onTap: () {
                 selectIndex = i;
+
                 setState(() {
-                  detalleCompania = _alldata[i];
+                  _pageController.animateToPage(i,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.elasticOut);
+                  // _pageController.jumpToPage(i);
+                  print(i);
                 });
               },
               child: LocationMarketRestaurant(
@@ -96,7 +104,7 @@ class _RestaurantPageState extends State<RestaurantPage>
         ));
       });
     }
-    // return _marketList;
+    return _marketList;
   }
 
   void refresh() {
@@ -161,23 +169,32 @@ class _RestaurantPageState extends State<RestaurantPage>
                 },
               ),
               fluttermap.MarkerLayerOptions(
-                markers: _marketList,
+                markers: _buildMarkrs(),
               ),
             ],
           ),
-          detalleCompania == null
-              ? Container()
-              : FlotanteCompaniaRestaurant(alldata: detalleCompania!),
           Positioned(
-              top: 15,
-              left: 10,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[],
-                ),
-              )),
+            left: 0,
+            right: 0,
+            bottom: 20,
+            height: MediaQuery.of(context).size.height * 0.25,
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              itemCount: _alldata.length,
+              itemBuilder: (BuildContext context, index) {
+                final item = _alldata[index];
+                return MapItemDetailsRestaurant(
+                  companiaMapa: item,
+                );
+              },
+            ),
+          ),
+          if (cargando)
+            Align(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            )
         ],
       ),
     );
@@ -210,7 +227,8 @@ class LocationMarketRestaurant extends StatelessWidget {
   final bool selected;
   @override
   Widget build(BuildContext context) {
-    final size = (selected) ? MARKET_SIZE_EXPANDED : MARKET_SIZE_SHRINK;
+    final size =
+        (selected) ? Config().marketSizeExpanded : Config().marketSizeShrink;
     return Center(
       child: AnimatedContainer(
         height: size,
@@ -304,28 +322,6 @@ class MapItemDetailsRestaurant extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        /* Expanded(
-                          child: Column(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                      child: Container(
-                                    child: Text(
-                                      'Duración: ',
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black54),
-                                    ),
-                                  )),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )*/
                       ],
                     ),
                   ),
@@ -334,7 +330,7 @@ class MapItemDetailsRestaurant extends StatelessWidget {
             ),
             MaterialButton(
               padding: EdgeInsets.zero,
-              color: MARKER_cOLOR,
+              color: Config().marketColor,
               elevation: 6,
               onPressed: () => openMapsSheet(context),
               child: Text("visit").tr(),

@@ -16,7 +16,7 @@ class CompaniaMapa {
   String? contacto;
   String? geometria;
   double? distancia;
-  double? tiempo;
+  double? duracion;
   CompaniaMapa(
       this.idcompania,
       this.rfc,
@@ -35,5 +35,5 @@ class CompaniaMapa {
       this.contacto,
       this.geometria,
       this.distancia,
-      this.tiempo);
+      this.duracion);
 }

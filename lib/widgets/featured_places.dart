@@ -8,6 +8,7 @@ import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Featured extends StatefulWidget {
   Featured({Key? key}) : super(key: key);
@@ -27,8 +28,8 @@ class _FeaturedState extends State<Featured> {
     });
   }
 
-  void obtenerLugaresPrincipales() async {
-    lugar = (await fb.getData())!;
+  Future obtenerLugaresPrincipales() async {
+    lugar = (await fb.getData());
     refresh();
   }
 
@@ -66,21 +67,35 @@ class _FeaturedState extends State<Featured> {
         SizedBox(
           height: 8,
         ),
-        Center(
-          child: DotsIndicator(
-            dotsCount: 5,
-            position: listIndex.toDouble(),
-            decorator: DotsDecorator(
-              color: Colors.black26,
-              activeColor: Colors.black,
-              spacing: EdgeInsets.only(left: 6),
-              size: const Size.square(5.0),
-              activeSize: const Size(20.0, 4.0),
-              activeShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
-            ),
-          ),
-        )
+        FutureBuilder(
+            future: fb.getData(),
+            builder: (context, AsyncSnapshot<List<Lugar?>> snapshot) {
+              if (snapshot.hasData) {
+                return Center(
+                  child: DotsIndicator(
+                    dotsCount: snapshot.data!.length,
+                    position: listIndex.toDouble(),
+                    decorator: DotsDecorator(
+                      // color: Colors.black26,
+                      //activeColor: Colors.black,
+                      spacing: EdgeInsets.only(left: 6),
+                      size: const Size.square(5.0),
+                      activeSize: const Size(20.0, 4.0),
+                      activeShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text("Error"),
+                );
+              } else {
+                return Center(
+                  child: Text("loading...".tr()),
+                );
+              }
+            }),
       ],
     );
   }

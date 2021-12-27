@@ -4,6 +4,7 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/src/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/busqueda_next_bloc.dart';
+import 'package:traveloaxaca/blocs/busqueda_quehacer_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
 import 'package:traveloaxaca/pages/buscar/permisogps.dart';
@@ -67,7 +68,7 @@ class _BuscarLugarPageState extends State<BuscarLugarPage> {
               //  decoration: BoxDecoration(color: Colors.white),
               child: TextFormField(
                 autofocus: true,
-                controller: context.watch<BusquedaNextBloc>().textfieldCtrl,
+                controller: context.watch<BusquedaQueHacerBloc>().textfieldCtrl,
                 style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -99,18 +100,17 @@ class _BuscarLugarPageState extends State<BuscarLugarPage> {
                       size: 25,
                     ),
                     onPressed: () {
-                      context.read<BusquedaNextBloc>().saerchInitialize();
+                      context.read<BusquedaQueHacerBloc>().saerchInitialize();
                     },
                   ),
                 ),
                 textInputAction: TextInputAction.search,
                 onFieldSubmitted: (value) {
                   if (value == '') {
-                    openSnacbar(scaffoldKey, 'Type something!');
+                    openSnacbar(scaffoldKey, 'type something'.tr());
                   } else {
-                    context.read<BusquedaNextBloc>().setSearchText(value);
-
-                    ///context.read<CompaniaBloc>().addToSearchList(value);
+                    context.read<BusquedaQueHacerBloc>().setSearchText(value);
+                    context.read<BusquedaQueHacerBloc>().addToSearchList(value);
                   }
                 },
               ),
@@ -159,14 +159,14 @@ class _BuscarLugarPageState extends State<BuscarLugarPage> {
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15, bottom: 5),
               child: Text(
-                context.watch<BusquedaNextBloc>().searchStarted == false
+                context.watch<BusquedaQueHacerBloc>().searchStarted == false
                     ? ''
                     : 'we have found',
                 textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.headline6,
               ).tr(),
             ),
-            context.watch<BusquedaNextBloc>().searchStarted == false
+            context.watch<BusquedaQueHacerBloc>().searchStarted == false
                 ? SuggestionsUI(nombre: widget.nombre)
                 : AfterSearchUI(idclasificacion: widget.idclasificacion)
           ],
@@ -187,7 +187,7 @@ class SuggestionsUI extends StatefulWidget {
 class _SuggestionsUIState extends State<SuggestionsUI> {
   @override
   Widget build(BuildContext context) {
-    final sb = context.watch<BusquedaNextBloc>();
+    final sb = context.watch<BusquedaQueHacerBloc>();
     return Expanded(
       child: Column(
         children: [
@@ -215,15 +215,15 @@ class _SuggestionsUIState extends State<SuggestionsUI> {
                         trailing: IconButton(
                           icon: Icon(Icons.close),
                           onPressed: () {
-                            /* context
-                                .read<CompaniaBloc>()
+                            context
+                                .read<BusquedaQueHacerBloc>()
                                 .removeFromSearchList(
-                                    sb.recentSearchData[index]);*/
+                                    sb.recentSearchData[index]);
                           },
                         ),
                         onTap: () {
                           context
-                              .read<BusquedaNextBloc>()
+                              .read<BusquedaQueHacerBloc>()
                               .setSearchText(sb.recentSearchData[index]);
                         },
                       );
@@ -250,7 +250,7 @@ class _AfterSearchUIState extends State<AfterSearchUI> {
   Widget build(BuildContext context) {
     return Expanded(
       child: FutureBuilder(
-        future: context.watch<BusquedaNextBloc>().getData(),
+        future: context.watch<BusquedaQueHacerBloc>().getData(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.length == 0)
@@ -267,10 +267,11 @@ class _AfterSearchUIState extends State<AfterSearchUI> {
                   height: 5,
                 ),
                 itemBuilder: (BuildContext context, int index) {
-                  return ListCard(
+                  return ListCardNearby(
                     d: snapshot.data[index],
                     tag: "search$index",
                     color: Colors.white,
+                    tipo: "",
                   );
                 },
               );

@@ -160,13 +160,13 @@ class Header extends StatelessWidget {
                           height: 50,
                           width: 50,
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: Colors.white,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.person,
                             size: 28,
-                            color: Colors.white,
+                            color: Colors.greenAccent,
                           ),
                         )
                       : Container(
@@ -189,45 +189,6 @@ class Header extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            /*InkWell(
-              child: Container(
-                alignment: Alignment.centerLeft,
-                margin: EdgeInsets.only(left: 5, right: 5),
-                padding: EdgeInsets.only(left: 15, right: 15),
-                height: 40,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  border: Border.all(color: Colors.grey, width: 0.5),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.search,
-                        color: Colors.grey[600],
-                        size: 20,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'search places',
-                        style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                      ).tr(),
-                    ],
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SearchPage()),
-                );
-              },
-            )*/
           ],
         ),
       ),

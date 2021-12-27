@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Config {
@@ -44,4 +45,12 @@ class Config {
   final String apiKey =
       'sk.eyJ1IjoiZHVndWVyIiwiYSI6ImNrd3puampxZTB3am0zMnE5dXp3cXpjcXcifQ.hZUrbDidn2hDJIvMSs3aPQ';
   final String mapBoxStyle = "mapbox/streets-v11";
+  final Color marketColor = const Color(0xFF3DC5A7);
+  final double marketSizeExpanded = 55.0;
+  final double marketSizeShrink = 38.0;
+  String distancia(int minutos) {
+    var d = Duration(minutes: minutos);
+    List<String> parts = d.toString().split(':');
+    return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+  }
 }

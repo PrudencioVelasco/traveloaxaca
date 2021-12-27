@@ -18,7 +18,7 @@ class FeaturedBloc with ChangeNotifier {
   List<Lugar> _data = [];
   List<Lugar> get data => _data;
 
-  Future<List<Lugar>?> getData() async {
+  Future<List<Lugar?>> getData() async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {

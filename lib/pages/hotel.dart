@@ -11,10 +11,6 @@ import 'package:latlong2/latlong.dart' as latlong;
 import 'package:map_launcher/map_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-const MARKER_cOLOR = Color(0xFF3DC5A7);
-const MARKET_SIZE_EXPANDED = 55.0;
-const MARKET_SIZE_SHRINK = 38.0;
-
 class HotelPage extends StatefulWidget {
   final Lugar? placeData;
   HotelPage({Key? key, required this.placeData}) : super(key: key);
@@ -25,15 +21,15 @@ class HotelPage extends StatefulWidget {
 class _HotelPageState extends State<HotelPage>
     with SingleTickerProviderStateMixin {
   List<Hotel> _alldata = [];
-  PageController? _pageController;
+  PageController _pageController = PageController();
+
   TrafficService _trafficService = new TrafficService();
   int? prevPage;
   List _markers = [];
   Uint8List? _customMarkerIcon;
   Hotel? detalleCompania;
   int selectIndex = 0;
-
-  List<fluttermap.Marker> _marketList = [];
+  bool cargando = true;
   AnimationController? _animationController;
   @override
   void initState() {
@@ -44,10 +40,11 @@ class _HotelPageState extends State<HotelPage>
       // context.read<AdsBloc>().initiateAds();
     });
     super.initState();
-    getData(context).then((value) => _buildMarkrs());
+    getData();
+    refresh();
   }
 
-  void openEmptyDialog(BuildContext context) {
+  void openEmptyDialog() {
     showDialog(
         context: context,
         // context: context,
@@ -70,14 +67,14 @@ class _HotelPageState extends State<HotelPage>
         });
   }
 
-  Future getData(context) async {
+  Future getData() async {
     double latitud = widget.placeData!.latitud!;
     double longitud = widget.placeData!.longitud!;
     SearchResponse response =
         await _trafficService.getResultadosPorQuery('hotel', latitud, longitud);
 
     if (response.features == null) {
-      openEmptyDialog(context);
+      openEmptyDialog();
     } else {
       for (var item in response.features!) {
         Hotel d = Hotel(
@@ -91,32 +88,41 @@ class _HotelPageState extends State<HotelPage>
         _alldata.add(d);
       }
     }
+    setState(() {
+      if (mounted) {
+        cargando = false;
+      }
+    });
   }
 
-  _buildMarkrs() {
-    for (var i = 0; i < _alldata.length; i++) {
-      setState(() {
-        _marketList.add(fluttermap.Marker(
-          point: latlong.LatLng(_alldata[i].lat, _alldata[i].lng),
-          height: MARKET_SIZE_EXPANDED,
-          width: MARKET_SIZE_EXPANDED,
-          builder: (_) {
-            return GestureDetector(
-              onTap: () {
-                selectIndex = i;
-                setState(() {
-                  detalleCompania = _alldata[i];
-                });
-              },
-              child: LocationMarket(
-                selected: selectIndex == i,
-              ),
-            );
-          },
-        ));
-      });
+  List<fluttermap.Marker> _buildMarkrs() {
+    final _marketList = <fluttermap.Marker>[];
+    for (int i = 0; i < _alldata.length; i++) {
+      _marketList.add(fluttermap.Marker(
+        point: latlong.LatLng(_alldata[i].lat, _alldata[i].lng),
+        height: Config().marketSizeExpanded,
+        width: Config().marketSizeExpanded,
+        builder: (_) {
+          return GestureDetector(
+            onTap: () {
+              selectIndex = i;
+
+              setState(() {
+                _pageController.animateToPage(i,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.elasticOut);
+                // _pageController.jumpToPage(i);
+                print(i);
+              });
+            },
+            child: LocationMarket(
+              selected: selectIndex == i,
+            ),
+          );
+        },
+      ));
     }
-    // return _marketList;
+    return _marketList;
   }
 
   void refresh() {
@@ -157,24 +163,34 @@ class _HotelPageState extends State<HotelPage>
                   'id': Config().mapBoxStyle
                 },
               ),
+              //  if (_buildMarkrs().length > 0)
               fluttermap.MarkerLayerOptions(
-                markers: _marketList,
+                markers: _buildMarkrs(),
               ),
             ],
           ),
-          detalleCompania == null
-              ? Container()
-              : FlotanteCompania(alldata: detalleCompania!),
           Positioned(
-              top: 15,
-              left: 10,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[],
-                ),
-              )),
+            left: 0,
+            right: 0,
+            bottom: 20,
+            height: MediaQuery.of(context).size.height * 0.25,
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              itemCount: _alldata.length,
+              itemBuilder: (BuildContext context, index) {
+                final item = _alldata[index];
+                return MapItemDetails(
+                  companiaMapa: item,
+                );
+              },
+            ),
+          ),
+          if (cargando)
+            Align(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            )
         ],
       ),
     );
@@ -206,7 +222,8 @@ class LocationMarket extends StatelessWidget {
   final bool selected;
   @override
   Widget build(BuildContext context) {
-    final size = (selected) ? MARKET_SIZE_EXPANDED : MARKET_SIZE_SHRINK;
+    final size =
+        (selected) ? Config().marketSizeExpanded : Config().marketSizeShrink;
     return Center(
       child: AnimatedContainer(
         height: size,
@@ -300,28 +317,6 @@ class MapItemDetails extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        /* Expanded(
-                          child: Column(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                      child: Container(
-                                    child: Text(
-                                      'Duración: ',
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black54),
-                                    ),
-                                  )),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )*/
                       ],
                     ),
                   ),
@@ -330,7 +325,7 @@ class MapItemDetails extends StatelessWidget {
             ),
             MaterialButton(
               padding: EdgeInsets.zero,
-              color: MARKER_cOLOR,
+              color: Config().marketColor,
               elevation: 6,
               onPressed: () => openMapsSheet(context),
               child: Text("visit").tr(),

@@ -5,6 +5,7 @@ import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/atractivo_bloc.dart';
 import 'package:traveloaxaca/blocs/buscar_bloc.dart';
 import 'package:traveloaxaca/blocs/busqueda_next_bloc.dart';
+import 'package:traveloaxaca/blocs/busqueda_quehacer_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
@@ -111,6 +112,8 @@ class MyApp extends StatelessWidget {
             create: (context) => CompaniaBloc()),
         ChangeNotifierProvider<LugarBloc>(create: (context) => LugarBloc()),
         ChangeNotifierProvider<ImagenBloc>(create: (context) => ImagenBloc()),
+        ChangeNotifierProvider<BusquedaQueHacerBloc>(
+            create: (context) => BusquedaQueHacerBloc()),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder:

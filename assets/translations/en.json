@@ -191,5 +191,7 @@
     "friday":"Friday",
     "saturday":"Saturday",
     "sunday":"Sunday",
-    "visit":"Visit"
+    "visit":"Visit",
+    "minutes":"Minutes",
+    "type something": "Type something!"
 }

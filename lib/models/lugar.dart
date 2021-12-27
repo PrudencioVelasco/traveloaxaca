@@ -29,6 +29,7 @@ class Lugar {
   List<Actividad?>? actividades = [];
   List<Lugar> toList = [];
   int? numero;
+  double? duracion;
   Lugar({
     this.idlugar,
     this.nombre,
@@ -47,6 +48,7 @@ class Lugar {
     this.actividades,
     this.principal,
     this.numero,
+    this.duracion,
   });
 
   factory Lugar.fromJson(Map<String, dynamic> json) => Lugar(
@@ -80,6 +82,7 @@ class Lugar {
             : List<Actividad>.from(jsonDecode(json["actividades"].toString())
                 .map((model) => Actividad.fromJson(model))),
         numero: json["numero"],
+        duracion: 0.0,
         //imagenes: json["imagenes"],
         /*actividades: json["actividades"] == null
             ? []
@@ -119,6 +122,7 @@ class Lugar {
             : [],
         "principal": principal,
         "numero": numero,
+        "duracion": duracion,
       };
 
   static bool isInteger(num value) =>

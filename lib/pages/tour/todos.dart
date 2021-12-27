@@ -397,7 +397,8 @@ class TodosToursPageState extends State<TodosToursPage> {
     });
   }
 
-  Future<void> showFilterDialog(BuildContext context) {
+  Future<void> showFilterDialog
+      (BuildContext context) {
     return showDialog(
         barrierDismissible: false,
         context: context,

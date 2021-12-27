@@ -369,7 +369,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                   label: Text(
                                     _totalLoves.toString() + " " + _textlove,
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.grey[600]),
                                   )),
@@ -382,7 +382,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                             collectionName: 'places'));
                                   },
                                   icon: Icon(
-                                    FontAwesomeIcons.comment,
+                                    FontAwesomeIcons.comments,
                                     color: Colors.grey[600],
                                   ),
                                   label: Text(
@@ -390,7 +390,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                         " " +
                                         _textcomentario,
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.grey[600]),
                                   )),
