@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
@@ -39,7 +38,7 @@ class _MapaPageState extends State<MapaPage>
   List<CompaniaMapa?> _alldata = [];
   List<CompaniaMapa?> _listaDataOriginal = [];
   List<CompaniaMapa?> _listaDataPrincipal = [];
-  bool filtrando=false;
+  bool filtrando = false;
   int? prevPage;
   List<fluttermap.Marker> _marketList = [];
   List<Compania?> _listaCompania = [];
@@ -193,7 +192,7 @@ class _MapaPageState extends State<MapaPage>
     }
     setState(() {
       _listaDataOriginal = _alldata;
-      _listaDataPrincipal=_alldata;
+      _listaDataPrincipal = _alldata;
       cargando = false;
     });
   }
@@ -335,7 +334,7 @@ class _MapaPageState extends State<MapaPage>
                       margin: EdgeInsets.only(right: 8, left: 8),
                       child: ElevatedButton(
                         onPressed: () {
-                           modalSortBy(context);
+                          modalSortBy(context);
                         },
                         child: Text("sort by".tr()),
                         style: ElevatedButton.styleFrom(
@@ -365,13 +364,13 @@ class _MapaPageState extends State<MapaPage>
       ),
     );
   }
+
   Future<void> modalSortBy(BuildContext context) {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
           return StatefulBuilder(builder: (context, setState) {
-
-            return  Container(
+            return Container(
               margin: EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Column(
@@ -482,11 +481,11 @@ class _MapaPageState extends State<MapaPage>
                                 shape: RoundedRectangleBorder(
                                     side: BorderSide(),
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
+                                        BorderRadius.all(Radius.circular(10))),
                               ),
                               onPressed: () {
                                 Navigator.pop(context, true);
-                               // btnCancelar();
+                                // btnCancelar();
                               },
                             ),
                           ),
@@ -507,7 +506,7 @@ class _MapaPageState extends State<MapaPage>
                                 shape: RoundedRectangleBorder(
                                     side: BorderSide(),
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
+                                        BorderRadius.all(Radius.circular(10))),
                               ),
                               onPressed: () {
                                 //btnBuscar();
@@ -522,20 +521,21 @@ class _MapaPageState extends State<MapaPage>
                 ),
               ),
             );
-
-          } );
+          });
         });
   }
+
   void btnCancelar() async {
-    _alldata=[];
+    _alldata = [];
     setState(() {
       _ascValue = null;
       _sortValue = null;
-      filtrando=false;
+      filtrando = false;
       _alldata = _listaDataPrincipal;
     });
   }
-  void btnBuscar(){
+
+  void btnBuscar() {
     List<CompaniaMapa?> filteredStrings = [];
     _alldata = [];
     int opcion = 0;
@@ -543,29 +543,28 @@ class _MapaPageState extends State<MapaPage>
       opcion = 0;
       filteredStrings = _listaDataOriginal
           .where((item) =>
-      item!.rating == int.parse(_sortValue.toString()).toDouble())
+              item!.rating == int.parse(_sortValue.toString()).toDouble())
           .toList();
     }
     if (_ascValue != null) {
       if (_ascValue!.toString() == "1") {
         if (_sortValue != null) {
           opcion = 0;
-          filteredStrings.sort((a, b) => a!.comentario!
-              .toInt()
-              .compareTo(b!.comentario!.toInt()));
+          filteredStrings.sort((a, b) =>
+              a!.comentario!.toInt().compareTo(b!.comentario!.toInt()));
         } else {
           opcion = 1;
-          _listaDataOriginal.sort((a, b) => a!.comentario!
-              .toInt()
-              .compareTo(b!.comentario!.toInt()));
+          _listaDataOriginal.sort((a, b) =>
+              a!.comentario!.toInt().compareTo(b!.comentario!.toInt()));
         }
       }
     }
     setState(() {
-      filtrando=true;
+      filtrando = true;
       _alldata = (opcion == 1) ? _listaDataOriginal : filteredStrings;
     });
   }
+
   void mapCreated(controller) {
     setState(() {
       _controller = controller;
@@ -799,12 +798,15 @@ class MapItemDetails extends StatelessWidget {
                 ],
               ),
             ),
-            MaterialButton(
-              padding: EdgeInsets.zero,
-              color: Config().marketColor,
-              elevation: 6,
-              onPressed: () {},
-              child: Text("visit".tr()),
+            Container(
+              margin: EdgeInsets.all(10),
+              child: MaterialButton(
+                padding: EdgeInsets.zero,
+                color: Config().marketColor,
+                elevation: 6,
+                onPressed: () {},
+                child: Text("visit".tr()),
+              ),
             )
           ],
         ),

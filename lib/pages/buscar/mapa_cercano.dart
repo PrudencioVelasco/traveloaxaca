@@ -14,7 +14,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_map/flutter_map.dart' as fluttermap;
 import 'package:latlong2/latlong.dart' as latlong;
 import 'package:traveloaxaca/utils/next_screen.dart';
-
 /*String distancia(int minutos) {
   var d = Duration(minutes: minutos);
   List<String> parts = d.toString().split(':');
@@ -239,7 +238,7 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
                 options: fluttermap.MapOptions(
                   minZoom: 5,
                   maxZoom: 18,
-                  zoom: 13,
+                  zoom: 12,
                   center: latlong.LatLng(widget.lugares.first!.latitud!,
                       widget.lugares.first!.longitud!),
                 ),
@@ -504,8 +503,12 @@ class MapItemDetails extends StatelessWidget {
                       height: MediaQuery.of(context).size.height,
                       width: 110,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(width: 0.5, color: Colors.grey)),
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          border: Border.all(
+                            width: 0.5,
+                          )),
                       child: Image.asset(Config().placeMarkerIcon)),
                   Flexible(
                     child: Wrap(
@@ -622,14 +625,17 @@ class MapItemDetails extends StatelessWidget {
                 ],
               ),
             ),
-            MaterialButton(
-              padding: EdgeInsets.zero,
-              color: Config().marketColor,
-              elevation: 6,
-              onPressed: () async {
-                siguiente(companiaMapa.idlugar!);
-              },
-              child: Text("visit".tr()),
+            Container(
+              margin: EdgeInsets.all(10),
+              child: MaterialButton(
+                padding: EdgeInsets.zero,
+                color: Config().marketColor,
+                elevation: 6,
+                onPressed: () async {
+                  siguiente(companiaMapa.idlugar!);
+                },
+                child: Text("visit".tr()),
+              ),
             )
           ],
         ),

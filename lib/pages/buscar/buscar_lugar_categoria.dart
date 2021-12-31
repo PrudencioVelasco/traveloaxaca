@@ -4,7 +4,6 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/src/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
-import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
 import 'package:traveloaxaca/pages/buscar/permisogps.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/list_card_compania.dart';

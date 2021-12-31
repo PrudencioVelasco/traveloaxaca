@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 
 class OtrasOpcionesPage extends StatefulWidget {
-  Lugar? d;
+  final Lugar? d;
   OtrasOpcionesPage({Key? key, required this.d}) : super(key: key);
   @override
   _OtrasOpcionesPageState createState() => _OtrasOpcionesPageState();

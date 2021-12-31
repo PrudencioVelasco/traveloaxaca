@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/place_details.dart';

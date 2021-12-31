@@ -166,7 +166,7 @@ class Header extends StatelessWidget {
                           child: Icon(
                             Icons.person,
                             size: 28,
-                            color: Colors.greenAccent,
+                            color: Colors.grey[800],
                           ),
                         )
                       : Container(

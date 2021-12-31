@@ -27,27 +27,28 @@ class Compania {
   String? correo;
   String? contacto;
   double? duracion;
+  double? distancia;
   List<Compania> toList = [];
-  Compania({
-    this.idclasificacion,
-    this.nombreclasificacion,
-    this.idcompania,
-    this.rfc,
-    this.logotipo,
-    this.paginaweb,
-    this.nombre,
-    this.love,
-    this.comentario,
-    this.rating,
-    this.primeraimagen,
-    this.actividad,
-    this.direccion,
-    this.latitud,
-    this.longitud,
-    this.correo,
-    this.contacto,
-    this.duracion,
-  });
+  Compania(
+      {this.idclasificacion,
+      this.nombreclasificacion,
+      this.idcompania,
+      this.rfc,
+      this.logotipo,
+      this.paginaweb,
+      this.nombre,
+      this.love,
+      this.comentario,
+      this.rating,
+      this.primeraimagen,
+      this.actividad,
+      this.direccion,
+      this.latitud,
+      this.longitud,
+      this.correo,
+      this.contacto,
+      this.duracion,
+      this.distancia});
 
   factory Compania.fromJson(Map<String, dynamic> json) => Compania(
         idclasificacion: json["idclasificacion"],
@@ -80,6 +81,13 @@ class Compania {
         correo: json["correo"],
         contacto: json["contacto"],
         duracion: 0.0,
+        distancia: (json["distancia"] != null)
+            ? json["distancia"] is String
+                ? double.parse(json["distancia"])
+                : isInteger(json["distancia"])
+                    ? json["distancia"].toDouble()
+                    : json["distancia"]
+            : 0.0,
       );
   Compania.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
@@ -106,6 +114,7 @@ class Compania {
         "correo": correo,
         "contacto": contacto,
         "duracion": duracion,
+        "distancia": distancia,
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();

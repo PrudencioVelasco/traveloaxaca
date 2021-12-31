@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -212,7 +213,17 @@ class _ListItem extends StatelessWidget {
                             topLeft: Radius.circular(5),
                             topRight: Radius.circular(5)),
                         child: (d.primeraimagen != null)
-                            ? CustomCacheImage(imageUrl: d.primeraimagen)
+                            ? CachedNetworkImage(
+                                imageUrl: d.primeraimagen!,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgess) =>
+                                        CircularProgressIndicator(
+                                  value: downloadProgess.progress,
+                                ),
+                                // placeholder: (context, url) => CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              )
                             : Image.asset(
                                 "assets/images/no-image.png",
                               ),

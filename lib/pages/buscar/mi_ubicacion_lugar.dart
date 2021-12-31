@@ -3,10 +3,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mapbox_api/mapbox_api.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/lugar_bloc.dart';
+import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/buscar/mapa_cercano.dart';
@@ -17,6 +19,7 @@ import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:latlong2/latlong.dart' as latlong;
+import 'dart:math' show cos, sqrt, asin;
 
 class MiUbicacionLugarPage extends StatefulWidget {
   final int? idclasificacion;
@@ -68,6 +71,9 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
   Position? currentLocation;
   bool ubicado = false;
   final trafficService = new TrafficService();
+  final mapbox = MapboxApi(accessToken: Config().apiKey);
+
+  List<String> _listaCoordenadas = [];
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -131,45 +137,69 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
     }
   }
 
+  calcularDistancia(
+      double latitudmi, double longitudmi, double latitud, double longitud) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((latitudmi - latitud) * p) / 2 +
+        c(latitud * p) *
+            c(latitudmi * p) *
+            (1 - c((longitud - longitudmi) * p)) /
+            2;
+    return 12742 * asin(sqrt(a));
+  }
+
   Future allLugares() async {
-    _listaLugar = await _lugarBloc.obtenerTodosLugares();
+    _listaLugar = await _lugarBloc.obtenerTodosLugaresCercanos(
+        _center!.latitude, _center!.longitude);
     if (_listaLugar.length > 0) {
+      /*for (var row in _listaLugar) {
+        if (row!.latitud != 0 && row.longitud != 0) {
+          String coor = row.latitud.toString() + "," + row.longitud.toString();
+          _listaCoordenadas.add(coor);
+        }
+      }*/
       for (var item in _listaLugar) {
-        if (item!.latitud != 0 && item.longitud != 0) {
-          final trafficResponse = await trafficService.getCoordsInicioYDestino2(
+        //if (item!.latitud != 0 && item.longitud != 0) {
+        /* final trafficResponse = await trafficService.getCoordsInicioYDestino2(
               _center!.latitude,
               _center!.longitude,
               item.latitud!,
               item.longitud!);
           double? valor = (trafficResponse.code == "Ok")
               ? trafficResponse.routes![0]!.duration
-              : 0.0;
-          if (valor != null && valor < 10800) {
-            _listaLugarSegundo.add(Lugar(
-              idlugar: item.idlugar!,
-              nombre: item.nombre ?? '',
-              direccion: item.direccion ?? '',
-              latitud: item.latitud ?? 0.0,
-              longitud: item.longitud ?? 0.0,
-              descripcion: item.descripcion ?? '',
-              historia: item.historia ?? '',
-              resena: item.resena ?? '',
-              love: item.love ?? 0,
-              comentario: item.comentario ?? 0,
-              rating: item.rating ?? 0.0,
-              primeraimagen: item.primeraimagen ?? null,
-              nombreclasificacion: item.nombreclasificacion ?? '',
-              actividades: item.actividades ?? [],
-              principal: item.principal ?? 0,
-              numero: item.numero ?? 0,
-              duracion: (trafficResponse.code == "Ok")
-                  ? trafficResponse.routes![0]!.duration
-                  : 0.0,
-            ));
-            _listaLugarSegundo
-                .sort((a, b) => a!.duracion!.compareTo(b!.duracion!));
-          }
-        }
+              : 0.0;*/
+
+        final trafficResponse = await trafficService.getCoordsInicioYDestino2(
+            _center!.latitude,
+            _center!.longitude,
+            item!.latitud!,
+            item.longitud!);
+        double? valor = (trafficResponse.code == "Ok")
+            ? trafficResponse.routes![0]!.duration
+            : 0.0;
+        _listaLugarSegundo.add(Lugar(
+            idlugar: item.idlugar!,
+            nombre: item.nombre ?? '',
+            direccion: item.direccion ?? '',
+            latitud: item.latitud ?? 0.0,
+            longitud: item.longitud ?? 0.0,
+            descripcion: item.descripcion ?? '',
+            historia: item.historia ?? '',
+            resena: item.resena ?? '',
+            love: item.love ?? 0,
+            comentario: item.comentario ?? 0,
+            rating: item.rating ?? 0.0,
+            primeraimagen: item.primeraimagen ?? null,
+            nombreclasificacion: item.nombreclasificacion ?? '',
+            actividades: item.actividades ?? [],
+            principal: item.principal ?? 0,
+            numero: item.numero ?? 0,
+            duracion: valor));
+        _listaLugarSegundo.sort((a, b) => a!.duracion!.compareTo(b!.duracion!));
+
+        // }
       }
       if (mounted) {
         setState(() {

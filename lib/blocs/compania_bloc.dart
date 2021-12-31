@@ -58,8 +58,32 @@ class CompaniaBloc with ChangeNotifier {
     String _api = '/monarca/compania';
     try {
       Uri url = Uri.http(_url, '$_api/buscarCompania');
+      String bodyParams = json.encode(
+          {'valor': _searchText.toLowerCase(), 'latitud': idclasificacion});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final data = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(data);
+      Compania lug = Compania.fromJsonToList(responseApi.data);
+      return lug.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  Future<List<Compania?>> getCompaniasCercano(
+      int idclasificacion, double latitud, double longitud) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/compania';
+    try {
+      Uri url = Uri.http(_url, '$_api/mostrarCompaniasCercano');
       String bodyParams = json.encode({
-        'valor': _searchText.toLowerCase(),
+        'latitud': latitud,
+        'longitud': longitud,
         'idclasificacion': idclasificacion
       });
       Map<String, String> headers = {

@@ -99,6 +99,32 @@ class LugarBloc with ChangeNotifier {
     }
   }
 
+  Future<List<Lugar?>> obtenerTodosLugaresCercanos(
+      double latitud, double longitud) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/lugar';
+    try {
+      Uri url = Uri.http(_url, '$_api/obtenerTodosLugaresCercanos');
+      String bodyParams = json.encode({
+        'latitud': latitud,
+        'longitud': longitud,
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Lugar lugar = Lugar.fromJsonToList(responseApi.data);
+      return lugar.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
   Future<Lugar?> obtenerDetalleLugar(int idlugar) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';

@@ -123,7 +123,12 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                     imageUrl: (item!.imagenestour!.toList().isNotEmpty)
                         ? item.imagenestour!.toList().first.url.toString()
                         : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
-                    placeholder: (context, url) => CircularProgressIndicator(),
+                    progressIndicatorBuilder: (context, url, downloadProgess) =>
+                        CircularProgressIndicator(
+                      value: downloadProgess.progress,
+                    ),
+                    // placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                     width: 150,
                     height: 150,
                     fit: BoxFit.cover,

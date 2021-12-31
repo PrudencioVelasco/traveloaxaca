@@ -45,7 +45,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   ];
   List<Map> _listaComLove = [
     {"id": 1, "nombre": "more comments".tr()},
-   // {"id": 2, "nombre": "more loves".tr()},
+    // {"id": 2, "nombre": "more loves".tr()},
   ];
   String _parametro = "";
   List<Compania?> _listaCompania = [];
@@ -138,44 +138,41 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   }
 
   Future allCompanias() async {
-    _listaCompania = await _companiaBloc.getData(widget.idclasificacion!);
+    _listaCompania = await _companiaBloc.getCompaniasCercano(
+        widget.idclasificacion!, _center!.latitude, _center!.longitude);
     if (_listaCompania.length > 0) {
       for (var item in _listaCompania) {
-        if (item!.latitud != 0 && item.longitud != 0) {
-          final trafficResponse = await trafficService.getCoordsInicioYDestino2(
-              _center!.latitude,
-              _center!.longitude,
-              item.latitud!,
-              item.longitud!);
-          double? valor = (trafficResponse.code == "Ok")
-              ? trafficResponse.routes![0]!.duration
-              : 0.0;
-          if (valor != null && valor < 10800) {
-            _listaCompaniaSegundo.add(Compania(
-                idclasificacion: item.idclasificacion,
-                nombreclasificacion: item.nombreclasificacion,
-                idcompania: item.idcompania,
-                rfc: item.rfc,
-                logotipo: item.logotipo,
-                paginaweb: item.paginaweb,
-                nombre: item.nombre,
-                love: item.love,
-                comentario: item.comentario,
-                rating: item.rating,
-                primeraimagen: item.primeraimagen,
-                actividad: item.actividad,
-                direccion: item.direccion,
-                latitud: item.latitud,
-                longitud: item.longitud,
-                correo: item.correo,
-                contacto: item.contacto,
-                duracion: valor));
-            _listaCompaniaSegundo
-                .sort((a, b) => a!.duracion!.compareTo(b!.duracion!));
-          }
-        }
+        final trafficResponse = await trafficService.getCoordsInicioYDestino2(
+            _center!.latitude,
+            _center!.longitude,
+            item!.latitud!,
+            item.longitud!);
+        double? valor = (trafficResponse.code == "Ok")
+            ? trafficResponse.routes![0]!.duration
+            : 0.0;
+        _listaCompaniaSegundo.add(Compania(
+            idclasificacion: item.idclasificacion,
+            nombreclasificacion: item.nombreclasificacion,
+            idcompania: item.idcompania,
+            rfc: item.rfc,
+            logotipo: item.logotipo,
+            paginaweb: item.paginaweb,
+            nombre: item.nombre,
+            love: item.love,
+            comentario: item.comentario,
+            rating: item.rating,
+            primeraimagen: item.primeraimagen,
+            actividad: item.actividad,
+            direccion: item.direccion,
+            latitud: item.latitud,
+            longitud: item.longitud,
+            correo: item.correo,
+            contacto: item.contacto,
+            duracion: valor));
+        _listaCompaniaSegundo
+            .sort((a, b) => a!.duracion!.compareTo(b!.duracion!));
       }
-      if(mounted){
+      if (mounted) {
         setState(() {
           _listaCompaniaOriginal = _listaCompaniaSegundo;
           _listaCompaniaPrincipal = _listaCompaniaSegundo;
@@ -258,7 +255,6 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
                           onPressed: () {
-
                             nextScreen(
                                 context,
                                 MapaPage(
@@ -286,7 +282,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                       Container(
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
-                          onPressed: ()  {
+                          onPressed: () {
                             modalSortBy(context);
                           },
                           child: Text("sort by".tr()),
@@ -310,7 +306,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                 ),
               ],
             ),
-            if(filtrando && _listaCompaniaSegundo.length==0)
+            if (filtrando && _listaCompaniaSegundo.length == 0)
               Expanded(
                 child: Column(
                   children: [
@@ -323,245 +319,244 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
                 ),
               ),
             Expanded(
-                child: (cargando)
-                    ? ListView.separated(
-                        padding: EdgeInsets.all(15),
-                        itemCount: 5,
-                        separatorBuilder: (BuildContext context, int index) =>
-                            SizedBox(
-                          height: 10,
+              child: (cargando)
+                  ? ListView.separated(
+                      padding: EdgeInsets.all(15),
+                      itemCount: 5,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          SizedBox(
+                        height: 10,
+                      ),
+                      itemBuilder: (BuildContext context, int index) {
+                        return LoadingCard(height: 120);
+                      },
+                    )
+                  : (sinresultado)
+                      ? EmptyPage(
+                          icon: FeatherIcons.clipboard,
+                          message: 'no places found'.tr(),
+                          message1: "try again".tr(),
+                        )
+                      : ListView.separated(
+                          // padding: EdgeInsets.all(10),
+                          itemCount: _listaCompaniaSegundo.length,
+                          separatorBuilder: (context, index) => SizedBox(
+                            height: 5,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListCardCompaniaCerca(
+                              d: _listaCompaniaSegundo[index],
+                              tag: "search$index",
+                              color: Colors.white,
+                              tipo: "miubicacion",
+                            );
+                          },
                         ),
-                        itemBuilder: (BuildContext context, int index) {
-                          return LoadingCard(height: 120);
-                        },
-                      )
-                    : (sinresultado)
-                        ? EmptyPage(
-                            icon: FeatherIcons.clipboard,
-                            message: 'no places found'.tr(),
-                            message1: "try again".tr(),
-                          )
-                        : ListView.separated(
-                            // padding: EdgeInsets.all(10),
-                            itemCount: _listaCompaniaSegundo.length,
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: 5,
-                            ),
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListCardCompaniaCerca(
-                                d: _listaCompaniaSegundo[index],
-                                tag: "search$index",
-                                color: Colors.white,
-                                tipo: "miubicacion",
-                              );
-                            },
-                          ),),
-
-
+            ),
           ],
         ),
       ),
     ));
   }
+
   void btnCancelar() async {
-    _listaCompaniaSegundo=[];
+    _listaCompaniaSegundo = [];
     setState(() {
       _ascValue = null;
       _sortValue = null;
-      filtrando=false;
+      filtrando = false;
       _listaCompaniaSegundo = _listaCompaniaPrincipal;
     });
   }
- void btnBuscar(){
-   List<Compania?> filteredStrings = [];
-   _listaCompaniaSegundo = [];
-   int opcion = 0;
-   if (_sortValue != null) {
-     opcion = 0;
-     filteredStrings = _listaCompaniaOriginal
-         .where((item) =>
-     item!.rating == int.parse(_sortValue.toString()).toDouble())
-         .toList();
-   }
-   if (_ascValue != null) {
-     if (_ascValue!.toString() == "1") {
-       if (_sortValue != null) {
-         opcion = 0;
-         filteredStrings.sort((a, b) => a!.comentario!
-             .toInt()
-             .compareTo(b!.comentario!.toInt()));
-       } else {
-         opcion = 1;
-         _listaCompaniaOriginal.sort((a, b) => a!.comentario!
-             .toInt()
-             .compareTo(b!.comentario!.toInt()));
-       }
-     }
-   }
-   setState(() {
-     filtrando=true;
-     _listaCompaniaSegundo = (opcion == 1) ? _listaCompaniaOriginal : filteredStrings;
-   });
- }
+
+  void btnBuscar() {
+    List<Compania?> filteredStrings = [];
+    _listaCompaniaSegundo = [];
+    int opcion = 0;
+    if (_sortValue != null) {
+      opcion = 0;
+      filteredStrings = _listaCompaniaOriginal
+          .where((item) =>
+              item!.rating == int.parse(_sortValue.toString()).toDouble())
+          .toList();
+    }
+    if (_ascValue != null) {
+      if (_ascValue!.toString() == "1") {
+        if (_sortValue != null) {
+          opcion = 0;
+          filteredStrings.sort((a, b) =>
+              a!.comentario!.toInt().compareTo(b!.comentario!.toInt()));
+        } else {
+          opcion = 1;
+          _listaCompaniaOriginal.sort((a, b) =>
+              a!.comentario!.toInt().compareTo(b!.comentario!.toInt()));
+        }
+      }
+    }
+    setState(() {
+      filtrando = true;
+      _listaCompaniaSegundo =
+          (opcion == 1) ? _listaCompaniaOriginal : filteredStrings;
+    });
+  }
+
   Future<void> modalSortBy(BuildContext context) {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
-         return StatefulBuilder(builder: (context, setState) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Container(
+              margin: EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        margin: EdgeInsets.only(top: 5, bottom: 5),
+                        height: 5,
+                        width: 150,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(40)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 12, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.sort,
+                              // color: Color(0xff808080),
+                            ),
+                          ),
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                hint: Text("rate").tr(),
+                                isDense: true,
+                                items: _listaRating.map((Map value) {
+                                  return DropdownMenuItem(
+                                    value: value["id"].toString(),
+                                    child: Text(
+                                      value["nombre"].toString(),
+                                    ),
+                                  );
+                                }).toList(),
+                                value: _sortValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _sortValue = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 8, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.sort_by_alpha,
+                              //  color: Color(0xff808080),
+                            ),
+                          ),
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                hint: Text("reactions").tr(),
+                                items: _listaComLove.map((Map value) {
+                                  return DropdownMenuItem(
+                                    value: value["id"].toString(),
+                                    child: Text(value["nombre"].toString(),
+                                        style: TextStyle(fontSize: 16)),
+                                  );
+                                }).toList(),
+                                value: _ascValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _ascValue = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("clean").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
 
-         return  Container(
-             margin: EdgeInsets.all(20),
-             child: SingleChildScrollView(
-               child: Column(
-                 children: <Widget>[
-                   Center(
-                     child: Container(
-                       padding: EdgeInsets.only(top: 10, bottom: 10),
-                       margin: EdgeInsets.only(top: 5, bottom: 5),
-                       height: 5,
-                       width: 150,
-                       decoration: BoxDecoration(
-                           color: Colors.grey,
-                           borderRadius: BorderRadius.circular(40)),
-                     ),
-                   ),
-                   SizedBox(
-                     height: 30,
-                   ),
-                   Container(
-                     padding: EdgeInsets.only(top: 12, right: 10),
-                     child: Row(
-                       children: <Widget>[
-                         Padding(
-                           padding: const EdgeInsets.only(right: 16.0),
-                           child: Icon(
-                             Icons.sort,
-                             // color: Color(0xff808080),
-                           ),
-                         ),
-                         Expanded(
-                           child: DropdownButtonHideUnderline(
-                             child: DropdownButton<String>(
-                               isExpanded: true,
-                               hint: Text("rate").tr(),
-                               isDense: true,
-                               items: _listaRating.map((Map value) {
-                                 return DropdownMenuItem(
-                                   value: value["id"].toString(),
-                                   child: Text(
-                                     value["nombre"].toString(),
-                                   ),
-                                 );
-                               }).toList(),
-                               value: _sortValue,
-                               onChanged: (newValue) {
-                                 setState(() {
-                                   _sortValue = newValue;
-                                 });
-                               },
-                             ),
-                           ),
-                         )
-                       ],
-                     ),
-                   ),
-                   Container(
-                     padding: EdgeInsets.only(top: 8, right: 10),
-                     child: Row(
-                       children: <Widget>[
-                         Padding(
-                           padding: const EdgeInsets.only(right: 16.0),
-                           child: Icon(
-                             Icons.sort_by_alpha,
-                             //  color: Color(0xff808080),
-                           ),
-                         ),
-                         Expanded(
-                           child: DropdownButtonHideUnderline(
-                             child: DropdownButton<String>(
-                               isExpanded: true,
-                               hint: Text("reactions").tr(),
-                               items: _listaComLove.map((Map value) {
-                                 return DropdownMenuItem(
-                                   value: value["id"].toString(),
-                                   child: Text(value["nombre"].toString(),
-                                       style: TextStyle(fontSize: 16)),
-                                 );
-                               }).toList(),
-                               value: _ascValue,
-                               onChanged: (newValue) {
-                                 setState(() {
-                                   _ascValue = newValue;
-                                 });
-                               },
-                             ),
-                           ),
-                         )
-                       ],
-                     ),
-                   ),
-                   SizedBox(
-                     height: 20,
-                   ),
-                   Container(
-                     child: Row(
-                       children: <Widget>[
-                         Expanded(
-                           child: ElevatedButton(
-                             child: Text("clean").tr(),
-                             style: ElevatedButton.styleFrom(
-                               primary: Colors.white,
-                               onPrimary: Colors.black,
-                               onSurface: Colors.black,
-                               //shadowColor: Colors.grey,
-                               padding: EdgeInsets.all(10.0),
-                               elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                                btnCancelar();
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("filter").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
 
-                               shape: RoundedRectangleBorder(
-                                   side: BorderSide(),
-                                   borderRadius:
-                                   BorderRadius.all(Radius.circular(10))),
-                             ),
-                             onPressed: () {
-                               Navigator.pop(context, true);
-                               btnCancelar();
-                             },
-                           ),
-                         ),
-                         SizedBox(
-                           width: 8,
-                         ),
-                         Expanded(
-                           child: ElevatedButton(
-                             child: Text("filter").tr(),
-                             style: ElevatedButton.styleFrom(
-                               primary: Colors.white,
-                               onPrimary: Colors.black,
-                               onSurface: Colors.black,
-                               //shadowColor: Colors.grey,
-                               padding: EdgeInsets.all(10.0),
-                               elevation: 2,
-
-                               shape: RoundedRectangleBorder(
-                                   side: BorderSide(),
-                                   borderRadius:
-                                   BorderRadius.all(Radius.circular(10))),
-                             ),
-                             onPressed: () {
-                               btnBuscar();
-                               //Navigator.pop(context, true);
-                             },
-                           ),
-                         )
-                       ],
-                     ),
-                   ),
-                 ],
-               ),
-             ),
-           );
-
-         } );
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                btnBuscar();
+                                //Navigator.pop(context, true);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
         });
   }
 

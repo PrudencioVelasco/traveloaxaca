@@ -43,8 +43,9 @@ class ThemeProvider extends ChangeNotifier {
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
         secondary: isDarkMode ? Colours.dark_app_main : Colours.app_main,
       ),
-        primaryColorBrightness: isDarkMode ? Brightness.dark : Brightness.light,
-        primaryColorLight: isDarkMode ? Colours.dark_bg_color : Colors.white,
+        primaryColorBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+        primaryColorLight: isDarkMode ? Colors.redAccent : Colors.white,
+
       indicatorColor: isDarkMode ? Colours.dark_app_main : Colours.app_main,
       scaffoldBackgroundColor:
           isDarkMode ? Colours.dark_bg_color : Colors.white,

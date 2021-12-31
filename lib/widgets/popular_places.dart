@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:line_icons/line_icons.dart';
@@ -114,7 +115,16 @@ class ItemList extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: (d!.primeraimagen != null)
-                    ? CustomCacheImage(imageUrl: d!.primeraimagen)
+                    ? CachedNetworkImage(
+                        imageUrl: d!.primeraimagen!,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgess) =>
+                                CircularProgressIndicator(
+                          value: downloadProgess.progress,
+                        ),
+                        // placeholder: (context, url) => CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      )
                     : Image.asset(
                         "assets/images/no-image.jpg",
                       ),

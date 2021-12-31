@@ -30,26 +30,27 @@ class Lugar {
   List<Lugar> toList = [];
   int? numero;
   double? duracion;
-  Lugar({
-    this.idlugar,
-    this.nombre,
-    this.direccion,
-    this.latitud,
-    this.longitud,
-    this.descripcion,
-    this.historia,
-    this.resena,
-    this.love,
-    this.comentario,
-    this.rating,
-    this.primeraimagen,
-    this.nombreclasificacion,
-    // required this.imagenes,
-    this.actividades,
-    this.principal,
-    this.numero,
-    this.duracion,
-  });
+  double? distancia;
+  Lugar(
+      {this.idlugar,
+      this.nombre,
+      this.direccion,
+      this.latitud,
+      this.longitud,
+      this.descripcion,
+      this.historia,
+      this.resena,
+      this.love,
+      this.comentario,
+      this.rating,
+      this.primeraimagen,
+      this.nombreclasificacion,
+      // required this.imagenes,
+      this.actividades,
+      this.principal,
+      this.numero,
+      this.duracion,
+      this.distancia});
 
   factory Lugar.fromJson(Map<String, dynamic> json) => Lugar(
         idlugar: json["idlugar"],
@@ -83,6 +84,13 @@ class Lugar {
                 .map((model) => Actividad.fromJson(model))),
         numero: json["numero"],
         duracion: 0.0,
+        distancia: (json["distancia"] != null)
+            ? json["distancia"] is String
+                ? double.parse(json["distancia"])
+                : isInteger(json["distancia"])
+                    ? json["distancia"].toDouble()
+                    : json["distancia"]
+            : 0.0,
         //imagenes: json["imagenes"],
         /*actividades: json["actividades"] == null
             ? []
@@ -123,6 +131,7 @@ class Lugar {
         "principal": principal,
         "numero": numero,
         "duracion": duracion,
+        "distancia": distancia,
       };
 
   static bool isInteger(num value) =>
