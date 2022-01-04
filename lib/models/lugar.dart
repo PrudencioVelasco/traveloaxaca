@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:traveloaxaca/models/actividad.dart';
+import 'package:traveloaxaca/models/imagen_lugar.dart';
 
 Lugar lugarFromJson(String str) => Lugar.fromJson(json.decode(str));
 
@@ -25,7 +26,7 @@ class Lugar {
   String? nombreclasificacion;
   //String? actividades;
   int? principal;
-  //List<Imagen?> imagenes = [];
+  List<ImagenLugar>? imagenes = [];
   List<Actividad?>? actividades = [];
   List<Lugar> toList = [];
   int? numero;
@@ -45,7 +46,7 @@ class Lugar {
       this.rating,
       this.primeraimagen,
       this.nombreclasificacion,
-      // required this.imagenes,
+      this.imagenes,
       this.actividades,
       this.principal,
       this.numero,
@@ -91,6 +92,10 @@ class Lugar {
                     ? json["distancia"].toDouble()
                     : json["distancia"]
             : 0.0,
+        imagenes: (json["imagenes"] == null || json["imagenes"] == '')
+            ? []
+            : List<ImagenLugar>.from(jsonDecode(json["imagenes"].toString())
+                .map((model) => ImagenLugar.fromJson(model))),
         //imagenes: json["imagenes"],
         /*actividades: json["actividades"] == null
             ? []
@@ -125,13 +130,16 @@ class Lugar {
         "rating": rating,
         "primeraimagen": primeraimagen,
         "nombreclasificacion": nombreclasificacion,
-        "imagenestour": (actividades!.length > 0)
+        "actividades": (actividades!.length > 0)
             ? actividades!.map((e) => e!.toJson()).toList()
             : [],
         "principal": principal,
         "numero": numero,
         "duracion": duracion,
         "distancia": distancia,
+        "imagenes": (imagenes!.length > 0)
+            ? actividades!.map((e) => e!.toJson()).toList()
+            : [],
       };
 
   static bool isInteger(num value) =>

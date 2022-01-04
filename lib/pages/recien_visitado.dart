@@ -122,9 +122,24 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
                 children: [
                   CachedNetworkImage(
                     imageUrl: (item!.primeraimagen != null)
-                        ? item.primeraimagen.toString()
-                        : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
-                    placeholder: (context, url) => CircularProgressIndicator(),
+                        ? item.primeraimagen!
+                        : 'https://misicebucket.s3.us-east-2.amazonaws.com/no-image-horizontal.png',
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    placeholder: (context, url) => Center(
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                        height: 50.0,
+                        width: 50.0,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                     width: 150,
                     height: 150,
                     fit: BoxFit.cover,

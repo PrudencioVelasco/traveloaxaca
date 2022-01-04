@@ -156,7 +156,7 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
                       final _commentsBloc =
                           Provider.of<CommentsBloc>(context, listen: false);
                       ResponseApi? resultado =
-                          await _commentsBloc.eliminarCommentario(
+                          await _commentsBloc.eliminarCommentarioCompania(
                               d.idcomentario!, widget.compania.idcompania!);
                       if (resultado!.success!) {
                         //  mostrarAlerta(

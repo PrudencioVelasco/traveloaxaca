@@ -154,9 +154,8 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                     } else {
                       final _commentsBloc =
                           Provider.of<CommentsBloc>(context, listen: false);
-                      ResponseApi? resultado =
-                          await _commentsBloc.eliminarCommentario(
-                              d.idcomentario!, widget.tour.idtour!);
+                      ResponseApi? resultado = await _commentsBloc
+                          .eliminarCommentarioTour(d.idcomentario!);
                       if (resultado!.success!) {
                         //  mostrarAlerta(
                         //      context, 'Eliminado', resultado.message!);

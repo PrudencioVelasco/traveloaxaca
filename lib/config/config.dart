@@ -6,6 +6,7 @@ class Config {
   final String mapAPIKey = 'AIzaSyDybQ1uOBgcVqsgMfj13EMiRlhB9Wv6LoY';
   final String countryName = 'Bangladesh';
   final String splashIcon = 'assets/images/splash.png';
+  final String logotipo = 'assets/images/logotipo.png';
   final String supportEmail = 'prudencio.vepa@gmail.com';
   final String privacyPolicyUrl = '';
   final String ourWebsiteUrl = '';

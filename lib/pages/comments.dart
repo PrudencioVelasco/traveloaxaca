@@ -70,11 +70,11 @@ class _CommentsPageState extends State<CommentsPage> {
     //QuerySnapshot data;
     if (_lastVisible == 0) {
 //_listComentarios
-      _listComentarios = (await _commentsBloc.obtenerComentariosLugarv2(
+      _listComentarios = (await _commentsBloc.obtenerComentariosLugar(
           widget.lugar.idlugar!, 0, 7));
     } else {
       // data = await firestore
-      _data = (await _commentsBloc.obtenerComentariosLugarv2(
+      _data = (await _commentsBloc.obtenerComentariosLugar(
           widget.lugar.idlugar!, _idComentarioUltimo, 7));
       //_listComentarios.add(_data);
       _data.forEach((element) {
@@ -155,7 +155,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       final _commentsBloc =
                           Provider.of<CommentsBloc>(context, listen: false);
                       ResponseApi? resultado =
-                          await _commentsBloc.eliminarCommentario(
+                          await _commentsBloc.eliminarCommentarioLugar(
                               d.idcomentario!, widget.lugar.idlugar!);
                       if (resultado!.success!) {
                         //  mostrarAlerta(

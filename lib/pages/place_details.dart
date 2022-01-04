@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -13,6 +14,7 @@ import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:traveloaxaca/comentario/agregar_comentario.dart';
+import 'package:traveloaxaca/comentario/subir_foto.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/atractivo.dart';
 import 'package:traveloaxaca/models/categoria.dart';
@@ -34,6 +36,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/widgets/mas_informacion_lugar.dart';
+import 'package:getwidget/getwidget.dart';
 
 class PlaceDetails extends StatefulWidget {
   final Lugar? data;
@@ -212,6 +215,22 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     }
   }
 
+  subirFotosClick() async {
+    final _signInBlocProvider = Provider.of<SignInBloc>(context, listen: false);
+    //  final ib = Provider.of<InternetBloc>(context, listen: false);
+    final autenticado = await _signInBlocProvider.isLoggedIn();
+    if (autenticado == true) {
+      // await ib.checkInternet();
+      // if (ib.hasInternet == false) {
+      //   openToast(context, 'no internet'.tr());
+      // } else {
+      nextScreen(context, SubirFotoComentarioLugar(lugar: widget.data));
+      // }
+    } else {
+      openSignInDialog(context);
+    }
+  }
+
   Future<String> someFutureStringFunction(String texto) async {
     var translation = await translator.translate(texto, from: 'es', to: 'en');
     return translation.toString();
@@ -234,7 +253,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                _sliderImages(context, height),
+                (widget.data!.imagenes!.length > 0)
+                    ? _sliderImages(context, height)
+                    : _vacioListaImagen(),
                 Positioned(
                   top: 20,
                   left: 15,
@@ -666,7 +687,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20))),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            subirFotosClick();
+                          },
                         ),
                       ),
                       SizedBox(
@@ -810,6 +833,28 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       overflow: isReadmore ? TextOverflow.visible : TextOverflow.ellipsis,
     );
   }*/
+  Widget _vacioListaImagen() {
+    return Hero(
+      tag: 'Slider2',
+      child: Container(
+        color: Colors.white,
+        child: Container(
+          height: 250,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/no-image.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Text("you can upload photos of this places".tr()),
+          ),
+        ),
+      ),
+    );
+  }
 
   Hero _sliderImages(BuildContext context, double height) {
     return Hero(
@@ -829,14 +874,38 @@ class _PlaceDetailsState extends State<PlaceDetails> {
               enlargeCenterPage: false,
               autoPlay: true,
             ),
-            items: lista
+            items: widget.data!.imagenes!
+                .toList()
                 .map((item) => Container(
                       child: Center(
-                          child: Image.network(
-                        item!.nombre!,
+                        child: CachedNetworkImage(
+                          imageUrl: item.url!,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          placeholder: (context, url) => Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 50.0,
+                              width: 50.0,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                          height: height,
+                          fit: BoxFit.cover,
+                        ),
+                        /*Image.network(
+                        item.url!,
                         fit: BoxFit.cover,
                         height: height,
-                      )),
+                      )*/
+                      ),
                     ))
                 .toList(),
           ),

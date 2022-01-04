@@ -25,6 +25,7 @@ import 'package:traveloaxaca/pages/tour/agregar_comentario.dart';
 import 'package:traveloaxaca/pages/tour/agregar_reporte.dart';
 import 'package:traveloaxaca/pages/tour/comentarios.dart';
 import 'package:traveloaxaca/pages/tour/mas_informacion.dart';
+import 'package:traveloaxaca/pages/tour/subir_foto.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
@@ -239,9 +240,8 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                     } else {
                       final _commentsBloc =
                           Provider.of<CommentsBloc>(context, listen: false);
-                      ResponseApi? resultado =
-                          await _commentsBloc.eliminarCommentario(
-                              d.idcomentario!, widget.tour!.idtour!);
+                      ResponseApi? resultado = await _commentsBloc
+                          .eliminarCommentarioTour(d.idcomentario!);
                       if (resultado!.success!) {
                         //  mostrarAlerta(
                         //      context, 'Eliminado', resultado.message!);
@@ -301,6 +301,22 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
       //   openToast(context, 'no internet'.tr());
       // } else {
       nextScreen(context, AgregarComentarioTourPage(tour: widget.tour));
+      // }
+    } else {
+      openSignInDialog(context);
+    }
+  }
+
+  subirFotoClick() async {
+    final _signInBlocProvider = Provider.of<SignInBloc>(context, listen: false);
+    //  final ib = Provider.of<InternetBloc>(context, listen: false);
+    final autenticado = await _signInBlocProvider.isLoggedIn();
+    if (autenticado == true) {
+      // await ib.checkInternet();
+      // if (ib.hasInternet == false) {
+      //   openToast(context, 'no internet'.tr());
+      // } else {
+      nextScreen(context, SubirFotoComentarioTour(tour: widget.tour));
       // }
     } else {
       openSignInDialog(context);
@@ -938,7 +954,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(20))),
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    subirFotoClick();
+                                  },
                                 ),
                               ),
                               SizedBox(

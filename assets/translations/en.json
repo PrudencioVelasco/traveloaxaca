@@ -138,7 +138,7 @@
     "like":"Like",
     "information":"Information",
     "post":"Post",
-    "write your experience":"Write experience",
+    "write your experience":"Write experience?",
     "how would you rate your experience":"How would you rate your experience?",
     "what kind of visit was this":"What kind of visit was this?",
     "when did you visit":"When did you visit?",
@@ -193,5 +193,7 @@
     "sunday":"Sunday",
     "visit":"Visit",
     "minutes":"Minutes",
-    "type something": "Type something!"
+    "type something": "Type something!",
+    "select images":"Select images",
+    "you can upload photos of this places":"You can upload photos of this places"
 }

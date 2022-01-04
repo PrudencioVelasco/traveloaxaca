@@ -129,12 +129,21 @@ class _FeaturedItemList extends StatelessWidget {
                   child: (d!.primeraimagen != null)
                       ? CachedNetworkImage(
                           imageUrl: d!.primeraimagen!,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgess) =>
-                                  CircularProgressIndicator(
-                            value: downloadProgess.progress,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                          // placeholder: (context, url) => CircularProgressIndicator(),
+                          placeholder: (context, url) => Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 50.0,
+                              width: 50.0,
+                            ),
+                          ),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
                         )

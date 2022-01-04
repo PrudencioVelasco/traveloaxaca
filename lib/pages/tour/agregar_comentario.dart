@@ -140,6 +140,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
       _selectedIndex = 0;
       _rating = 3;
       selectedDate = DateTime.now();
+      images = [];
     });
   }
 
@@ -147,13 +148,10 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
     setState(() {
       _deshabilitar = true;
     });
-    ResponseApi? dato = await _commentsBloc.agregarComentarioLugar(
-        widget.tour!.idtour!,
-        _rating,
-        ctrlComentario.text,
-        _selectedIndex,
-        selectedDate);
-    if (dato!.success!) {
+    bool dato = await _commentsBloc.agregarComentarioTour(widget.tour!.idtour!,
+        _rating, ctrlComentario.text, _selectedIndex, selectedDate, images);
+
+    if (dato) {
       //return _onAlertButtonPressed(context) {
       setState(() {
         _deshabilitar = false;
@@ -186,7 +184,8 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
         ],
       ).show();
     } else {
-      mostrarAlerta(context, 'message'.tr(), dato.message!);
+      mostrarAlerta(context, 'message'.tr(),
+          'something is wrong. please try again.'.tr());
       setState(() {
         _deshabilitar = false;
       });
@@ -497,33 +496,49 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                                 Asset asset = images[index];
                                 return Stack(
                                   children: <Widget>[
-                                    AssetThumb(
-                                      asset: asset,
-                                      width: 300,
-                                      height: 300,
+                                    Container(
+                                      margin: EdgeInsets.only(left: 5.0),
+                                      child: AssetThumb(
+                                        asset: asset,
+                                        width: 300,
+                                        height: 300,
+                                      ),
                                     ),
                                     Positioned(
-                                        right: -15,
-                                        top: -15,
-                                        child: IconButton(
-                                            icon: Icon(
-                                              Icons.cancel,
-                                              color:
-                                                  Colors.black.withOpacity(0.5),
-                                              size: 18,
+                                      right: 0,
+                                      top: 0,
+                                      child: Material(
+                                        type: MaterialType.transparency,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                              ),
+                                              //color: Colors.indigo[900],
+                                              shape: BoxShape.circle),
+                                          child: InkWell(
+                                            borderRadius:
+                                                BorderRadius.circular(0.0),
+                                            onTap: () => setState(() {
+                                              images.removeAt(index);
+                                            }),
+                                            child: Container(
+                                              child: Icon(
+                                                Icons.cancel,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
                                             ),
-                                            onPressed: () => setState(() {
-                                                  images.removeAt(index);
-                                                })))
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 );
                               }),
                             ),
                           ),
-                        ),
-                        new IconButton(
-                          icon: Icon(Icons.remove_circle),
-                          onPressed: () {},
                         ),
                       ],
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

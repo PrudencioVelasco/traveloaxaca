@@ -105,12 +105,13 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
 
         //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // if you need this
+          //  borderRadius: BorderRadius.circular(10), // if you need this
           side: BorderSide(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withOpacity(0.5),
             width: 1,
           ),
         ),
+
         margin: EdgeInsets.all(5),
         elevation: 10,
         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -122,7 +123,7 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                   CachedNetworkImage(
                     imageUrl: (item!.imagenestour!.toList().isNotEmpty)
                         ? item.imagenestour!.toList().first.url.toString()
-                        : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
+                        : 'https://misicebucket.s3.us-east-2.amazonaws.com/no-image-horizontal.png',
                     progressIndicatorBuilder: (context, url, downloadProgess) =>
                         CircularProgressIndicator(
                       value: downloadProgess.progress,
@@ -142,11 +143,12 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                     height: 50,
                     //color: Colors.green,
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: const EdgeInsets.only(
+                          left: 10, right: 10, top: 4, bottom: 4),
                       child: Text(
                         item.nombre!,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 2,

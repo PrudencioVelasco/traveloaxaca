@@ -142,7 +142,7 @@
     "like":"Me gusta",
     "information":"Información",
     "post":"Publicar",
-    "write your experience":"Escrite tu experiencia",
+    "write your experience":"¿Escrite tu experiencia?",
     "how would you rate your experience":"¿Como calificarías tu experiencia?",
     "what kind of visit was this":"¿Qué tipo de visita fue?",
     "when did you visit":"¿Cuándo fue tu visita?",
@@ -195,5 +195,7 @@
     "sunday":"Domingo",
     "visit":"Visitar",
     "minutes":"Minutos",
-    "type something": "Escriba algo!"
+    "type something": "Escriba algo!",
+    "select images":"Seleccione images",
+    "you can upload photos of this places":"Usted puede compartir sus fotos de este lugar."
 }

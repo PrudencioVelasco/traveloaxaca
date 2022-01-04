@@ -146,7 +146,7 @@ class _AgregarComentarioCompaniaPageState
   }
 
   Future agregarComentario() async {
-    setState(() {
+    /*  setState(() {
       _deshabilitar = true;
     });
     ResponseApi? dato = await _commentsBloc.agregarComentarioLugar(
@@ -192,7 +192,7 @@ class _AgregarComentarioCompaniaPageState
       setState(() {
         _deshabilitar = false;
       });
-    }
+    }*/
   }
 
   Widget buildGridView() {
@@ -499,24 +499,43 @@ class _AgregarComentarioCompaniaPageState
                                 Asset asset = images[index];
                                 return Stack(
                                   children: <Widget>[
-                                    AssetThumb(
-                                      asset: asset,
-                                      width: 300,
-                                      height: 300,
+                                    Container(
+                                      margin: EdgeInsets.only(left: 5.0),
+                                      child: AssetThumb(
+                                        asset: asset,
+                                        width: 300,
+                                        height: 300,
+                                      ),
                                     ),
                                     Positioned(
-                                        right: -15,
-                                        top: -15,
-                                        child: IconButton(
-                                            icon: Icon(
-                                              Icons.cancel,
-                                              color:
-                                                  Colors.black.withOpacity(0.5),
-                                              size: 18,
+                                      right: 0,
+                                      top: 0,
+                                      child:
+                                      Material(type: MaterialType.transparency,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(color:  Colors.black.withOpacity(0.5),),
+                                              //color: Colors.indigo[900],
+                                              shape: BoxShape.circle
+                                          ),
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(0.0),
+                                            onTap: () => setState(() {
+                                              images.removeAt(index);
+                                            }),
+                                            child: Container(
+
+                                              child: Icon(
+                                                Icons.cancel,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
                                             ),
-                                            onPressed: () => setState(() {
-                                                  images.removeAt(index);
-                                                })))
+                                          ),
+                                        ),
+
+                                      ),
+                                    )
                                   ],
                                 );
                               }),

@@ -33,21 +33,18 @@ class _LoadingPageState extends State<LoadingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RotationTransition(
-        turns: Tween(begin: 0.0, end: 1.0).animate(_controller!),
-        child: FutureBuilder(
-          future: checkLoginState(context),
-          builder: (context, snapshot) {
-            return Center(
-              child: Image(
-                image: AssetImage(Config().splashIcon),
-                height: 120,
-                width: 120,
-                fit: BoxFit.contain,
-              ),
-            );
-          },
-        ),
+      body: FutureBuilder(
+        future: checkLoginState(context),
+        builder: (context, snapshot) {
+          return Center(
+            child: Image(
+              image: AssetImage(Config().logotipo),
+              height: 200,
+              width: 200,
+              fit: BoxFit.contain,
+            ),
+          );
+        },
       ),
     );
   }
