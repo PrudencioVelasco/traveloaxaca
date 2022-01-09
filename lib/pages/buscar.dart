@@ -5,10 +5,11 @@ import 'package:traveloaxaca/blocs/buscar_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/models/categoria.dart';
 import 'package:traveloaxaca/models/lugar.dart';
-import 'package:traveloaxaca/pages/buscar/buscar_lugar.dart';
+import 'package:traveloaxaca/pages/buscar/buscar_cosas_quehacer.dart';
 import 'package:traveloaxaca/pages/buscar/buscar_lugar_categoria.dart';
 import 'package:traveloaxaca/pages/buscarNext.dart';
 import 'package:traveloaxaca/pages/tour/todos.dart';
+import 'package:traveloaxaca/pages/rutas_principales.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:translator/translator.dart';
@@ -31,6 +32,7 @@ class _BuscarPageState extends State<BuscarPage> {
   String? parametro;
   String inputText = "";
   int? _selectIndex;
+  var isLight = true;
   @override
   void initState() {
     // Future.delayed(Duration()).then((value) => _con.saerchInitialize());
@@ -61,6 +63,8 @@ class _BuscarPageState extends State<BuscarPage> {
 
   @override
   Widget build(BuildContext context) {
+    //var brishtness = MediaQuery.of(context).platformBrightness;
+    //bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
         // backgroundColor: Colors.white,
         body: SafeArea(
@@ -93,7 +97,8 @@ class _BuscarPageState extends State<BuscarPage> {
                   builder: (context, AsyncSnapshot<List<Categoria?>> snapshot) {
                     if (snapshot.hasData) {
                       return Container(
-                        height: 80,
+                        height: 50,
+                        // color: Colors.redAccent,
                         margin: EdgeInsets.only(left: 15, right: 15, top: 10),
                         width: MediaQuery.of(context).size.width,
                         child: ListView.builder(
@@ -102,7 +107,7 @@ class _BuscarPageState extends State<BuscarPage> {
                           physics: BouncingScrollPhysics(),
                           itemCount: snapshot.data!.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return _chois(snapshot.data![index], context);
+                            return _categorias(snapshot.data![index], context);
                           },
                         ),
                       );
@@ -112,6 +117,38 @@ class _BuscarPageState extends State<BuscarPage> {
                       return CircularProgressIndicator();
                     }
                   }),
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: 20,
+                      left: 25,
+                    ),
+                    child: Text(
+                      'destination travel'.tr(),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              RutasPrincipalesPage()
+              /* Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: MapboxMap(
+                  styleString:
+                      !isDarkMode ? MapboxStyles.LIGHT : MapboxStyles.DARK,
+                  accessToken: Config().apiKey,
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: const CameraPosition(
+                      target: LatLng(16.29019334715737, -97.82625818770822),
+                      zoom: 14),
+                  onStyleLoadedCallback: _onStyleLoadedCallback,
+                ),
+              )*/
             ],
           ),
         ),
@@ -119,7 +156,62 @@ class _BuscarPageState extends State<BuscarPage> {
     ));
   }
 
-  @override
+  Widget _categorias(Categoria? item, BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          if (item!.idclasificacion == 13) {
+            nextScreen(context, TodosToursPage());
+          } else if (item.idclasificacion == 16) {
+            nextScreen(
+                context,
+                BuscarLugarPage(
+                  nombre: item.nombreclasificacion,
+                  idclasificacion: item.idclasificacion,
+                ));
+          } else {
+            // nextScreen(context, PermisoGpsPage(
+            nextScreen(
+                context,
+                BuscarLugarCategoriaPage(
+                  nombre: item.nombreclasificacion,
+                  idclasificacion: item.idclasificacion,
+                ));
+          }
+        },
+        child: Container(
+          // width: 500.0,
+          decoration: BoxDecoration(
+              border:
+                  Border.all(color: Theme.of(context).colorScheme.secondary),
+              borderRadius: BorderRadius.all(Radius.circular(30))),
+          padding: EdgeInsets.all(15),
+          margin: EdgeInsets.only(
+            left: 10,
+          ),
+          // padding: new EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
+          //color: Colors.green,
+          child: Column(children: [
+            FutureBuilder(
+                future: someFutureStringFunction(
+                    context, item!.nombreclasificacion!),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data.toString().toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("error");
+                  }
+                  return Text("loading...".tr());
+                })
+          ]),
+        ));
+  }
+
+  /*@override
   bool get wantKeepAlive => true;
   Widget _chois(Categoria? item, BuildContext context) {
     return InkWell(
@@ -128,10 +220,10 @@ class _BuscarPageState extends State<BuscarPage> {
         alignment: Alignment.topCenter,
         margin: EdgeInsets.only(top: 0),
         child: ChoiceChip(
-          elevation: 4,
-          pressElevation: 5,
+          // elevation: 4,
+          //pressElevation: 5,
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.grey, width: 2),
+              side: BorderSide(color: Colors.grey, width: 1),
               borderRadius: BorderRadius.all(Radius.circular(20))),
           label: FutureBuilder(
               future:
@@ -145,11 +237,11 @@ class _BuscarPageState extends State<BuscarPage> {
                 return Text("loading...".tr());
               }),
           selected: _selectIndex == item.idclasificacion,
-          padding: EdgeInsets.all(13),
-          labelStyle:
-              TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          backgroundColor: Colors.white,
-          selectedColor: Colors.white,
+          padding: EdgeInsets.all(16),
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+          //backgroundColor: Colors.white,
+          selectedColor: ChipTheme.of(context).secondarySelectedColor,
+
           onSelected: (bool value) {
             setState(() {
               _selectIndex = item.idclasificacion;
@@ -176,7 +268,7 @@ class _BuscarPageState extends State<BuscarPage> {
         ),
       ),
     );
-  }
+  }*/
 }
 
 class Header extends StatelessWidget {

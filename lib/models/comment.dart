@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:traveloaxaca/models/imagen_comentario_lugar.dart';
+
 Comentario comentarioFromJson(String str) =>
     Comentario.fromJson(json.decode(str));
 
@@ -18,6 +20,8 @@ class Comentario {
   String? comentario;
   String? fecha;
   double? rating;
+  List<ImagenComentarioLugar>? imagenes = [];
+
   List<Comentario> toList = [];
   Comentario({
     this.idcomentario,
@@ -28,6 +32,7 @@ class Comentario {
     this.comentario,
     this.fecha,
     this.rating,
+    this.imagenes,
   });
 
   factory Comentario.fromJson(Map<String, dynamic> json) => Comentario(
@@ -43,6 +48,11 @@ class Comentario {
             : isInteger(json["rating"])
                 ? json["rating"].toDouble()
                 : json["rating"],
+        imagenes: (json["imagenes"] == null || json["imagenes"] == '')
+            ? []
+            : List<ImagenComentarioLugar>.from(
+                jsonDecode(json["imagenes"].toString())
+                    .map((model) => ImagenComentarioLugar.fromJson(model))),
       );
   Comentario.fromJsonToList(List<dynamic> jsonList) {
     //if (jsonList == null) return;
@@ -60,6 +70,9 @@ class Comentario {
         "comentario": comentario,
         "fecha": fecha,
         "rating": rating,
+        "imagenes": (imagenes!.length > 0)
+            ? imagenes!.map((e) => e.toJson()).toList()
+            : [],
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();

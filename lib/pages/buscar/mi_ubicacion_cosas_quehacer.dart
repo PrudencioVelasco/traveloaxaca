@@ -11,7 +11,7 @@ import 'package:traveloaxaca/blocs/lugar_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/lugar.dart';
-import 'package:traveloaxaca/pages/buscar/mapa_cercano.dart';
+import 'package:traveloaxaca/pages/buscar/mapa_cercano_cosas_quehacer.dart';
 import 'package:traveloaxaca/services/traffic_service.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/list_card.dart';
@@ -180,23 +180,25 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
             ? trafficResponse.routes![0]!.duration
             : 0.0;
         _listaLugarSegundo.add(Lugar(
-            idlugar: item.idlugar!,
-            nombre: item.nombre ?? '',
-            direccion: item.direccion ?? '',
-            latitud: item.latitud ?? 0.0,
-            longitud: item.longitud ?? 0.0,
-            descripcion: item.descripcion ?? '',
-            historia: item.historia ?? '',
-            resena: item.resena ?? '',
-            love: item.love ?? 0,
-            comentario: item.comentario ?? 0,
-            rating: item.rating ?? 0.0,
-            primeraimagen: item.primeraimagen ?? null,
-            nombreclasificacion: item.nombreclasificacion ?? '',
-            actividades: item.actividades ?? [],
-            principal: item.principal ?? 0,
-            numero: item.numero ?? 0,
-            duracion: valor));
+          idlugar: item.idlugar!,
+          nombre: item.nombre ?? '',
+          direccion: item.direccion ?? '',
+          latitud: item.latitud ?? 0.0,
+          longitud: item.longitud ?? 0.0,
+          descripcion: item.descripcion ?? '',
+          historia: item.historia ?? '',
+          resena: item.resena ?? '',
+          love: item.love ?? 0,
+          comentario: item.comentario ?? 0,
+          rating: item.rating ?? 0.0,
+          primeraimagen: item.primeraimagen ?? null,
+          nombreclasificacion: item.nombreclasificacion ?? '',
+          actividades: item.actividades ?? [],
+          principal: item.principal ?? 0,
+          numero: item.numero ?? 0,
+          duracion: valor,
+          imagenes: item.imagenes ?? [],
+        ));
         _listaLugarSegundo.sort((a, b) => a!.duracion!.compareTo(b!.duracion!));
 
         // }

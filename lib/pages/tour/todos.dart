@@ -225,16 +225,24 @@ class TodosToursPageState extends State<TodosToursPage> {
                                     .first
                                     .url
                                     .toString()
-                                : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
-                            placeholder: (context, url) => SizedBox(
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.cyanAccent,
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.red),
+                                : 'https://misicebucket.s3.us-east-2.amazonaws.com/no-image-horizontal.png',
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                              height: 100.0,
-                              width: 100.0,
                             ),
+                            placeholder: (context, url) => Center(
+                              child: SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 50.0,
+                                width: 50.0,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                             width: 300,
                             height: 120,
                             fit: BoxFit.cover,
@@ -248,8 +256,8 @@ class TodosToursPageState extends State<TodosToursPage> {
                               child: Text(
                                 _listaTours[index]!.nombre!,
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  //fontWeight: FontWeight.bold,
                                   //  color: Colors.black87,
                                 ),
                                 maxLines: 2,
@@ -397,8 +405,7 @@ class TodosToursPageState extends State<TodosToursPage> {
     });
   }
 
-  Future<void> showFilterDialog
-      (BuildContext context) {
+  Future<void> showFilterDialog(BuildContext context) {
     return showDialog(
         barrierDismissible: false,
         context: context,

@@ -67,14 +67,14 @@ class _PopularPlaces extends State<PopularPlaces> {
                     context,
                     MorePlacesPage(
                       title: 'popular',
-                      color: Colors.greenAccent,
+                      color: Colors.pinkAccent.shade400,
                     )),
               )
             ],
           ),
         ),
         Container(
-          height: 220,
+          height: 260,
           //color: Colors.green,
           width: MediaQuery.of(context).size.width,
           child: ListView.builder(
@@ -105,9 +105,9 @@ class ItemList extends StatelessWidget {
     return InkWell(
       child: Container(
         margin: EdgeInsets.only(left: 0, right: 10, top: 5, bottom: 5),
-        width: MediaQuery.of(context).size.width * 0.36,
+        width: MediaQuery.of(context).size.width * 0.41,
         decoration: BoxDecoration(
-            color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            color: Colors.grey[300], borderRadius: BorderRadius.circular(0)),
         child: Stack(
           children: [
             Hero(
@@ -145,7 +145,7 @@ class ItemList extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 0, left: 0, right: 0),
                 child: Container(
                   height: 50,
-                  width: MediaQuery.of(context).size.width * 0.36,
+                  width: MediaQuery.of(context).size.width * 0.41,
                   padding: EdgeInsets.only(left: 5, right: 5, top: 3),
                   color: Colors.black.withOpacity(0.4),
                   child: Text(d!.nombre!,

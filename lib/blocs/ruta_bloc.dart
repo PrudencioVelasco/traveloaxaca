@@ -19,11 +19,11 @@ class RutasBloc with ChangeNotifier {
   List<Ruta> _data = [];
   List<Ruta> get data => _data;
 
-  Future<List<Ruta>?> getData() async {
+  Future<List<Ruta?>> getData() async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/ruta';
     try {
-      Uri url = Uri.http(_url, '$_api/todasRutas');
+      Uri url = Uri.http(_url, '$_api/todasRutasVisibles');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -39,7 +39,7 @@ class RutasBloc with ChangeNotifier {
     }
   }
 
-  Future<List<Lugar>?> getLugaresRuta(int idruta) async {
+  Future<List<Lugar?>> getLugaresRuta(int idruta) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/ruta';
     try {

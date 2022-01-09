@@ -1,23 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/atractivo_bloc.dart';
 import 'package:traveloaxaca/blocs/categoria_bloc.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/love_bloc.dart';
 import 'package:traveloaxaca/blocs/lugar_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:traveloaxaca/comentario/agregar_comentario.dart';
+import 'package:traveloaxaca/comentario/reportar_comentario_lugar.dart';
 import 'package:traveloaxaca/comentario/subir_foto.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/atractivo.dart';
 import 'package:traveloaxaca/models/categoria.dart';
+import 'package:traveloaxaca/models/comment.dart';
 import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +33,9 @@ import 'package:traveloaxaca/pages/comments.dart';
 import 'package:traveloaxaca/pages/guide.dart';
 import 'package:traveloaxaca/pages/hotel.dart';
 import 'package:traveloaxaca/pages/restaurant.dart';
+import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
+import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
 import 'package:traveloaxaca/widgets/custom_cache_image.dart';
@@ -37,6 +44,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/widgets/mas_informacion_lugar.dart';
 import 'package:getwidget/getwidget.dart';
+import 'dart:io';
 
 class PlaceDetails extends StatefulWidget {
   final Lugar? data;
@@ -50,9 +58,9 @@ class PlaceDetails extends StatefulWidget {
 
 class _PlaceDetailsState extends State<PlaceDetails> {
   final translator = GoogleTranslator();
-  List<Imagen?> lista = [];
+  // List<Imagen?> lista = [];
   List<Lugar?> _listalugares = [];
-  List<Categoria?> _listaCategoria = [];
+  // List<Categoria?> _listaCategoria = [];
   List<Actividad?> _listaActividad = [];
   List<Atractivo?> _listaAtractivo = [];
 
@@ -70,19 +78,29 @@ class _PlaceDetailsState extends State<PlaceDetails> {
 
   int _totalLoves = 0;
   int _totalComentarios = 0;
-  String _textlove = "love".tr();
   String _textcomentario = "comments".tr();
   String _textVer = "view".tr();
   String _textReviews = "comments".tr();
   bool _marcarCorazon = false;
+
+  bool? _isLoading;
+  int _lastVisible = 0;
+  bool? _hasData;
+  List<Comentario?> _listComentarios = [];
+  CommentsBloc _commentsBloc = new CommentsBloc();
+  List<Comentario?> _data = [];
+  int _idComentarioUltimo = 0;
+  bool? _isConnected;
+
   @override
   void initState() {
+    _checkInternetConnection();
     super.initState();
     Future.delayed(Duration(milliseconds: 0)).then((value) async {
       // context.read<AdsBloc>().initiateAds();
       context.read<LugarBloc>().saerchInitialize();
-      getAllImages(widget.data!.idlugar!);
-      getAllCategorias(widget.data!.idlugar!);
+      // getAllImages(widget.data!.idlugar!);
+      // getAllCategorias(widget.data!.idlugar!);
       obtenerLugaresDentroLugar(widget.data!.idlugar!);
       Provider.of<CommentsBloc>(context, listen: false)
           .totalComentariosLugar(widget.data!.idlugar!);
@@ -97,6 +115,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       _loveBloc.init(context, refresh);
     });
     getData();
+    _getDataComments();
     getActividadLugar();
     getActractivoLugar();
     //totalLove();
@@ -107,9 +126,23 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     context.read<LugarBloc>().addToSearchList(widget.data!.idlugar.toString());
   }
 
-  void totalLove() async {
-    await _loveBloc.principalTotalLoves(widget.data!.idlugar!);
+  Future<void> _checkInternetConnection() async {
+    try {
+      final response = await InternetAddress.lookup('www.google.com');
+      if (response.isNotEmpty)
+        setState(() {
+          _isConnected = true;
+        });
+    } on SocketException catch (err) {
+      setState(() {
+        _isConnected = false;
+      });
+    }
   }
+
+  /*void totalLove() async {
+    await _loveBloc.principalTotalLoves(widget.data!.idlugar!);
+  }*/
 
   Future numerosIniciales() async {
     int totalL = await _loveBloc.obtenerTotalLove(widget.data!.idlugar!);
@@ -132,13 +165,58 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     }
   }
 
-  void totalComment() async {
+  /*void totalComment() async {
     await _commentBloc.totalComentariosLugar(widget.data!.idlugar!);
-  }
+  }*/
 
   void getData() async {
     _sitiosInteres =
         (await _sitiosInteresBloc.getSitiosInteresv2(widget.data!.idlugar!))!;
+  }
+
+  Future _getDataComments() async {
+    setState(() => _hasData = true);
+    //QuerySnapshot data;
+    if (_lastVisible == 0) {
+//_listComentarios
+      _listComentarios = (await _commentsBloc.obtenerComentariosLugar(
+          widget.data!.idlugar!, 0, 7));
+    } else {
+      // data = await firestore
+      _data = (await _commentsBloc.obtenerComentariosLugar(
+          widget.data!.idlugar!, _idComentarioUltimo, 7));
+      //_listComentarios.add(_data);
+      _data.forEach((element) {
+        _listComentarios.add(element);
+      });
+    }
+    if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
+      if (_listComentarios.length >= 7) {
+        _idComentarioUltimo = _listComentarios.last!.idcomentario!;
+        _lastVisible = 1;
+      }
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      if (_lastVisible == 0) {
+        setState(() {
+          _isLoading = false;
+          _hasData = false;
+          print('no items');
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _hasData = true;
+          print('no more items');
+        });
+      }
+    }
+    return null;
   }
 
   void getActividadLugar() async {
@@ -157,19 +235,90 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     }
   }
 
-  void getAllImages(int idlugar) async {
+  /*void getAllImages(int idlugar) async {
     lista = await _con.obtenerImagenesLugar(idlugar);
     refresh();
-  }
+  }*/
 
   void obtenerLugaresDentroLugar(int idlugar) async {
     _listalugares = await _con.obtenerLugaresDentroLugar(idlugar);
     refresh();
   }
 
-  void getAllCategorias(int idlugar) async {
+  /*void getAllCategorias(int idlugar) async {
     _listaCategoria = (await _categoriaBloc.obtenercategoriasPorLugar(idlugar));
     refresh();
+  }*/
+
+  handleDelete(context, Comentario d) {
+    final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text('message').tr(),
+            content: Text('delete from database?',
+                    style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700))
+                .tr(),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  await ib.checkInternet();
+                  if (ib.hasInternet == true) {
+                    Navigator.pop(context);
+                    mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
+                  } else {
+                    if (sb.idusuario != d.idusuario) {
+                      Navigator.pop(context);
+                      mensajeDialog(context, 'message'.tr(),
+                          'You can not delete others comment'.tr());
+                    } else {
+                      final _commentsBloc =
+                          Provider.of<CommentsBloc>(context, listen: false);
+                      ResponseApi? resultado =
+                          await _commentsBloc.eliminarCommentarioLugar(
+                              d.idcomentario!, widget.data!.idlugar!);
+                      if (resultado!.success!) {
+                        //  mostrarAlerta(
+                        //      context, 'Eliminado', resultado.message!);
+                        Navigator.pop(context);
+                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
+                        // onRefreshData();
+                        // Navigator.pop(context);
+                      } else {
+                        Navigator.pop(context);
+                        // openToast(context, resultado.message!);
+                        mensajeDialog(
+                            context, 'message'.tr(), resultado.message!);
+                      }
+                    }
+                  }
+                },
+                child: Text(
+                  'yes',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ).tr(),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'no',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ).tr(),
+              ),
+            ],
+          );
+        });
   }
 
   handleLoveClick() async {
@@ -245,362 +394,457 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final orientation = MediaQuery.of(context).orientation;
+    final _signInBloc = Provider.of<SignInBloc>(context, listen: true);
     return Scaffold(
       //backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                (widget.data!.imagenes!.length > 0)
-                    ? _sliderImages(context, height)
-                    : _vacioListaImagen(),
-                Positioned(
-                  top: 20,
-                  left: 15,
-                  child: SafeArea(
-                    child: CircleAvatar(
-                      backgroundColor: Colors.blue.withOpacity(0.9),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.arrow_left,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context, true);
-                        },
-                      ),
-                    ),
+      appBar: AppBar(
+        title: Text(
+          widget.data!.nombre.toString(),
+          style: Theme.of(context).textTheme.headline6,
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              handleLoveClick();
+            },
+            icon: (_marcarCorazon)
+                ? Icon(
+                    FontAwesomeIcons.solidHeart,
+                    color: Colors.red,
+                    size: 20,
+                  )
+                : Icon(
+                    FontAwesomeIcons.solidHeart,
+                    color: Colors.grey,
+                    size: 20,
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding:
-                  EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      TextButton.icon(
-                        onPressed: () {
-                          handleLoveClick();
-                        },
-                        icon: (_marcarCorazon)
-                            ? Icon(
-                                FontAwesomeIcons.solidHeart,
-                                color: Colors.red,
-                                size: 20,
-                              )
-                            : Icon(
-                                FontAwesomeIcons.solidHeart,
-                                color: Colors.grey,
-                                size: 20,
-                              ),
-                        label: (_marcarCorazon)
-                            ? Text(
-                                "like",
-                                style: TextStyle(color: Colors.red),
-                              ).tr()
-                            : Text(
-                                "like",
-                                style: Theme.of(context).textTheme.subtitle1,
-                              ).tr(),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          nextScreen(
-                              context,
-                              CommentsPage(
-                                lugar: widget.data!,
-                                collectionName: "places",
-                              ));
-                        },
-                        icon: Icon(
-                          FontAwesomeIcons.comment,
-                          color: Colors.grey[600],
-                          size: 22,
-                        ),
-                        label: Text(
-                            _totalComentarios.toString() +
-                                " " +
-                                _textcomentario,
-                            style: Theme.of(context).textTheme.subtitle1),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Icon(
-                        Icons.location_on,
-                        size: 20,
-                        color: Colors.grey,
-                      ),
-                      Expanded(
-                          child: Text(
-                        widget.data!.direccion!,
-                        style: Theme.of(context).textTheme.subtitle1,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )),
-                    ],
-                  ),
-                  Text(
-                    widget.data!.nombre!,
-                    style: Theme.of(context).textTheme.headline1,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 8, bottom: 8),
-                    height: 3,
-                    width: 150,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(40)),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        _totalLoves.toString(),
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Icon(
-                        FontAwesomeIcons.heart,
-                        color: Colors.red,
-                        size: 20,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        _totalComentarios.toString(),
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Icon(
-                        FontAwesomeIcons.comments,
-                        color: Colors.blue[300],
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  ReadMoreText(
-                    widget.data!.descripcion!,
-                    trimLines: 4,
-                    colorClickableText: Colors.blue,
-                    trimMode: TrimMode.Line,
-                    trimCollapsedText: 'read more'.tr(),
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(fontSize: 16),
-                    trimExpandedText: 'read less'.tr(),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Column(
+          )
+        ],
+      ),
+      body: (_isConnected == null)
+          ? Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                height: 50.0,
+                width: 50.0,
+              ),
+            )
+          : (!_isConnected!)
+              ? Center(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text('todo',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                          )).tr(),
                       Container(
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
-                        margin: EdgeInsets.only(top: 5, bottom: 10),
-                        height: 3,
-                        width: 150,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(40)),
+                          margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                          child: Text(
+                            'are you offline?'.tr(),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                      Container(
+                        margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                        child: Text(
+                          'please check your internet connection and reload the page'
+                              .tr(),
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      listaOpciones(
-                          listaCategoria: _listaCategoria, lugar: widget.data!),
+                      Container(
+                        margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                child: Text('reload').tr(),
+                                // icon: Icon(Icons.add_comment_rounded),
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  onPrimary: Colors.black,
+                                  onSurface: Colors.black,
+                                  //shadowColor: Colors.grey,
+                                  padding: EdgeInsets.all(10.0),
+                                  elevation: 6,
+
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20))),
+                                ),
+                                onPressed: () => setState(() {}),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  if (_listaActividad.length > 0)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 0,
-                            //top: 10,
-                          ),
-                          child: Text(
-                            'activity',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ).tr(),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 8, bottom: 8),
-                          height: 3,
-                          width: 100,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(40)),
-                        ),
-                        Container(
-                          height: 80,
-                          //color: Colors.green,
-                          width: MediaQuery.of(context).size.width,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            physics: BouncingScrollPhysics(),
-                            itemCount: _listaActividad.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return _chois(_listaActividad[index]);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  if (_listaAtractivo.length > 0)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 0,
-                            // top: 10,
-                          ),
-                          child: Text(
-                            'divertion',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ).tr(),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 8, bottom: 8),
-                          height: 3,
-                          width: 150,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(40)),
-                        ),
-                        Container(
-                          height: 80,
-                          //color: Colors.green,
-                          width: MediaQuery.of(context).size.width,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            physics: BouncingScrollPhysics(),
-                            itemCount: _listaAtractivo.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return _choisAtractivos(_listaAtractivo[index]);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  if (_sitiosInteres.length > 0)
-                    //Text(_sitiosInteres[0].descripcion.toString())
-                    Container(
-                      //margin: EdgeInsets.only(right: 100),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(
-                              left: 0,
-                              //top: 10,
-                            ),
-                            child: Text(
-                              'attractive turistic',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ).tr(),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 8, bottom: 8),
-                            height: 3,
-                            width: 150,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(40)),
-                          ),
-                          Container(
-                            //height: 260,
-                            //  margin: EdgeInsets.only(right: 55),
-                            // color: Colors.green,
-
-                            width: MediaQuery.of(context).size.width,
-                            child: Html(
-                              data: '''${_sitiosInteres[0].descripcion}''',
-                              shrinkWrap: true,
-                              style: {
-                                "body": Style(
-                                  maxLines: 4,
-                                  textAlign: TextAlign.justify,
-                                  fontSize: FontSize(16.0),
-                                  // fontWeight: FontWeight.w500,
-                                  // color: Colors.black,
-                                  textOverflow: TextOverflow.ellipsis,
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Stack(
+                        children: <Widget>[
+                          (widget.data!.imagenes!.length > 0)
+                              ? _sliderImages(context, height)
+                              : _vacioListaImagen(),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: 20, left: 15, right: 15, bottom: 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            /* Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                TextButton.icon(
+                                  onPressed: () {
+                                    handleLoveClick();
+                                  },
+                                  icon: (_marcarCorazon)
+                                      ? Icon(
+                                          FontAwesomeIcons.solidHeart,
+                                          color: Colors.red,
+                                          size: 20,
+                                        )
+                                      : Icon(
+                                          FontAwesomeIcons.solidHeart,
+                                          color: Colors.grey,
+                                          size: 20,
+                                        ),
+                                  label: (_marcarCorazon)
+                                      ? Text(
+                                          "like",
+                                          style: TextStyle(color: Colors.red),
+                                        ).tr()
+                                      : Text(
+                                          "like",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle1,
+                                        ).tr(),
                                 ),
-                              },
-                            ),
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: ElevatedButton(
-                                  child: Text('read more').tr(),
-                                  // icon: Icon(Icons.add_comment_rounded),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.white,
-                                    onPrimary: Colors.black,
-                                    onSurface: Colors.black,
-                                    //shadowColor: Colors.grey,
-                                    padding: EdgeInsets.all(10.0),
-                                    elevation: 6,
-
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20))),
-                                  ),
+                                TextButton.icon(
                                   onPressed: () {
                                     nextScreen(
                                         context,
-                                        MasInformacionLugarPage(
-                                          lugar: widget.data,
-                                          sitiosinteres: _sitiosInteres[0],
+                                        CommentsPage(
+                                          lugar: widget.data!,
+                                          collectionName: "places",
                                         ));
                                   },
+                                  icon: Icon(
+                                    FontAwesomeIcons.comment,
+                                    color: Colors.grey[600],
+                                    size: 22,
+                                  ),
+                                  label: Text(
+                                      _totalComentarios.toString() +
+                                          " " +
+                                          _textcomentario,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle1),
                                 ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                              ],
+                            ),*/
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.location_on,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  widget.data!.direccion!,
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                )),
+                              ],
+                            ),
+                            Text(
+                              widget.data!.nombre!,
+                              style: Theme.of(context).textTheme.headline1,
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 8, bottom: 8),
+                              height: 3,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(40)),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                RatingBar.builder(
+                                  // ignoreGestures: true,
+                                  itemSize: 28,
+                                  initialRating: widget.data!.rating!,
+                                  ignoreGestures: true,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: false,
+                                  itemCount: 5,
 
-                  /*(_sitiosInteres.length > 0)
+                                  itemPadding:
+                                      EdgeInsets.symmetric(horizontal: 0.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    //_rating = rating;
+                                    //print(rating);
+                                  },
+                                ),
+                                Text(
+                                  "(" + _totalComentarios.toString() + ")",
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(
+                                  FontAwesomeIcons.heart,
+                                  color: Colors.red,
+                                  size: 18,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  _totalLoves.toString(),
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            ReadMoreText(
+                              widget.data!.descripcion!,
+                              trimLines: 4,
+                              colorClickableText: Colors.blue,
+                              trimMode: TrimMode.Line,
+                              trimCollapsedText: 'read more'.tr(),
+                              textAlign: TextAlign.justify,
+                              style: TextStyle(fontSize: 16),
+                              trimExpandedText: 'read less'.tr(),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('todo',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                    )).tr(),
+                                Container(
+                                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                                  margin: EdgeInsets.only(top: 5, bottom: 10),
+                                  height: 3,
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(40)),
+                                ),
+                                listaOpciones(lugar: widget.data!),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            if (_listaActividad.length > 0)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 0,
+                                      //top: 10,
+                                    ),
+                                    child: Text(
+                                      'activity',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ).tr(),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 8, bottom: 8),
+                                    height: 3,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius:
+                                            BorderRadius.circular(40)),
+                                  ),
+                                  Container(
+                                    height: 80,
+                                    //color: Colors.green,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      physics: BouncingScrollPhysics(),
+                                      itemCount: _listaActividad.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return _chois(_listaActividad[index]);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (_listaAtractivo.length > 0)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 0,
+                                      // top: 10,
+                                    ),
+                                    child: Text(
+                                      'divertion',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ).tr(),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 8, bottom: 8),
+                                    height: 3,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius:
+                                            BorderRadius.circular(40)),
+                                  ),
+                                  Container(
+                                    height: 80,
+                                    //color: Colors.green,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      physics: BouncingScrollPhysics(),
+                                      itemCount: _listaAtractivo.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return _choisAtractivos(
+                                            _listaAtractivo[index]);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (_sitiosInteres.length > 0)
+                              //Text(_sitiosInteres[0].descripcion.toString())
+                              Container(
+                                //margin: EdgeInsets.only(right: 100),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                        left: 0,
+                                        //top: 10,
+                                      ),
+                                      child: Text(
+                                        'attractive turistic',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ).tr(),
+                                    ),
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(top: 8, bottom: 8),
+                                      height: 3,
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context).primaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(40)),
+                                    ),
+                                    Container(
+                                      //height: 260,
+                                      //  margin: EdgeInsets.only(right: 55),
+                                      // color: Colors.green,
+
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Html(
+                                        data:
+                                            '''${_sitiosInteres[0].descripcion}''',
+                                        shrinkWrap: true,
+                                        style: {
+                                          "body": Style(
+                                            maxLines: 4,
+                                            textAlign: TextAlign.justify,
+                                            fontSize: FontSize(16.0),
+                                            // fontWeight: FontWeight.w500,
+                                            // color: Colors.black,
+                                            textOverflow: TextOverflow.ellipsis,
+                                          ),
+                                        },
+                                      ),
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            child: Text('read more').tr(),
+                                            // icon: Icon(Icons.add_comment_rounded),
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.white,
+                                              onPrimary: Colors.black,
+                                              onSurface: Colors.black,
+                                              //shadowColor: Colors.grey,
+                                              padding: EdgeInsets.all(10.0),
+                                              elevation: 6,
+
+                                              shape: RoundedRectangleBorder(
+                                                  side: BorderSide(),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(20))),
+                                            ),
+                                            onPressed: () {
+                                              nextScreen(
+                                                  context,
+                                                  MasInformacionLugarPage(
+                                                    lugar: widget.data,
+                                                    sitiosinteres:
+                                                        _sitiosInteres[0],
+                                                  ));
+                                            },
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                            /*(_sitiosInteres.length > 0)
                       ? Container(
                           //margin: EdgeInsets.only(right: 100),
                           child: Column(
@@ -652,74 +896,459 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         )
                       : Text(''),*/
 
-                  Container(
-                    margin: EdgeInsets.only(top: 8, bottom: 8),
-                    height: 3,
-                    width: width,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(40)),
-                  ),
-                  Text('contribute',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      )).tr(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          label: Text("upload a photo").tr(),
-                          icon: Icon(Icons.add_a_photo_rounded),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
+                            Container(
+                              margin: EdgeInsets.only(top: 8, bottom: 8),
+                              height: 3,
+                              width: width,
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(40)),
+                            ),
+                            Text('contribute',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                )).tr(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    label: Text("upload a photo").tr(),
+                                    icon: Icon(Icons.add_a_photo_rounded),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.white,
+                                      onPrimary: Colors.black,
+                                      onSurface: Colors.black,
+                                      //shadowColor: Colors.grey,
+                                      padding: EdgeInsets.all(10.0),
+                                      elevation: 4,
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
-                          onPressed: () {
-                            subirFotosClick();
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          label: Text('write a comment').tr(),
-                          icon: Icon(Icons.add_comment_rounded),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20))),
+                                    ),
+                                    onPressed: () {
+                                      subirFotosClick();
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    label: Text('write a comment').tr(),
+                                    icon: Icon(Icons.add_comment_rounded),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.white,
+                                      onPrimary: Colors.black,
+                                      onSurface: Colors.black,
+                                      //shadowColor: Colors.grey,
+                                      padding: EdgeInsets.all(10.0),
+                                      elevation: 4,
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
-                          onPressed: () {
-                            agregarComentarioClick();
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                  /* Column(
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20))),
+                                    ),
+                                    onPressed: () {
+                                      agregarComentarioClick();
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _hasData == false
+                                      ? Container(
+                                          margin: EdgeInsets.only(
+                                              top: 10, bottom: 30),
+                                          child: ListView(
+                                            scrollDirection: Axis.vertical,
+                                            shrinkWrap: true,
+                                            children: [
+                                              EmptyPage(
+                                                  icon: LineIcons.comments,
+                                                  message:
+                                                      'no comments found'.tr(),
+                                                  message1:
+                                                      'be the first to comment'
+                                                          .tr()),
+                                            ],
+                                          ),
+                                        )
+                                      : Container(
+                                          // color: Colors.red,
+                                          margin: EdgeInsets.only(top: 15),
+                                          child: ListView.separated(
+                                            scrollDirection: Axis.vertical,
+                                            shrinkWrap: true,
+                                            primary: false,
+                                            padding: EdgeInsets.all(5),
+                                            // controller: _scrollViewController,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            itemCount: _listComentarios.length,
+                                            separatorBuilder:
+                                                (BuildContext context,
+                                                        int index) =>
+                                                    SizedBox(
+                                              height: 0,
+                                            ),
+                                            itemBuilder: (_, int index) {
+                                              if (index <
+                                                  _listComentarios.length) {
+                                                //return reviewList(_listComentarios[index]!, context,_signInBloc);
+                                                return Container(
+                                                    //  padding: EdgeInsets.only(
+                                                    //      top: 5, bottom: 5),
+                                                    decoration: BoxDecoration(
+                                                      //color: Colors.white,
+                                                      border: Border(
+                                                        bottom: BorderSide(
+                                                            width: 1,
+                                                            color: Colors
+                                                                .grey.shade300),
+                                                      ),
+                                                      //  borderRadius: BorderRadius.circular(5)),
+                                                    ),
+                                                    child: ListTile(
+                                                        leading: (_listComentarios[
+                                                                    index]!
+                                                                .imageUrl!
+                                                                .isEmpty)
+                                                            ? Container(
+                                                                height: 50,
+                                                                width: 50,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      300],
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                ),
+                                                                child: Icon(
+                                                                    Icons
+                                                                        .person,
+                                                                    size: 28),
+                                                              )
+                                                            : CircleAvatar(
+                                                                radius: 25,
+                                                                backgroundColor:
+                                                                    Colors.grey[
+                                                                        200],
+                                                                backgroundImage:
+                                                                    CachedNetworkImageProvider(
+                                                                        _listComentarios[index]!
+                                                                            .imageUrl!)),
+                                                        title: Column(
+                                                          children: <Widget>[
+                                                            Container(
+                                                              child: Row(
+                                                                children: [
+                                                                  Text(
+                                                                    _listComentarios[
+                                                                            index]!
+                                                                        .userName!,
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontWeight.w600),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                      _listComentarios[
+                                                                              index]!
+                                                                          .fecha
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          color: Colors.grey[
+                                                                              500],
+                                                                          fontSize:
+                                                                              11,
+                                                                          fontWeight:
+                                                                              FontWeight.w500)),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        subtitle: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  //alignment: MainAxisAlignment.start,
+                                                                  //color: Colors.red,
+                                                                  child: RatingBar
+                                                                      .builder(
+                                                                    // ignoreGestures: true,
+                                                                    itemSize:
+                                                                        20,
+                                                                    initialRating:
+                                                                        _listComentarios[index]!
+                                                                            .rating!,
+                                                                    minRating: _listComentarios[
+                                                                            index]!
+                                                                        .rating!,
+                                                                    maxRating: _listComentarios[
+                                                                            index]!
+                                                                        .rating!,
+                                                                    ignoreGestures:
+                                                                        true,
+                                                                    direction: Axis
+                                                                        .horizontal,
+                                                                    allowHalfRating:
+                                                                        false,
+                                                                    itemCount:
+                                                                        5,
+                                                                    itemPadding:
+                                                                        EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                4.0),
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                                _) =>
+                                                                            Icon(
+                                                                      Icons
+                                                                          .star,
+                                                                      color: Colors
+                                                                          .amber,
+                                                                    ),
+                                                                    onRatingUpdate:
+                                                                        (rating) {
+                                                                      //_rating = rating;
+                                                                      //print(rating);
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                      ReadMoreText(
+                                                                    _listComentarios[
+                                                                            index]!
+                                                                        .comentario!,
+                                                                    trimLines:
+                                                                        4,
+                                                                    colorClickableText:
+                                                                        Colors
+                                                                            .blue,
+                                                                    trimMode:
+                                                                        TrimMode
+                                                                            .Line,
+                                                                    trimCollapsedText:
+                                                                        'read more'
+                                                                            .tr(),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .justify,
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            16),
+                                                                    trimExpandedText:
+                                                                        'read less'
+                                                                            .tr(),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            if (_listComentarios[
+                                                                        index]!
+                                                                    .imagenes!
+                                                                    .length >
+                                                                0)
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                      child: GridView
+                                                                          .count(
+                                                                    crossAxisCount:
+                                                                        3,
+                                                                    shrinkWrap:
+                                                                        true,
+                                                                    children: List.generate(
+                                                                        _listComentarios[index]!
+                                                                            .imagenes!
+                                                                            .length,
+                                                                        (index2) {
+                                                                      return Container(
+                                                                        margin: EdgeInsets.only(
+                                                                            left:
+                                                                                5.0),
+                                                                        child:
+                                                                            CachedNetworkImage(
+                                                                          imageUrl: _listComentarios[index]!
+                                                                              .imagenes![index2]
+                                                                              .imagenurl!,
+                                                                          imageBuilder: (context, imageProvider) =>
+                                                                              Container(
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              image: DecorationImage(
+                                                                                image: imageProvider,
+                                                                                fit: BoxFit.cover,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          placeholder: (context, url) =>
+                                                                              Center(
+                                                                            child:
+                                                                                SizedBox(
+                                                                              child: CircularProgressIndicator(),
+                                                                              height: 50.0,
+                                                                              width: 50.0,
+                                                                            ),
+                                                                          ),
+                                                                          errorWidget: (context, url, error) =>
+                                                                              Icon(Icons.error),
+                                                                          width:
+                                                                              300,
+                                                                          height:
+                                                                              300,
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                                  )),
+                                                                ],
+                                                              ),
+                                                          ],
+                                                        ),
+                                                        trailing: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            PopupMenuButton(
+                                                                // key: _menuKey,
+                                                                itemBuilder: (_) =>
+                                                                    <
+                                                                        PopupMenuItem<
+                                                                            String>>[
+                                                                      if (_listComentarios[index]!
+                                                                              .idusuario ==
+                                                                          _signInBloc
+                                                                              .idusuario)
+                                                                        PopupMenuItem<String>(
+                                                                            child:
+                                                                                Text('delete?'.tr()),
+                                                                            value: 'eliminar'),
+                                                                      PopupMenuItem<
+                                                                              String>(
+                                                                          child: Text('report?'
+                                                                              .tr()),
+                                                                          value:
+                                                                              'reportar'),
+                                                                    ],
+                                                                onSelected:
+                                                                    (valor) {
+                                                                  print(valor);
+                                                                  if (valor ==
+                                                                      "reportar") {
+                                                                    nextScreen(
+                                                                        context,
+                                                                        ReportarComentarioLugarPage(
+                                                                            comentario:
+                                                                                _listComentarios[index]!));
+                                                                  }
+                                                                  if (valor ==
+                                                                      "eliminar") {
+                                                                    handleDelete(
+                                                                        context,
+                                                                        _listComentarios[
+                                                                            index]!);
+                                                                  }
+                                                                }),
+                                                          ],
+                                                        )));
+                                              }
+                                              return Opacity(
+                                                opacity:
+                                                    _isLoading! ? 1.0 : 0.0,
+                                                child: _lastVisible == 0
+                                                    ? LoadingCard(height: 100)
+                                                    : Center(
+                                                        child: SizedBox(
+                                                            width: 32.0,
+                                                            height: 32.0,
+                                                            child:
+                                                                new CupertinoActivityIndicator()),
+                                                      ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            ),
+                            if (_totalComentarios >= 7)
+                              Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      child: Text(_textVer +
+                                          " " +
+                                          _totalComentarios.toString() +
+                                          " " +
+                                          _textReviews),
+                                      // icon: Icon(Icons.add_comment_rounded),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.white,
+                                        onPrimary: Colors.black,
+                                        onSurface: Colors.black,
+                                        //shadowColor: Colors.grey,
+                                        padding: EdgeInsets.all(10.0),
+                                        elevation: 4,
+
+                                        shape: RoundedRectangleBorder(
+                                            side: BorderSide(),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20))),
+                                      ),
+                                      onPressed: () {
+                                        nextScreen(
+                                            context,
+                                            CommentsPage(
+                                              lugar: widget.data!,
+                                              collectionName: "places",
+                                            ));
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            /* Column(
                     //crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       ButtonBar(
@@ -764,75 +1393,64 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       )
                     ],
                   ),*/
-                  if (_listalugares.length > 0)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 0,
-                            top: 10,
-                          ),
-                          child: Text(
-                            'you may also like',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ).tr(),
+                            if (_listalugares.length > 0)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: 0,
+                                      top: 10,
+                                    ),
+                                    child: Text(
+                                      'you may also like',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ).tr(),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 8, bottom: 8),
+                                    height: 3,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius:
+                                            BorderRadius.circular(40)),
+                                  ),
+                                  Container(
+                                    height: 220,
+                                    //color: Colors.green,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: ListView.builder(
+                                      padding:
+                                          EdgeInsets.only(right: 15, top: 5),
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: _listalugares.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if (_listalugares.isEmpty)
+                                          return LoadingPopularPlacesCard();
+                                        return ItemList(
+                                          d: _listalugares[index],
+                                        );
+                                        //return LoadingCard1();
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                          ],
                         ),
-                        Container(
-                          margin: EdgeInsets.only(top: 8, bottom: 8),
-                          height: 3,
-                          width: 100,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(40)),
-                        ),
-                        Container(
-                          height: 220,
-                          //color: Colors.green,
-                          width: MediaQuery.of(context).size.width,
-                          child: ListView.builder(
-                            padding: EdgeInsets.only(right: 15, top: 5),
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _listalugares.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (_listalugares.isEmpty)
-                                return LoadingPopularPlacesCard();
-                              return ItemList(
-                                d: _listalugares[index],
-                              );
-                              //return LoadingCard1();
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+                      ),
+                    ],
+                  ),
+                ),
     );
   }
 
-  /*Widget buildText(String text) {
-    // if read more is false then show only 3 lines from text
-    // else show full text
-    final lines = isReadmore ? null : 8;
-    return Text(
-      text,
-      style: TextStyle(fontSize: 16),
-      maxLines: lines,
-      textAlign: TextAlign.justify,
-      // overflow properties is used to show 3 dot in text widget
-      // so that user can understand there are few more line to read.
-      overflow: isReadmore ? TextOverflow.visible : TextOverflow.ellipsis,
-    );
-  }*/
   Widget _vacioListaImagen() {
     return Hero(
       tag: 'Slider2',
@@ -849,7 +1467,10 @@ class _PlaceDetailsState extends State<PlaceDetails> {
           ),
           child: Align(
             alignment: Alignment.bottomCenter,
-            child: Text("you can upload photos of this places".tr()),
+            child: Text(
+              "you can upload photos of this places".tr(),
+              style: TextStyle(color: Colors.black),
+            ),
           ),
         ),
       ),
@@ -900,11 +1521,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                           height: height,
                           fit: BoxFit.cover,
                         ),
-                        /*Image.network(
-                        item.url!,
-                        fit: BoxFit.cover,
-                        height: height,
-                      )*/
                       ),
                     ))
                 .toList(),
@@ -918,12 +1534,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
 class listaOpciones extends StatelessWidget {
   const listaOpciones({
     Key? key,
-    required List<Categoria?> listaCategoria,
     required this.lugar,
-  })  : _listaCategoria = listaCategoria,
-        super(key: key);
+  }) : super(key: key);
 
-  final List<Categoria?> _listaCategoria;
   final Lugar lugar;
 
   @override

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:traveloaxaca/models/imagen_comentario_tour.dart';
+
 ComentarioTour comentarioTourFromJson(String str) =>
     ComentarioTour.fromJson(json.decode(str));
 
@@ -23,22 +25,24 @@ class ComentarioTour {
   String? userName;
   String? imageUrl;
   String? fecha;
+  List<ImagenComentarioTour>? imagenes = [];
+
   List<ComentarioTour> toList = [];
-  ComentarioTour({
-    this.idcomentario,
-    this.idtour,
-    this.idconquienvisito,
-    this.rating,
-    this.comentario,
-    this.fechavisito,
-    this.eliminado,
-    this.fecharegistro,
-    this.idusuario,
-    this.uid,
-    this.userName,
-    this.imageUrl,
-    this.fecha,
-  });
+  ComentarioTour(
+      {this.idcomentario,
+      this.idtour,
+      this.idconquienvisito,
+      this.rating,
+      this.comentario,
+      this.fechavisito,
+      this.eliminado,
+      this.fecharegistro,
+      this.idusuario,
+      this.uid,
+      this.userName,
+      this.imageUrl,
+      this.fecha,
+      this.imagenes});
 
   factory ComentarioTour.fromJson(Map<String, dynamic> json) => ComentarioTour(
         idcomentario: json["idcomentario"],
@@ -58,6 +62,11 @@ class ComentarioTour {
         userName: json["userName"],
         imageUrl: json["imageUrl"],
         fecha: json["fecha"],
+        imagenes: (json["imagenes"] == null || json["imagenes"] == '')
+            ? []
+            : List<ImagenComentarioTour>.from(
+                jsonDecode(json["imagenes"].toString())
+                    .map((model) => ImagenComentarioTour.fromJson(model))),
       );
   ComentarioTour.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
@@ -79,6 +88,9 @@ class ComentarioTour {
         "userName": userName,
         "imageUrl": imageUrl,
         "fecha": fecha,
+        "imagenes": (imagenes!.length > 0)
+            ? imagenes!.map((e) => e.toJson()).toList()
+            : [],
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();

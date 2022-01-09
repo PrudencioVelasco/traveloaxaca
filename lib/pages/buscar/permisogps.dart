@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:traveloaxaca/helpers/helpers.dart';
-import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
-import 'package:traveloaxaca/pages/buscar/mi_ubicacion_lugar.dart';
+import 'package:traveloaxaca/pages/buscar/mi_ubicacion_lugar_categoria.dart';
+import 'package:traveloaxaca/pages/buscar/mi_ubicacion_cosas_quehacer.dart';
 import 'package:traveloaxaca/utils/acceso_gps_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 

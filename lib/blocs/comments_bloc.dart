@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:traveloaxaca/models/comment.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'dart:async';
 import 'package:http_parser/http_parser.dart';
-import 'package:dio/dio.dart';
 
 class CommentsBloc extends ChangeNotifier {
   BuildContext? context;

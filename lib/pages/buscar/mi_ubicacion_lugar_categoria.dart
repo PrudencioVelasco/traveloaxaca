@@ -9,7 +9,7 @@ import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/compania.dart';
-import 'package:traveloaxaca/pages/buscar/mapa.dart';
+import 'package:traveloaxaca/pages/buscar/mapa_lugar_categoria.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/list_card_compania.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';

@@ -71,7 +71,9 @@ class _FeaturedState extends State<Featured> {
         FutureBuilder(
             future: fb.getData(),
             builder: (context, AsyncSnapshot<List<Lugar?>> snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.hasData &&
+                  snapshot.data != null &&
+                  snapshot.data!.length > 0) {
                 return Center(
                   child: DotsIndicator(
                     dotsCount: snapshot.data!.length,

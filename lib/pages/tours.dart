@@ -7,16 +7,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/tour/detalle_tour.dart';
 import 'package:traveloaxaca/pages/tour/todos.dart';
+import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 
-class CategoriaPrincipalPage extends StatefulWidget {
-  CategoriaPrincipalPage({Key? key}) : super(key: key);
+class ToursPage extends StatefulWidget {
+  ToursPage({Key? key}) : super(key: key);
 
   @override
-  _CategoriaPrincipalPageState createState() => _CategoriaPrincipalPageState();
+  _ToursPageState createState() => _ToursPageState();
 }
 
-class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
+class _ToursPageState extends State<ToursPage> {
   List<Tour?> _listaTours = [];
   TourBloc _tourBloc = new TourBloc();
   int _selectedIndex = 0;
@@ -74,15 +75,17 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
-                  height: 240,
+                  height: 290,
                   //color: Colors.green,
                   width: MediaQuery.of(context).size.width,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     physics: BouncingScrollPhysics(),
-                    itemCount: _listaTours.length,
+                    itemCount: _listaTours.isEmpty ? 3 : _listaTours.length,
                     itemBuilder: (BuildContext context, int index) {
+                      if (_listaTours.isEmpty)
+                        return LoadingListaToursPrincipalCard();
                       return _botones2(_listaTours[index]);
                     },
                   ),
@@ -124,14 +127,24 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                     imageUrl: (item!.imagenestour!.toList().isNotEmpty)
                         ? item.imagenestour!.toList().first.url.toString()
                         : 'https://misicebucket.s3.us-east-2.amazonaws.com/no-image-horizontal.png',
-                    progressIndicatorBuilder: (context, url, downloadProgess) =>
-                        CircularProgressIndicator(
-                      value: downloadProgess.progress,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                    // placeholder: (context, url) => CircularProgressIndicator(),
+                    placeholder: (context, url) => Center(
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                        height: 50.0,
+                        width: 50.0,
+                      ),
+                    ),
                     errorWidget: (context, url, error) => Icon(Icons.error),
-                    width: 150,
-                    height: 150,
+                    width: 160,
+                    height: 160,
                     fit: BoxFit.cover,
                   ),
                 ],
@@ -139,8 +152,8 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
               Row(
                 children: [
                   Container(
-                    width: 150,
-                    height: 50,
+                    width: 160,
+                    height: 40,
                     //color: Colors.green,
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -160,7 +173,7 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
               ),
               Container(
                 //color: Colors.blueAccent,
-                height: 25,
+                height: 30,
                 child: Row(
                   children: [
                     Padding(
@@ -173,7 +186,7 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                         direction: Axis.horizontal,
                         allowHalfRating: false,
                         itemCount: 5,
-                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => Icon(
                           Icons.star,
                           color: Colors.amber,
@@ -184,8 +197,33 @@ class _CategoriaPrincipalPageState extends State<CategoriaPrincipalPage> {
                         },
                       ),
                     ),
+                    Text(
+                      "(" + item.totalcomentarios.toString() + ")",
+                      style: TextStyle(fontSize: 11),
+                    )
                   ],
                 ),
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 160,
+                    height: 50,
+                    //color: Colors.green,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, right: 10, top: 4, bottom: 4),
+                      child: Text(
+                        "agency".tr() + ": " + item.nombrecompania!,
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ]),
       ),

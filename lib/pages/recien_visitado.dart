@@ -4,13 +4,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/src/provider.dart';
 import 'package:traveloaxaca/blocs/lugar_bloc.dart';
-import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/models/lugar.dart';
-import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
-import 'package:traveloaxaca/pages/tour/detalle_tour.dart';
-import 'package:traveloaxaca/pages/tour/todos.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 
 class RecienVisitadoPage extends StatefulWidget {
@@ -75,7 +71,7 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
                 Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Container(
-                    height: 240,
+                    height: 260,
                     //color: Colors.green,
                     width: MediaQuery.of(context).size.width,
                     child: ListView.builder(
@@ -106,7 +102,7 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
 
         //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // if you need this
+          borderRadius: BorderRadius.circular(0), // if you need this
           side: BorderSide(
             color: Colors.grey.withOpacity(0.2),
             width: 1,
@@ -140,8 +136,8 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
                       ),
                     ),
                     errorWidget: (context, url, error) => Icon(Icons.error),
-                    width: 150,
-                    height: 150,
+                    width: 160,
+                    height: 160,
                     fit: BoxFit.cover,
                   ),
                 ],
@@ -149,7 +145,7 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
               Row(
                 children: [
                   Container(
-                    width: 150,
+                    width: 160,
                     height: 50,
                     //color: Colors.green,
                     child: Padding(
@@ -169,7 +165,7 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
               ),
               Container(
                 //color: Colors.blueAccent,
-                height: 25,
+                height: 30,
                 child: Row(
                   children: [
                     Padding(
@@ -182,7 +178,7 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
                         direction: Axis.horizontal,
                         allowHalfRating: false,
                         itemCount: 5,
-                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => Icon(
                           Icons.star,
                           color: Colors.amber,
@@ -193,6 +189,10 @@ class _RecienVisitadoPageState extends State<RecienVisitadoPage> {
                         },
                       ),
                     ),
+                    Text(
+                      "(" + item.comentario.toString() + ")",
+                      style: TextStyle(fontSize: 12),
+                    )
                   ],
                 ),
               ),

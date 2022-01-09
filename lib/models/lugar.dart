@@ -12,6 +12,7 @@ String lugarToJson(Lugar data) => json.encode(data.toJson());
 
 class Lugar {
   int? idlugar;
+  int? idruta;
   String? nombre;
   String? direccion;
   double? latitud;
@@ -34,6 +35,7 @@ class Lugar {
   double? distancia;
   Lugar(
       {this.idlugar,
+      this.idruta,
       this.nombre,
       this.direccion,
       this.latitud,
@@ -55,6 +57,7 @@ class Lugar {
 
   factory Lugar.fromJson(Map<String, dynamic> json) => Lugar(
         idlugar: json["idlugar"],
+        idruta: json["idruta"],
         nombre: json["nombre"],
         direccion: json["direccion"],
         latitud: json["latitud"] is String
@@ -118,6 +121,7 @@ class Lugar {
   }
   Map<String, dynamic> toJson() => {
         "idlugar": idlugar,
+        "idruta": idruta,
         "nombre": nombre,
         "direccion": direccion,
         "latitud": latitud,
@@ -138,7 +142,7 @@ class Lugar {
         "duracion": duracion,
         "distancia": distancia,
         "imagenes": (imagenes!.length > 0)
-            ? actividades!.map((e) => e!.toJson()).toList()
+            ? imagenes!.map((e) => e.toJson()).toList()
             : [],
       };
 

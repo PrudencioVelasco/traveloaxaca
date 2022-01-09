@@ -34,16 +34,13 @@ class ListCard extends StatelessWidget {
             //color: Colors.grey[200],
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(5),
+              // borderRadius: BorderRadius.circular(5),
             ),
             child: Stack(
               children: <Widget>[
                 Container(
                   //  color: Colors.green,
-                  decoration: BoxDecoration(
-                    // color: color,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+
                   margin:
                       EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
                   alignment: Alignment.topLeft,
@@ -140,20 +137,21 @@ class ListCard extends StatelessWidget {
             ),
           ),
           Positioned(
-              top: 40,
-              bottom: 30,
-              left: 10,
+              top: 1.2,
+              bottom: 1.2,
+              left: 11.2,
               child: Hero(
                 tag: tag!,
                 child: Container(
+                    color: Colors.grey,
                     height: 120,
                     width: 120,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
+                        // borderRadius: BorderRadius.circular(5),
                         child: (d!.primeraimagen != null)
                             ? CustomCacheImage(imageUrl: d!.primeraimagen!)
                             : Image.asset(
-                                "assets/images/no-image.png",
+                                "assets/images/no-imagen-company.jpg",
                               ))),
               ))
         ],
@@ -193,7 +191,7 @@ class ListCardNearby extends StatelessWidget {
             //color: Colors.grey[200],
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(5),
+              // borderRadius: BorderRadius.circular(5),
             ),
             child: Stack(
               children: <Widget>[
@@ -326,20 +324,20 @@ class ListCardNearby extends StatelessWidget {
             ),
           ),
           Positioned(
-              top: 40,
-              bottom: 30,
-              left: 10,
+              top: 1.2,
+              bottom: 1.2,
+              left: 11.2,
               child: Hero(
                 tag: tag!,
                 child: Container(
                     height: 120,
                     width: 120,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
+                        //  borderRadius: BorderRadius.circular(5),
                         child: (d!.primeraimagen != null)
                             ? CustomCacheImage(imageUrl: d!.primeraimagen!)
                             : Image.asset(
-                                "assets/images/no-image.png",
+                                "assets/images/no-imagen-company.jpg",
                               ))),
               ))
         ],

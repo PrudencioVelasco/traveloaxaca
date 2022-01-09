@@ -27,7 +27,7 @@ class _RutaPageState extends State<RutaPage> {
   }
 
   void getAllRutas() async {
-    _ruta = (await _rutasBloc.getData())!;
+    _ruta = (await _rutasBloc.getData());
     refresh();
   }
 

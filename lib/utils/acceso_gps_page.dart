@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:traveloaxaca/pages/buscar/mi_ubicacion.dart';
+import 'package:traveloaxaca/pages/buscar/mi_ubicacion_lugar_categoria.dart';
 
 class AccesoGpsPage extends StatefulWidget {
   final String? nombre;

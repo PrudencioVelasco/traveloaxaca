@@ -54,7 +54,6 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _commentsBloc.init(context, refresh);
-      _internetBloc.init(context);
     });
     _isLoading = true;
     _getData();
@@ -418,6 +417,54 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
                                           ),
                                         ],
                                       ),
+                                      if (_listComentarios[index]!
+                                              .imagenes!
+                                              .length >
+                                          0)
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: GridView.count(
+                                              crossAxisCount: 3,
+                                              shrinkWrap: true,
+                                              children: List.generate(
+                                                  _listComentarios[index]!
+                                                      .imagenes!
+                                                      .length, (index2) {
+                                                return CachedNetworkImage(
+                                                  imageUrl:
+                                                      _listComentarios[index]!
+                                                          .imagenes![index2]
+                                                          .imagenurl!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      Center(
+                                                    child: SizedBox(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                      height: 50.0,
+                                                      width: 50.0,
+                                                    ),
+                                                  ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                  width: 300,
+                                                  height: 300,
+                                                );
+                                              }),
+                                            )),
+                                          ],
+                                        ),
                                     ],
                                   ),
                                   trailing: Row(
@@ -431,10 +478,11 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
                                                         .idusuario ==
                                                     _signInBloc.idusuario)
                                                   PopupMenuItem<String>(
-                                                      child: Text('Eliminar'),
+                                                      child:
+                                                          Text('delete?'.tr()),
                                                       value: 'eliminar'),
                                                 PopupMenuItem<String>(
-                                                    child: Text('Reportar'),
+                                                    child: Text('report'.tr()),
                                                     value: 'reportar'),
                                               ],
                                           onSelected: (valor) {

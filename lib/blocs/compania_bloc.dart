@@ -58,8 +58,10 @@ class CompaniaBloc with ChangeNotifier {
     String _api = '/monarca/compania';
     try {
       Uri url = Uri.http(_url, '$_api/buscarCompania');
-      String bodyParams = json.encode(
-          {'valor': _searchText.toLowerCase(), 'latitud': idclasificacion});
+      String bodyParams = json.encode({
+        'valor': _searchText.toLowerCase(),
+        'idclasificacion': idclasificacion
+      });
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'

@@ -184,7 +184,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(5),
+              // borderRadius: BorderRadius.circular(5),
             ),
             //  color: Colors.red,
             alignment: Alignment.bottomRight,
@@ -196,10 +196,7 @@ class ListCardCompaniaCerca extends StatelessWidget {
               children: <Widget>[
                 Container(
                   //  color: Colors.green,
-                  decoration: BoxDecoration(
-                    //color: Colors.red,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+
                   margin:
                       EdgeInsets.only(top: 0, left: 5, right: 10, bottom: 0),
                   alignment: Alignment.topLeft,
@@ -277,8 +274,9 @@ class ListCardCompaniaCerca extends StatelessWidget {
                           height: 2,
                           width: 120,
                           decoration: BoxDecoration(
-                              color: Colors.grey[400],
-                              borderRadius: BorderRadius.circular(20)),
+                            color: Colors.grey[400],
+                            //borderRadius: BorderRadius.circular(20)
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -294,8 +292,8 @@ class ListCardCompaniaCerca extends StatelessWidget {
                                 direction: Axis.horizontal,
                                 allowHalfRating: false,
                                 itemCount: 5,
-                                itemPadding: EdgeInsets.symmetric(
-                                    horizontal: 4.0),
+                                itemPadding:
+                                    EdgeInsets.symmetric(horizontal: 4.0),
                                 itemBuilder: (context, _) => Icon(
                                   Icons.star,
                                   color: Colors.amber,
@@ -306,9 +304,8 @@ class ListCardCompaniaCerca extends StatelessWidget {
                                 },
                               ),
                             ),
-
                             Text(
-                            "("+ d!.comentario.toString()+")",
+                              "(" + d!.comentario.toString() + ")",
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
@@ -323,22 +320,25 @@ class ListCardCompaniaCerca extends StatelessWidget {
             ),
           ),
           Positioned(
-              top: 40,
-              bottom: 30,
-              left: 10,
-              child: Hero(
-                tag: tag!,
-                child: Container(
-                    height: 120,
-                    width: 120,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: (d!.primeraimagen != null)
-                            ? CustomCacheImage(imageUrl: d!.primeraimagen!)
-                            : Image.asset(
-                                "assets/images/no-image.png",
-                              ))),
-              ))
+            top: 1.2,
+            bottom: 1.2,
+            left: 11.2,
+            child: Hero(
+              tag: tag!,
+              child: Container(
+                height: 120,
+                width: 120,
+                child: ClipRRect(
+                  //  borderRadius: BorderRadius.circular(5),
+                  child: (d!.primeraimagen != null)
+                      ? CustomCacheImage(imageUrl: d!.primeraimagen!)
+                      : Image.asset(
+                          "assets/images/no-imagen-company.jpg",
+                        ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
       onTap: () => nextScreen(context, DetalleCompaniaPage(compania: d)),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,9 +57,12 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
   bool? _isLoading;
   String _textVer = "view".tr();
   String _textReviews = "comments".tr();
+  bool? _isConnected;
+
   @override
   void initState() {
     super.initState();
+    _checkInternetConnection();
     _isLoading = true;
     _scrollViewController = new ScrollController();
     _scrollViewController!.addListener(() {
@@ -81,6 +86,20 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {});
     _getData();
     refresh();
+  }
+
+  Future<void> _checkInternetConnection() async {
+    try {
+      final response = await InternetAddress.lookup('www.google.com');
+      if (response.isNotEmpty)
+        setState(() {
+          _isConnected = true;
+        });
+    } on SocketException catch (err) {
+      setState(() {
+        _isConnected = false;
+      });
+    }
   }
 
   Future _getData() async {
@@ -224,691 +243,812 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                 actions: [],
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollViewController,
-                child: Container(
-                  child: Column(children: [
-                    Container(
-                      child: _sliderImages(context, height, width),
+            (_isConnected == null)
+                ? Center(
+                    child: SizedBox(
+                      child: CircularProgressIndicator(),
+                      height: 50.0,
+                      width: 50.0,
                     ),
-                    Container(
-                      padding: EdgeInsets.only(top: 10, right: 10, left: 10),
-                      child: Column(children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                                child: Text(
-                              widget.compania!.nombre.toString(),
-                              style: Theme.of(context).textTheme.headline1,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            )),
-                          ],
-                        ),
-                        if (widget.compania!.direccion != "")
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                  child: Text(
-                                widget.compania!.direccion.toString(),
-                                style: Theme.of(context).textTheme.bodyText2,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              )),
-                            ],
-                          ),
-                        Row(children: [
-                          // Expanded(
-                          Container(
-                            // width: width,
-                            height: 30,
-                            //color: Colors.red,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: RatingBar.builder(
-                                // ignoreGestures: true,
-                                itemSize: 28,
-                                initialRating: widget.compania!.rating!,
-                                ignoreGestures: true,
-                                direction: Axis.horizontal,
-                                allowHalfRating: false,
-                                itemCount: 5,
-                                itemPadding:
-                                    EdgeInsets.symmetric(horizontal: 0.0),
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                ),
-                                onRatingUpdate: (rating) {
-                                  //_rating = rating;
-                                  //print(rating);
-                                },
-                              ),
-                            ),
-                          ),
-
-                          Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Text("(" +
-                                widget.compania!.comentario.toString() +
-                                ")"),
-                          )
-                        ]),
-                        Row(
-                          children: [
-                            if (widget.compania!.paginaweb != "")
-                              Expanded(
-                                  child: Container(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: TextButton.icon(
-                                    onPressed: () async {
-                                      String url = widget.compania!.paginaweb!;
-                                      if (await canLaunch(url))
-                                        await launch(url);
-                                      else
-                                        // can't launch url, there is some error
-                                        throw "Could not launch $url";
-                                    },
-                                    icon: Icon(
-                                      FontAwesomeIcons.globe,
-                                    ),
-                                    label: Text("Visitar Pagina")),
-                              )),
-                            FutureBuilder(
-                              future: context
-                                  .watch<CompaniaBloc>()
-                                  .obtenerTelefonosCompania(
-                                      widget.compania!.idcompania!),
-                              builder: (context,
-                                  AsyncSnapshot<List<Telefono?>> snapshot) {
-                                /* if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                } else {*/
-                                if (snapshot.hasData) {
-                                  if (snapshot.data!.length > 0) {
-                                    return Expanded(
-                                        child: Container(
-                                      alignment: AlignmentDirectional.centerEnd,
-                                      child: TextButton.icon(
-                                          onPressed: () async {
-                                            String numero = "+52" +
-                                                snapshot
-                                                    .data!.first!.numerotelefono
-                                                    .toString();
-                                            launch('tel://$numero');
-                                          },
-                                          icon: Icon(Icons.call),
-                                          label: Text("call".tr())),
-                                    ));
-                                  } else {
-                                    return Container();
-                                  }
-                                } else if (snapshot.hasError) {
-                                  return Container();
-                                } else {
-                                  return CircularProgressIndicator();
-                                }
-                                // }
-                              },
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                                child: Container(
-                              child: FutureBuilder(
-                                future: context
-                                    .watch<CompaniaBloc>()
-                                    .obtenerHorarioCompaniaFiltrado(
-                                        widget.compania!.idcompania!),
-                                builder: (context,
-                                    AsyncSnapshot<List<Horario?>> snapshot) {
-                                  if (snapshot.hasData) {
-                                    if (snapshot.data!.length > 0) {
-                                      return Container(
-                                        child: ListTile(
-                                          leading: Icon(
-                                            Icons.circle,
-                                            color: Colors.green,
-                                          ),
-                                          title: Text(
-                                            "open now".tr(),
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                          subtitle: Text(snapshot
-                                                  .data!.first!.horainicial! +
-                                              " - " +
-                                              snapshot.data!.first!.horafinal!),
-                                          trailing: IconButton(
-                                            icon: Icon(
-                                                FontAwesomeIcons.chevronRight),
-                                            onPressed: () {
-                                              nextScreen(
-                                                  context,
-                                                  HorarioPage(
-                                                      compania:
-                                                          widget.compania!));
-                                            },
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      return Container(
-                                        child: ListTile(
-                                          leading: Icon(
-                                            Icons.circle,
-                                            color: Colors.red,
-                                          ),
-                                          title: Text(
-                                            "closed".tr(),
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                          subtitle: Text("schedule".tr()),
-                                          trailing: IconButton(
-                                            icon: Icon(
-                                                FontAwesomeIcons.chevronRight),
-                                            onPressed: () {
-                                              nextScreen(
-                                                  context,
-                                                  HorarioPage(
-                                                      compania:
-                                                          widget.compania!));
-                                            },
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    if (snapshot.hasError) {
-                                      return Container();
-                                    } else {
-                                      return Text("loading...".tr());
-                                    }
-                                  }
-                                },
-                              ),
-                            ))
-                          ],
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 8, bottom: 8),
-                          height: 2,
-                          width: width,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(40)),
-                        ),
-                        if (widget.compania!.actividad != "")
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                    left: 0,
-                                    //top: 10,
-                                  ),
-                                  child: Text(
-                                    'about us',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ).tr(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        if (widget.compania!.actividad != "")
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Html(
-                                    data: '''${widget.compania!.actividad}''',
-                                    shrinkWrap: true,
-                                    style: {
-                                      "body": Style(
-                                        maxLines: 3,
-                                        textAlign: TextAlign.justify,
-                                        fontSize: FontSize(16.0),
-                                        // fontWeight: FontWeight.w500,
-                                        //  color: Colors.black,
-                                        textOverflow: TextOverflow.ellipsis,
-                                      ),
-                                    },
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        if ((widget.compania!.actividad != "") &&
-                            widget.compania!.actividad!.length > 50)
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: ElevatedButton(
-                                  child: Text('read more').tr(),
-                                  // icon: Icon(Icons.add_comment_rounded),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.white,
-                                    onPrimary: Colors.black,
-                                    onSurface: Colors.black,
-                                    //shadowColor: Colors.grey,
-                                    padding: EdgeInsets.all(10.0),
-                                    elevation: 4,
-
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20))),
-                                  ),
-                                  onPressed: () {},
-                                ),
-                              )
-                            ],
-                          ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                  left: 0,
-                                  //top: 10,
-                                ),
-                                child: Text(
-                                  'contribute',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ).tr(),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
+                  )
+                : (!_isConnected!)
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              margin: EdgeInsets.only(top: 8, bottom: 8),
-                              height: 3,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(40)),
+                                margin: EdgeInsets.only(
+                                    left: 25, right: 25, top: 10),
+                                child: Text(
+                                  'are you offline?'.tr(),
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )),
+                            Container(
+                              margin:
+                                  EdgeInsets.only(left: 25, right: 25, top: 10),
+                              child: Text(
+                                'please check your internet connection and reload the page'
+                                    .tr(),
+                                style: TextStyle(fontSize: 16),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                label: Text('write a comment').tr(),
-                                icon: Icon(Icons.add_comment_rounded),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.white,
-                                  onPrimary: Colors.black,
-                                  onSurface: Colors.black,
-                                  //shadowColor: Colors.grey,
-                                  padding: EdgeInsets.all(10.0),
-                                  elevation: 4,
+                            Container(
+                              margin:
+                                  EdgeInsets.only(left: 25, right: 25, top: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      child: Text('reload').tr(),
+                                      // icon: Icon(Icons.add_comment_rounded),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.white,
+                                        onPrimary: Colors.black,
+                                        onSurface: Colors.black,
+                                        //shadowColor: Colors.grey,
+                                        padding: EdgeInsets.all(10.0),
+                                        elevation: 6,
 
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
-                                ),
-                                onPressed: () {
-                                  nextScreen(
-                                      context,
-                                      AgregarComentarioCompaniaPage(
-                                          compania: widget.compania));
-                                },
+                                        shape: RoundedRectangleBorder(
+                                            side: BorderSide(),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20))),
+                                      ),
+                                      onPressed: () => setState(() {}),
+                                    ),
+                                  ),
+                                ],
                               ),
                             )
                           ],
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _hasData == false
-                                  ? Container(
-                                      margin:
-                                          EdgeInsets.only(top: 10, bottom: 30),
-                                      child: ListView(
-                                        scrollDirection: Axis.vertical,
-                                        shrinkWrap: true,
-                                        children: [
-                                          EmptyPage(
-                                              icon: LineIcons.comments,
-                                              message: 'no comments found'.tr(),
-                                              message1:
-                                                  'be the first to comment'
-                                                      .tr()),
-                                        ],
-                                      ),
-                                    )
-                                  : Container(
-                                      // color: Colors.red,
-                                      margin: EdgeInsets.only(top: 15),
-                                      child: ListView.separated(
-                                        scrollDirection: Axis.vertical,
-                                        shrinkWrap: true,
-                                        primary: false,
-                                        padding: EdgeInsets.all(5),
-                                        // controller: _scrollViewController,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: _listComentarios.length,
-                                        separatorBuilder:
-                                            (BuildContext context, int index) =>
-                                                SizedBox(
-                                          height: 0,
+                      )
+                    : Expanded(
+                        child: SingleChildScrollView(
+                          controller: _scrollViewController,
+                          child: Container(
+                            child: Column(children: [
+                              Container(
+                                child: _sliderImages(context, height, width),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(
+                                    top: 10, right: 10, left: 10),
+                                child: Column(children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Expanded(
+                                          child: Text(
+                                        widget.compania!.nombre.toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      )),
+                                    ],
+                                  ),
+                                  if (widget.compania!.direccion != "")
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Expanded(
+                                            child: Text(
+                                          widget.compania!.direccion.toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        )),
+                                      ],
+                                    ),
+                                  Row(children: [
+                                    // Expanded(
+                                    Container(
+                                      // width: width,
+                                      height: 30,
+                                      //color: Colors.red,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 5),
+                                        child: RatingBar.builder(
+                                          // ignoreGestures: true,
+                                          itemSize: 28,
+                                          initialRating:
+                                              widget.compania!.rating!,
+                                          ignoreGestures: true,
+                                          direction: Axis.horizontal,
+                                          allowHalfRating: false,
+                                          itemCount: 5,
+                                          itemPadding: EdgeInsets.symmetric(
+                                              horizontal: 0.0),
+                                          itemBuilder: (context, _) => Icon(
+                                            Icons.star,
+                                            color: Colors.amber,
+                                          ),
+                                          onRatingUpdate: (rating) {
+                                            //_rating = rating;
+                                            //print(rating);
+                                          },
                                         ),
-                                        itemBuilder: (_, int index) {
-                                          if (index < _listComentarios.length) {
-                                            //return reviewList(_listComentarios[index]!, context,_signInBloc);
-                                            return Container(
-                                                //  padding: EdgeInsets.only(
-                                                //      top: 5, bottom: 5),
-                                                decoration: BoxDecoration(
-                                                  //color: Colors.white,
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                        width: 1,
-                                                        color: Colors
-                                                            .grey.shade300),
-                                                  ),
-                                                  //  borderRadius: BorderRadius.circular(5)),
-                                                ),
-                                                child: ListTile(
-                                                    leading: (_listComentarios[
-                                                                index]!
-                                                            .imageUrl!
-                                                            .isEmpty)
-                                                        ? Container(
-                                                            height: 50,
-                                                            width: 50,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors
-                                                                  .grey[300],
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                            ),
-                                                            child: Icon(
-                                                                Icons.person,
-                                                                size: 28),
-                                                          )
-                                                        : CircleAvatar(
-                                                            radius: 25,
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .grey[200],
-                                                            backgroundImage:
-                                                                CachedNetworkImageProvider(
-                                                                    _listComentarios[
-                                                                            index]!
-                                                                        .imageUrl!)),
-                                                    title: Column(
-                                                      children: <Widget>[
-                                                        Container(
-                                                          child: Row(
-                                                            children: [
-                                                              Text(
-                                                                _listComentarios[
-                                                                        index]!
-                                                                    .userName!,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontSize:
-                                                                        12,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                  _listComentarios[
-                                                                          index]!
-                                                                      .fecha
-                                                                      .toString(),
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                              .grey[
-                                                                          500],
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500)),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    subtitle: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Container(
-                                                              //alignment: MainAxisAlignment.start,
-                                                              //color: Colors.red,
-                                                              child: RatingBar
-                                                                  .builder(
-                                                                // ignoreGestures: true,
-                                                                itemSize: 20,
-                                                                initialRating:
-                                                                    _listComentarios[
-                                                                            index]!
-                                                                        .rating!,
-                                                                minRating:
-                                                                    _listComentarios[
-                                                                            index]!
-                                                                        .rating!,
-                                                                maxRating:
-                                                                    _listComentarios[
-                                                                            index]!
-                                                                        .rating!,
-                                                                ignoreGestures:
-                                                                    true,
-                                                                direction: Axis
-                                                                    .horizontal,
-                                                                allowHalfRating:
-                                                                    false,
-                                                                itemCount: 5,
-                                                                itemPadding: EdgeInsets
-                                                                    .symmetric(
-                                                                        horizontal:
-                                                                            4.0),
-                                                                itemBuilder:
-                                                                    (context,
-                                                                            _) =>
-                                                                        Icon(
-                                                                  Icons.star,
-                                                                  color: Colors
-                                                                      .amber,
-                                                                ),
-                                                                onRatingUpdate:
-                                                                    (rating) {
-                                                                  //_rating = rating;
-                                                                  //print(rating);
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child:
-                                                                  ReadMoreText(
-                                                                _listComentarios[
-                                                                        index]!
-                                                                    .comentario!,
-                                                                trimLines: 4,
-                                                                colorClickableText:
-                                                                    Colors.blue,
-                                                                trimMode:
-                                                                    TrimMode
-                                                                        .Line,
-                                                                trimCollapsedText:
-                                                                    'read more'
-                                                                        .tr(),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .justify,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        16),
-                                                                trimExpandedText:
-                                                                    'read less'
-                                                                        .tr(),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    trailing: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        PopupMenuButton(
-                                                            // key: _menuKey,
-                                                            itemBuilder: (_) =>
-                                                                <
-                                                                    PopupMenuItem<
-                                                                        String>>[
-                                                                  if (_listComentarios[
-                                                                              index]!
-                                                                          .idusuario ==
-                                                                      _signInBloc
-                                                                          .idusuario)
-                                                                    PopupMenuItem<String>(
-                                                                        child: Text(
-                                                                            'Eliminar'),
-                                                                        value:
-                                                                            'eliminar'),
-                                                                  PopupMenuItem<String>(
-                                                                      child: Text(
-                                                                          'Reportar'),
-                                                                      value:
-                                                                          'reportar'),
-                                                                ],
-                                                            onSelected:
-                                                                (valor) {
-                                                              print(valor);
-                                                              if (valor ==
-                                                                  "reportar") {
-                                                                nextScreen(
-                                                                    context,
-                                                                    ReportarComentarioCompaniaPage(
-                                                                        comentario:
-                                                                            _listComentarios[index]!));
-                                                              }
-                                                              if (valor ==
-                                                                  "eliminar") {
-                                                                handleDelete(
-                                                                    context,
-                                                                    _listComentarios[
-                                                                        index]!);
-                                                              }
-                                                            }),
-                                                      ],
-                                                    )));
-                                          }
-                                          return Opacity(
-                                            opacity: _isLoading! ? 1.0 : 0.0,
-                                            child: _lastVisible == 0
-                                                ? LoadingCard(height: 100)
-                                                : Center(
-                                                    child: SizedBox(
-                                                        width: 32.0,
-                                                        height: 32.0,
-                                                        child:
-                                                            new CupertinoActivityIndicator()),
-                                                  ),
-                                          );
-                                        },
                                       ),
                                     ),
-                            ),
-                          ],
-                        ),
-                        if (_totalComentarios >= 5)
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: ElevatedButton(
-                                  child: Text(_textVer +
-                                      " " +
-                                      _totalComentarios.toString() +
-                                      " " +
-                                      _textReviews),
-                                  // icon: Icon(Icons.add_comment_rounded),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.white,
-                                    onPrimary: Colors.black,
-                                    onSurface: Colors.black,
-                                    //shadowColor: Colors.grey,
-                                    padding: EdgeInsets.all(10.0),
-                                    elevation: 4,
 
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20))),
+                                    Container(
+                                      padding: EdgeInsets.only(top: 10),
+                                      child: Text("(" +
+                                          widget.compania!.comentario
+                                              .toString() +
+                                          ")"),
+                                    )
+                                  ]),
+                                  Row(
+                                    children: [
+                                      if (widget.compania!.paginaweb != "")
+                                        Expanded(
+                                            child: Container(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          child: TextButton.icon(
+                                              onPressed: () async {
+                                                String url =
+                                                    widget.compania!.paginaweb!;
+                                                if (await canLaunch(url))
+                                                  await launch(url);
+                                                else
+                                                  // can't launch url, there is some error
+                                                  throw "Could not launch $url";
+                                              },
+                                              icon: Icon(
+                                                FontAwesomeIcons.globe,
+                                              ),
+                                              label: Text("Visitar Pagina")),
+                                        )),
+                                      FutureBuilder(
+                                        future: context
+                                            .watch<CompaniaBloc>()
+                                            .obtenerTelefonosCompania(
+                                                widget.compania!.idcompania!),
+                                        builder: (context,
+                                            AsyncSnapshot<List<Telefono?>>
+                                                snapshot) {
+                                          /* if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                } else {*/
+                                          if (snapshot.hasData) {
+                                            if (snapshot.data!.length > 0) {
+                                              return Expanded(
+                                                  child: Container(
+                                                alignment: AlignmentDirectional
+                                                    .centerEnd,
+                                                child: TextButton.icon(
+                                                    onPressed: () async {
+                                                      String numero = "+52" +
+                                                          snapshot.data!.first!
+                                                              .numerotelefono
+                                                              .toString();
+                                                      launch('tel://$numero');
+                                                    },
+                                                    icon: Icon(Icons.call),
+                                                    label: Text("call".tr())),
+                                              ));
+                                            } else {
+                                              return Container();
+                                            }
+                                          } else if (snapshot.hasError) {
+                                            return Container();
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                          // }
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    nextScreen(
-                                        context,
-                                        ComentariosCompaniaPage(
-                                            compania: widget.compania!,
-                                            collectionName: 'places'));
-                                  },
-                                ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: Container(
+                                        child: FutureBuilder(
+                                          future: context
+                                              .watch<CompaniaBloc>()
+                                              .obtenerHorarioCompaniaFiltrado(
+                                                  widget.compania!.idcompania!),
+                                          builder: (context,
+                                              AsyncSnapshot<List<Horario?>>
+                                                  snapshot) {
+                                            if (snapshot.hasData) {
+                                              if (snapshot.data!.length > 0) {
+                                                return Container(
+                                                  child: ListTile(
+                                                    leading: Icon(
+                                                      Icons.circle,
+                                                      color: Colors.green,
+                                                    ),
+                                                    title: Text(
+                                                      "open now".tr(),
+                                                      style: TextStyle(
+                                                          fontSize: 18),
+                                                    ),
+                                                    subtitle: Text(snapshot
+                                                            .data!
+                                                            .first!
+                                                            .horainicial! +
+                                                        " - " +
+                                                        snapshot.data!.first!
+                                                            .horafinal!),
+                                                    trailing: IconButton(
+                                                      icon: Icon(
+                                                          FontAwesomeIcons
+                                                              .chevronRight),
+                                                      onPressed: () {
+                                                        nextScreen(
+                                                            context,
+                                                            HorarioPage(
+                                                                compania: widget
+                                                                    .compania!));
+                                                      },
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                return Container(
+                                                  child: ListTile(
+                                                    leading: Icon(
+                                                      Icons.circle,
+                                                      color: Colors.red,
+                                                    ),
+                                                    title: Text(
+                                                      "closed".tr(),
+                                                      style: TextStyle(
+                                                          fontSize: 18),
+                                                    ),
+                                                    subtitle:
+                                                        Text("schedule".tr()),
+                                                    trailing: IconButton(
+                                                      icon: Icon(
+                                                          FontAwesomeIcons
+                                                              .chevronRight),
+                                                      onPressed: () {
+                                                        nextScreen(
+                                                            context,
+                                                            HorarioPage(
+                                                                compania: widget
+                                                                    .compania!));
+                                                      },
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            } else {
+                                              if (snapshot.hasError) {
+                                                return Container();
+                                              } else {
+                                                return Text("loading...".tr());
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      ))
+                                    ],
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 8, bottom: 8),
+                                    height: 2,
+                                    width: width,
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius:
+                                            BorderRadius.circular(40)),
+                                  ),
+                                  if (widget.compania!.actividad != "")
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            margin: EdgeInsets.only(
+                                              left: 0,
+                                              //top: 10,
+                                            ),
+                                            child: Text(
+                                              'about us',
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ).tr(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  if (widget.compania!.actividad != "")
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Html(
+                                              data:
+                                                  '''${widget.compania!.actividad}''',
+                                              shrinkWrap: true,
+                                              style: {
+                                                "body": Style(
+                                                  maxLines: 3,
+                                                  textAlign: TextAlign.justify,
+                                                  fontSize: FontSize(16.0),
+                                                  // fontWeight: FontWeight.w500,
+                                                  //  color: Colors.black,
+                                                  textOverflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              },
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  if ((widget.compania!.actividad != "") &&
+                                      widget.compania!.actividad!.length > 50)
+                                    Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            child: Text('read more').tr(),
+                                            // icon: Icon(Icons.add_comment_rounded),
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.white,
+                                              onPrimary: Colors.black,
+                                              onSurface: Colors.black,
+                                              //shadowColor: Colors.grey,
+                                              padding: EdgeInsets.all(10.0),
+                                              elevation: 4,
+
+                                              shape: RoundedRectangleBorder(
+                                                  side: BorderSide(),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(20))),
+                                            ),
+                                            onPressed: () {},
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          margin: EdgeInsets.only(
+                                            left: 0,
+                                            //top: 10,
+                                          ),
+                                          child: Text(
+                                            'contribute',
+                                            style: TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ).tr(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 8, bottom: 8),
+                                        height: 3,
+                                        width: 150,
+                                        decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(40)),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: ElevatedButton.icon(
+                                          label: Text('write a comment').tr(),
+                                          icon: Icon(Icons.add_comment_rounded),
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.white,
+                                            onPrimary: Colors.black,
+                                            onSurface: Colors.black,
+                                            //shadowColor: Colors.grey,
+                                            padding: EdgeInsets.all(10.0),
+                                            elevation: 4,
+
+                                            shape: RoundedRectangleBorder(
+                                                side: BorderSide(),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20))),
+                                          ),
+                                          onPressed: () {
+                                            nextScreen(
+                                                context,
+                                                AgregarComentarioCompaniaPage(
+                                                    compania: widget.compania));
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _hasData == false
+                                            ? Container(
+                                                margin: EdgeInsets.only(
+                                                    top: 10, bottom: 30),
+                                                child: ListView(
+                                                  scrollDirection:
+                                                      Axis.vertical,
+                                                  shrinkWrap: true,
+                                                  children: [
+                                                    EmptyPage(
+                                                        icon:
+                                                            LineIcons.comments,
+                                                        message:
+                                                            'no comments found'
+                                                                .tr(),
+                                                        message1:
+                                                            'be the first to comment'
+                                                                .tr()),
+                                                  ],
+                                                ),
+                                              )
+                                            : Container(
+                                                // color: Colors.red,
+                                                margin:
+                                                    EdgeInsets.only(top: 15),
+                                                child: ListView.separated(
+                                                  scrollDirection:
+                                                      Axis.vertical,
+                                                  shrinkWrap: true,
+                                                  primary: false,
+                                                  padding: EdgeInsets.all(5),
+                                                  // controller: _scrollViewController,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  itemCount:
+                                                      _listComentarios.length,
+                                                  separatorBuilder:
+                                                      (BuildContext context,
+                                                              int index) =>
+                                                          SizedBox(
+                                                    height: 0,
+                                                  ),
+                                                  itemBuilder: (_, int index) {
+                                                    if (index <
+                                                        _listComentarios
+                                                            .length) {
+                                                      //return reviewList(_listComentarios[index]!, context,_signInBloc);
+                                                      return Container(
+                                                          //  padding: EdgeInsets.only(
+                                                          //      top: 5, bottom: 5),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            //color: Colors.white,
+                                                            border: Border(
+                                                              bottom: BorderSide(
+                                                                  width: 1,
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade300),
+                                                            ),
+                                                            //  borderRadius: BorderRadius.circular(5)),
+                                                          ),
+                                                          child: ListTile(
+                                                              leading: (_listComentarios[
+                                                                          index]!
+                                                                      .imageUrl!
+                                                                      .isEmpty)
+                                                                  ? Container(
+                                                                      height:
+                                                                          50,
+                                                                      width: 50,
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: Colors
+                                                                            .grey[300],
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                      ),
+                                                                      child: Icon(
+                                                                          Icons
+                                                                              .person,
+                                                                          size:
+                                                                              28),
+                                                                    )
+                                                                  : CircleAvatar(
+                                                                      radius:
+                                                                          25,
+                                                                      backgroundColor:
+                                                                          Colors.grey[
+                                                                              200],
+                                                                      backgroundImage:
+                                                                          CachedNetworkImageProvider(
+                                                                              _listComentarios[index]!.imageUrl!)),
+                                                              title: Column(
+                                                                children: <
+                                                                    Widget>[
+                                                                  Container(
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          _listComentarios[index]!
+                                                                              .userName!,
+                                                                          style: TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 12,
+                                                                              fontWeight: FontWeight.w600),
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                            _listComentarios[index]!
+                                                                                .fecha
+                                                                                .toString(),
+                                                                            style: TextStyle(
+                                                                                color: Colors.grey[500],
+                                                                                fontSize: 11,
+                                                                                fontWeight: FontWeight.w500)),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              subtitle: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Container(
+                                                                        //alignment: MainAxisAlignment.start,
+                                                                        //color: Colors.red,
+                                                                        child: RatingBar
+                                                                            .builder(
+                                                                          // ignoreGestures: true,
+                                                                          itemSize:
+                                                                              20,
+                                                                          initialRating:
+                                                                              _listComentarios[index]!.rating!,
+                                                                          minRating:
+                                                                              _listComentarios[index]!.rating!,
+                                                                          maxRating:
+                                                                              _listComentarios[index]!.rating!,
+                                                                          ignoreGestures:
+                                                                              true,
+                                                                          direction:
+                                                                              Axis.horizontal,
+                                                                          allowHalfRating:
+                                                                              false,
+                                                                          itemCount:
+                                                                              5,
+                                                                          itemPadding:
+                                                                              EdgeInsets.symmetric(horizontal: 4.0),
+                                                                          itemBuilder: (context, _) =>
+                                                                              Icon(
+                                                                            Icons.star,
+                                                                            color:
+                                                                                Colors.amber,
+                                                                          ),
+                                                                          onRatingUpdate:
+                                                                              (rating) {
+                                                                            //_rating = rating;
+                                                                            //print(rating);
+                                                                          },
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child:
+                                                                            ReadMoreText(
+                                                                          _listComentarios[index]!
+                                                                              .comentario!,
+                                                                          trimLines:
+                                                                              4,
+                                                                          colorClickableText:
+                                                                              Colors.blue,
+                                                                          trimMode:
+                                                                              TrimMode.Line,
+                                                                          trimCollapsedText:
+                                                                              'read more'.tr(),
+                                                                          textAlign:
+                                                                              TextAlign.justify,
+                                                                          style:
+                                                                              TextStyle(fontSize: 16),
+                                                                          trimExpandedText:
+                                                                              'read less'.tr(),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  if (_listComentarios[
+                                                                              index]!
+                                                                          .imagenes!
+                                                                          .length >
+                                                                      0)
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                            child:
+                                                                                GridView.count(
+                                                                          crossAxisCount:
+                                                                              3,
+                                                                          shrinkWrap:
+                                                                              true,
+                                                                          children: List.generate(
+                                                                              _listComentarios[index]!.imagenes!.length,
+                                                                              (index2) {
+                                                                            return CachedNetworkImage(
+                                                                              imageUrl: _listComentarios[index]!.imagenes![index2].imagenurl!,
+                                                                              imageBuilder: (context, imageProvider) => Container(
+                                                                                decoration: BoxDecoration(
+                                                                                  image: DecorationImage(
+                                                                                    image: imageProvider,
+                                                                                    fit: BoxFit.cover,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              placeholder: (context, url) => Center(
+                                                                                child: SizedBox(
+                                                                                  child: CircularProgressIndicator(),
+                                                                                  height: 50.0,
+                                                                                  width: 50.0,
+                                                                                ),
+                                                                              ),
+                                                                              errorWidget: (context, url, error) => Icon(Icons.error),
+                                                                              width: 300,
+                                                                              height: 300,
+                                                                            );
+                                                                          }),
+                                                                        )),
+                                                                      ],
+                                                                    ),
+                                                                ],
+                                                              ),
+                                                              trailing: Row(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  PopupMenuButton(
+                                                                      // key: _menuKey,
+                                                                      itemBuilder:
+                                                                          (_) =>
+                                                                              <PopupMenuItem<String>>[
+                                                                                if (_listComentarios[index]!.idusuario == _signInBloc.idusuario) PopupMenuItem<String>(child: Text('delete?'.tr()), value: 'eliminar'),
+                                                                                PopupMenuItem<String>(child: Text('report?'.tr()), value: 'reportar'),
+                                                                              ],
+                                                                      onSelected: (valor) {
+                                                                        print(
+                                                                            valor);
+                                                                        if (valor ==
+                                                                            "reportar") {
+                                                                          nextScreen(
+                                                                              context,
+                                                                              ReportarComentarioCompaniaPage(comentario: _listComentarios[index]!));
+                                                                        }
+                                                                        if (valor ==
+                                                                            "eliminar") {
+                                                                          handleDelete(
+                                                                              context,
+                                                                              _listComentarios[index]!);
+                                                                        }
+                                                                      }),
+                                                                ],
+                                                              )));
+                                                    }
+                                                    return Opacity(
+                                                      opacity: _isLoading!
+                                                          ? 1.0
+                                                          : 0.0,
+                                                      child: _lastVisible == 0
+                                                          ? LoadingCard(
+                                                              height: 100)
+                                                          : Center(
+                                                              child: SizedBox(
+                                                                  width: 32.0,
+                                                                  height: 32.0,
+                                                                  child:
+                                                                      new CupertinoActivityIndicator()),
+                                                            ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (_totalComentarios >= 5)
+                                    Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            child: Text(_textVer +
+                                                " " +
+                                                _totalComentarios.toString() +
+                                                " " +
+                                                _textReviews),
+                                            // icon: Icon(Icons.add_comment_rounded),
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.white,
+                                              onPrimary: Colors.black,
+                                              onSurface: Colors.black,
+                                              //shadowColor: Colors.grey,
+                                              padding: EdgeInsets.all(10.0),
+                                              elevation: 4,
+
+                                              shape: RoundedRectangleBorder(
+                                                  side: BorderSide(),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(20))),
+                                            ),
+                                            onPressed: () {
+                                              nextScreen(
+                                                  context,
+                                                  ComentariosCompaniaPage(
+                                                      compania:
+                                                          widget.compania!,
+                                                      collectionName:
+                                                          'places'));
+                                            },
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                ]),
                               )
-                            ],
+                            ]),
                           ),
-                      ]),
-                    )
-                  ]),
-                ),
-              ),
-            )
+                        ),
+                      )
           ],
         ),
       ),
@@ -965,7 +1105,13 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                 } else if (snapshot.hasError) {
                   return Text("fetch error");
                 } else {
-                  return CircularProgressIndicator();
+                  return Center(
+                    child: SizedBox(
+                      child: CircularProgressIndicator(),
+                      height: 50.0,
+                      width: 50.0,
+                    ),
+                  );
                 }
                 //}
               },

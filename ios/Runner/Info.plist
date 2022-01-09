@@ -68,7 +68,7 @@
   <string>https</string>
   <string>http</string>
 </array>
-	<key>NSCameraUsageDescription</key>
+ <key>NSCameraUsageDescription</key>
 	<string>App name Want To Access Your Camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App name Want To Access Your Gallery</string>

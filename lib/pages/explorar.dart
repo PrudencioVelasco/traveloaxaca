@@ -9,7 +9,7 @@ import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:traveloaxaca/models/lugar.dart';
-import 'package:traveloaxaca/pages/categoria_principal.dart';
+import 'package:traveloaxaca/pages/tours.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
 import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
@@ -57,11 +57,6 @@ class _ExplorarState extends State<Explorar> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.black,
-      ),
-    );
     return Scaffold(
         //  backgroundColor: Colors.white,
         body: SafeArea(
@@ -83,13 +78,8 @@ class _ExplorarState extends State<Explorar> {
               Featured(),
               PopularPlaces(),
               //RutaPage(),
-              CategoriaPrincipalPage(),
-              RecienVisitadoPage(),
-              // CategoriaPage(),
-              //RecentPlaces(),
-              //SpecialStateOne(),
-              //SpecialStateTwo(),
-              //RecommendedPlaces()
+              ToursPage(),
+              RecienVisitadoPage()
             ],
           ),
         ),

@@ -10,6 +10,7 @@ class Ruta {
   String? nombre;
   String? imagen;
   String? descripcion;
+  int? visible;
   List<Ruta> toList = [];
   Ruta({
     required this.idruta,
@@ -17,6 +18,7 @@ class Ruta {
     this.nombre,
     this.imagen,
     this.descripcion,
+    this.visible,
   });
 
   factory Ruta.fromJson(Map<String, dynamic> json) => Ruta(
@@ -25,6 +27,7 @@ class Ruta {
         nombre: json["nombre"],
         imagen: json["imagen"],
         descripcion: json["descripcion"],
+        visible: json["visible"],
       );
   Ruta.fromJsonToList(List<dynamic> jsonList) {
     //if (jsonList == null) return;
@@ -39,5 +42,6 @@ class Ruta {
         "nombre": nombre,
         "imagen": imagen,
         "descripcion": descripcion,
+        "visible": visible,
       };
 }

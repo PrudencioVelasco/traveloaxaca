@@ -33,10 +33,9 @@ class CommentsPage extends StatefulWidget {
 }
 
 class _CommentsPageState extends State<CommentsPage> {
-  //final FirebaseFirestore firestore = FirebaseFirestore.instance;
   ScrollController? controller;
+  ScrollController? _scrollComentarios;
   CommentsBloc _commentsBloc = new CommentsBloc();
-  //DocumentSnapshot? _lastVisible;
   int _lastVisible = 0;
   int _idComentarioUltimo = 0;
   bool? _isLoading;
@@ -53,7 +52,6 @@ class _CommentsPageState extends State<CommentsPage> {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _commentsBloc.init(context, refresh);
-      _internetBloc.init(context);
     });
     _isLoading = true;
     _getData();
@@ -71,18 +69,18 @@ class _CommentsPageState extends State<CommentsPage> {
     if (_lastVisible == 0) {
 //_listComentarios
       _listComentarios = (await _commentsBloc.obtenerComentariosLugar(
-          widget.lugar.idlugar!, 0, 7));
+          widget.lugar.idlugar!, 0, 15));
     } else {
       // data = await firestore
       _data = (await _commentsBloc.obtenerComentariosLugar(
-          widget.lugar.idlugar!, _idComentarioUltimo, 7));
+          widget.lugar.idlugar!, _idComentarioUltimo, 15));
       //_listComentarios.add(_data);
       _data.forEach((element) {
         _listComentarios.add(element);
       });
     }
     if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
-      if (_listComentarios.length >= 7) {
+      if (_listComentarios.length >= 15) {
         _idComentarioUltimo = _listComentarios.last!.idcomentario!;
         _lastVisible = 1;
       }
@@ -406,17 +404,62 @@ class _CommentsPageState extends State<CommentsPage> {
                                               trimExpandedText:
                                                   'read less'.tr(),
                                             ),
-                                            /*  Text(
-                                                _listComentarios[index]!
-                                                    .comentario!,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.black87,
-                                                    fontWeight: FontWeight.w500),
-                                              ),*/
                                           ),
                                         ],
                                       ),
+                                      if (_listComentarios[index]!
+                                              .imagenes!
+                                              .length >
+                                          0)
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: GridView.count(
+                                              crossAxisCount: 3,
+                                              shrinkWrap: true,
+                                              children: List.generate(
+                                                  _listComentarios[index]!
+                                                      .imagenes!
+                                                      .length, (index2) {
+                                                return Container(
+                                                  margin: EdgeInsets.only(
+                                                      left: 5.0),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl:
+                                                        _listComentarios[index]!
+                                                            .imagenes![index2]
+                                                            .imagenurl!,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            Center(
+                                                      child: SizedBox(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                        height: 50.0,
+                                                        width: 50.0,
+                                                      ),
+                                                    ),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Icon(Icons.error),
+                                                    width: 300,
+                                                    height: 300,
+                                                  ),
+                                                );
+                                              }),
+                                            )),
+                                          ],
+                                        ),
                                     ],
                                   ),
                                   trailing: Row(
@@ -430,10 +473,11 @@ class _CommentsPageState extends State<CommentsPage> {
                                                         .idusuario ==
                                                     _signInBloc.idusuario)
                                                   PopupMenuItem<String>(
-                                                      child: Text('Eliminar'),
+                                                      child:
+                                                          Text('delete?'.tr()),
                                                       value: 'eliminar'),
                                                 PopupMenuItem<String>(
-                                                    child: Text('Reportar'),
+                                                    child: Text('report?'.tr()),
                                                     value: 'reportar'),
                                               ],
                                           onSelected: (valor) {

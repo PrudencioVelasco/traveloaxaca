@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:traveloaxaca/models/imagen_comentario_compania.dart';
+
 ComentarioCompania comentarioCompaniaFromJson(String str) =>
     ComentarioCompania.fromJson(json.decode(str));
 
@@ -25,21 +27,22 @@ class ComentarioCompania {
   String? imageUrl;
   String? fecha;
   List<ComentarioCompania> toList = [];
-  ComentarioCompania({
-    this.idcomentario,
-    this.idcompania,
-    this.idconquienvisito,
-    this.rating,
-    this.comentario,
-    this.fechavisito,
-    this.eliminado,
-    this.fecharegistro,
-    this.idusuario,
-    this.uid,
-    this.userName,
-    this.imageUrl,
-    this.fecha,
-  });
+  List<ImagenComentarioCompania>? imagenes = [];
+  ComentarioCompania(
+      {this.idcomentario,
+      this.idcompania,
+      this.idconquienvisito,
+      this.rating,
+      this.comentario,
+      this.fechavisito,
+      this.eliminado,
+      this.fecharegistro,
+      this.idusuario,
+      this.uid,
+      this.userName,
+      this.imageUrl,
+      this.fecha,
+      this.imagenes});
 
   factory ComentarioCompania.fromJson(Map<String, dynamic> json) =>
       ComentarioCompania(
@@ -60,6 +63,11 @@ class ComentarioCompania {
         userName: json["userName"],
         imageUrl: json["imageUrl"],
         fecha: json["fecha"],
+        imagenes: (json["imagenes"] == null || json["imagenes"] == '')
+            ? []
+            : List<ImagenComentarioCompania>.from(
+                jsonDecode(json["imagenes"].toString())
+                    .map((model) => ImagenComentarioCompania.fromJson(model))),
       );
   ComentarioCompania.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
@@ -82,6 +90,9 @@ class ComentarioCompania {
         "userName": userName,
         "imageUrl": imageUrl,
         "fecha": fecha,
+        "imagenes": (imagenes!.length > 0)
+            ? imagenes!.map((e) => e.toJson()).toList()
+            : [],
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();
