@@ -27,7 +27,7 @@
     "no hotels found": "No se encontraron hoteles",
     "no restaurants found": "No se encontraron restaurantes",
     "we didn't find any nearby hotels in this area": "No hemos encontrado ningún hotel cercano en esta área",
-    "we didn't find any nearby places in this area": "No hemos encontrado ningún lugares cercano en esta área",
+    "we didn't find any nearby places in this area": "No hemos encontrado ningún lugar cercano en esta área",
     "we didn't find any nearby restaurants in this area": "No hemos encontrado ningún restaurante cercano en esta área",
     "user reviews": "Opiniones de los usuarios",
     "write a review": "Escriba una reseña",
@@ -38,7 +38,7 @@
     "search & explore": "Buscar y explorar lugares",
     "recent searchs": "Búsquedas recientes",
     "search for places": "Buscar lugares",
-    "search-description": "Aún no has buscado ningún artículo.\n Pruébalo ahora, ¡te ayudaremos!",
+    "search-description": "Aún no has buscado ningún lugar.\n Pruébalo ahora, ¡te ayudaremos!",
     "we have found": "Nosotros hemos encontrado",
     "no places found": "No se encontraron lugares",
     "try again": "¡Inténtalo de nuevo!",
@@ -170,5 +170,9 @@
     "please check your internet connection and reload the page": "Por favor revise su conexión a Internet y recargar la pagina",
     "reload": "Recargar",
     "agency": "Agencia",
-    "destination travel":"Destino para viajar"
+    "destination travel":"Destino para viajar",
+    "read the guide":"Leer la guia",
+    "photos": "Fotos",
+    "explore oaxaca":"Explora Oaxaca",
+    "explore mexico":"Explora Mexico"
 }

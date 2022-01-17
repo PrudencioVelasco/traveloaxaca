@@ -281,7 +281,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                               itemPadding:
                                   EdgeInsets.symmetric(horizontal: 4.0),
                               itemBuilder: (context, _) => Icon(
-                                Icons.star,
+                                Icons.star_border_outlined,
                                 color: Colors.amber,
                               ),
                               onRatingUpdate: (rating) {
@@ -305,8 +305,8 @@ class TodosToursPageState extends State<TodosToursPage> {
                                 TextSpan(
                                     style: TextStyle(
                                       color: Colors.grey[600],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                     text: _listaTours[index]!
                                         .totalloves
@@ -323,8 +323,8 @@ class TodosToursPageState extends State<TodosToursPage> {
                                 TextSpan(
                                     style: TextStyle(
                                       color: Colors.grey[600],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                     text: _listaTours[index]!
                                         .totalcomentarios

@@ -377,7 +377,7 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                                               itemPadding: EdgeInsets.symmetric(
                                                   horizontal: 4.0),
                                               itemBuilder: (context, _) => Icon(
-                                                Icons.star,
+                                                Icons.star_border_outlined,
                                                 color: Colors.amber,
                                               ),
                                               onRatingUpdate: (rating) {
@@ -525,11 +525,13 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
           ),
           SafeArea(
             child: Container(
-              height: 65,
+              height: 70,
               padding: EdgeInsets.only(top: 8, bottom: 10, right: 20, left: 20),
               width: double.infinity,
               //  color: Colors.white,
               child: Container(
+                margin: EdgeInsets.only(bottom:
+                10),
                 decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(25)),

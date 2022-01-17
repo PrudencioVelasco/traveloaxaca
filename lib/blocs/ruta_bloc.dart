@@ -39,6 +39,26 @@ class RutasBloc with ChangeNotifier {
     }
   }
 
+  Future<List<Ruta?>> obtenerRutasPrincipales() async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/ruta';
+    try {
+      Uri url = Uri.http(_url, '$_api/todasRutasPrincipales');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.get(url, headers: headers);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      Ruta lug = Ruta.fromJsonToList(responseApi.data);
+      return _data = lug.toList;
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
   Future<List<Lugar?>> getLugaresRuta(int idruta) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/ruta';

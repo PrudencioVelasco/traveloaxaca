@@ -225,6 +225,8 @@ class _MapaPageState extends State<MapaPage>
 
   @override
   Widget build(BuildContext context) {
+    var brishtness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -258,7 +260,9 @@ class _MapaPageState extends State<MapaPage>
                               'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                           additionalOptions: {
                             'accessToken': Config().apiKey,
-                            'id': Config().mapBoxStyle
+                            'id': (isDarkMode)
+                                ? Config().mapBoxStyleDark
+                                : Config().mapBoxStyleLight
                           },
                         ),
                         if (_buildMarkrs().length > 0)

@@ -543,7 +543,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                               itemPadding: EdgeInsets.symmetric(
                                                   horizontal: 0.0),
                                               itemBuilder: (context, _) => Icon(
-                                                Icons.star,
+                                                Icons.star_border_outlined,
                                                 color: Colors.amber,
                                               ),
                                               onRatingUpdate: (rating) {
@@ -968,6 +968,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                                                           .toString()
                                                                       : '',
                                                                   maxLines: 3,
+                                                                  style: TextStyle(
+                                                                    fontSize: 12,
+                                                                  ),
                                                                   overflow:
                                                                       TextOverflow
                                                                           .ellipsis,

@@ -39,7 +39,7 @@
   </intent>
 </queries>
    <application
-        android:label="Travel Oaxaca"
+        android:label="Explora Oaxaca"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/> 

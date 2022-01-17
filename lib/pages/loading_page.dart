@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
+import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/pages/home.dart';
+import 'package:easy_splash_screen/easy_splash_screen.dart';
+import 'package:traveloaxaca/setting/res/resources.dart';
 
 class LoadingPage extends StatefulWidget {
   @override
@@ -33,7 +36,20 @@ class _LoadingPageState extends State<LoadingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
+        body: EasySplashScreen(
+      logo: Image.asset(Config().logotipo),
+      title: Text(
+        "explore oaxaca".tr(),
+        style: TextStyle(
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      showLoader: true,
+      loadingText: Text("loading...".tr()),
+      futureNavigator: checkLoginState(context),
+    )
+        /*FutureBuilder(
         future: checkLoginState(context),
         builder: (context, snapshot) {
           return Center(
@@ -45,27 +61,19 @@ class _LoadingPageState extends State<LoadingPage>
             ),
           );
         },
-      ),
-    );
+      ),*/
+        );
   }
 
-  Future checkLoginState(BuildContext context) async {
+  Future<Widget> checkLoginState(BuildContext context) async {
     final _signInBlocProvider = Provider.of<SignInBloc>(context);
 
     final autenticado = await _signInBlocProvider.isLoggedIn();
 
     if (autenticado) {
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              pageBuilder: (_, __, ___) => Home(),
-              transitionDuration: Duration(milliseconds: 0)));
+      return Future.value(new Home());
     } else {
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              pageBuilder: (_, __, ___) => Home(),
-              transitionDuration: Duration(milliseconds: 0)));
+      return Future.value(new Home());
     }
   }
 }

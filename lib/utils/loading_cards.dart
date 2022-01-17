@@ -49,19 +49,38 @@ class LoadingRutaTuristicaCard extends StatelessWidget {
   }
 }
 
+class LoadingRutasPrincipalesTuristicaCard extends StatelessWidget {
+  const LoadingRutasPrincipalesTuristicaCard({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SkeletonAnimation(
+        child: Container(
+            margin: EdgeInsets.only(left: 0, right: 10, top: 5, bottom: 5),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10))));
+  }
+}
+
 class LoadingFeaturedCard extends StatelessWidget {
   const LoadingFeaturedCard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SkeletonAnimation(
-        child: Container(
-            margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10))));
+      child: Container(
+        margin: EdgeInsets.only( bottom: 15),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          //  borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 }
 

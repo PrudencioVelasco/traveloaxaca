@@ -21,6 +21,8 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:latlong2/latlong.dart' as latlong;
 import 'dart:math' show cos, sqrt, asin;
 
+import 'package:traveloaxaca/utils/snacbar.dart';
+
 class MiUbicacionLugarPage extends StatefulWidget {
   final int? idclasificacion;
   final String? nombreclasificacion;
@@ -72,7 +74,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
   bool ubicado = false;
   final trafficService = new TrafficService();
   final mapbox = MapboxApi(accessToken: Config().apiKey);
-
+  var scaffoldKey = GlobalKey<ScaffoldState>();
   List<String> _listaCoordenadas = [];
   void initState() {
     super.initState();
@@ -238,159 +240,179 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
+        key: scaffoldKey,
         body: NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverAppBar(
-            title: FutureBuilder(
-                future: someFutureStringFunction(
-                    context, widget.nombreclasificacion!),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(
-                      snapshot.data.toString().toUpperCase() +
-                          " " +
-                          "nearby".tr().toUpperCase(),
-                      style: Theme.of(context).textTheme.headline6,
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("error");
-                  }
-                  return Text("loading...".tr());
-                }),
-            pinned: true,
-            floating: true,
-            forceElevated: innerBoxIsScrolled,
-          ),
-        ];
-      },
-      body: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Column(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                title: FutureBuilder(
+                    future: someFutureStringFunction(
+                        context, widget.nombreclasificacion!),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                          snapshot.data.toString().toUpperCase() +
+                              " " +
+                              "nearby".tr().toUpperCase(),
+                          style: Theme.of(context).textTheme.headline6,
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text("error");
+                      }
+                      return Text("loading...".tr());
+                    }),
+                pinned: true,
+                floating: true,
+                forceElevated: innerBoxIsScrolled,
+              ),
+            ];
+          },
+          body: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  margin: EdgeInsets.all(10),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            nextScreen(
-                                context,
-                                MapaCercanoPage(
-                                  idclasificacion: widget.idclasificacion,
-                                  nombreclasificacion:
-                                      widget.nombreclasificacion,
-                                  lugares: _listaLugarSegundo,
-                                ));
-                          },
-                          child: Text("map".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            //onSurface: Colors.red,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
-                        ),
+                Column(
+                  children: [
+                    Container(
+                      //height: 0,
+                      margin: EdgeInsets.only(
+                        top: 5,
                       ),
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            modalActivity(context);
-                          },
-                          child: Text("activity".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(right: 8, left: 8),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (!cargando && !sinresultado) {
+                                  nextScreen(
+                                      context,
+                                      MapaCercanoPage(
+                                        idclasificacion: widget.idclasificacion,
+                                        nombreclasificacion:
+                                            widget.nombreclasificacion,
+                                        lugares: _listaLugarSegundo,
+                                      ));
+                                } else {
+                                  openSnacbar(
+                                      scaffoldKey, 'no places found'.tr());
+                                }
+                              },
+                              child: Text("map".tr()),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                //onSurface: Colors.red,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(right: 8, left: 8),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (!cargando && !sinresultado) {
+                                  modalActivity(context);
+                                } else {
+                                  openSnacbar(
+                                      scaffoldKey, 'no places found'.tr());
+                                }
+                              },
+                              child: Text("activity".tr()),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 4,
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            modalSortBy();
-                          },
-                          child: Text("sort by".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
+                          Container(
+                            margin: EdgeInsets.only(right: 8, left: 8),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (!cargando && !sinresultado) {
+                                  modalSortBy();
+                                } else {
+                                  openSnacbar(
+                                      scaffoldKey, 'no places found'.tr());
+                                }
+                              },
+                              child: Text("sort by".tr()),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 4,
 
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                              ),
+                            ),
                           ),
-                        ),
+                        ]),
                       ),
-                    ]),
-                  ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: (cargando)
+                      ? ListView.separated(
+                          padding: EdgeInsets.all(15),
+                          itemCount: 5,
+                          separatorBuilder: (BuildContext context, int index) =>
+                              SizedBox(
+                            height: 10,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            return LoadingCard(height: 120);
+                          },
+                        )
+                      : (sinresultado)
+                          ? EmptyPage(
+                              icon: FeatherIcons.clipboard,
+                              message: 'no places found'.tr(),
+                              message1: "try again".tr(),
+                            )
+                          : ListView.separated(
+                              // padding: EdgeInsets.all(10),
+                              itemCount: _listaLugarSegundo.length,
+                              separatorBuilder: (context, index) => SizedBox(
+                                height: 5,
+                              ),
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListCardCosasHacerNearby(
+                                  d: _listaLugarSegundo[index],
+                                  tag: "search$index",
+                                  color: Colors.white,
+                                  tipo: "miubicacion",
+                                );
+                              },
+                            ),
                 ),
               ],
             ),
-            Expanded(
-                child: (cargando)
-                    ? ListView.separated(
-                        padding: EdgeInsets.all(15),
-                        itemCount: 5,
-                        separatorBuilder: (BuildContext context, int index) =>
-                            SizedBox(
-                          height: 10,
-                        ),
-                        itemBuilder: (BuildContext context, int index) {
-                          return LoadingCard(height: 120);
-                        },
-                      )
-                    : (sinresultado)
-                        ? EmptyPage(
-                            icon: FeatherIcons.clipboard,
-                            message: 'no places found'.tr(),
-                            message1: "try again".tr(),
-                          )
-                        : ListView.separated(
-                            // padding: EdgeInsets.all(10),
-                            itemCount: _listaLugarSegundo.length,
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: 5,
-                            ),
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListCardNearby(
-                                d: _listaLugarSegundo[index],
-                                tag: "search$index",
-                                color: Colors.white,
-                                tipo: "miubicacion",
-                              );
-                            },
-                          )),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 
   modalSortBy() {
@@ -574,77 +596,83 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
                 SizedBox(
                   height: 30,
                 ),
-                Container(
-                  // color: Colors.green,
-                  height: MediaQuery.of(context).size.height * 0.42,
-                  padding: new EdgeInsets.only(bottom: 10),
-                  child: ListView(scrollDirection: Axis.vertical, children: [
-                    Container(
-                      child: Column(
-                        // crossAxisAlignment: CrossAxisAlignment.center,
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
+                Expanded(
+                  child: Container(
+                    // color: Colors.green,
+                    // height: MediaQuery.of(context).size.height * 0.42,
+                    padding: new EdgeInsets.only(bottom: 10),
+                    child: ListView(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
                           Container(
                               child: getFilterChipsWidgets(setState, context)),
+                        ]),
+                  ),
+                ),
+                SafeArea(
+                  child: Container(
+                    height: 65,
+                    padding: EdgeInsets.only(
+                        top: 8, bottom: 10, right: 20, left: 20),
+                    margin: EdgeInsets.only(bottom: 20),
+                    width: double.infinity,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 10, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("clean").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                                //btnCancelar();
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("filter").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                //btnBuscar();
+                                //Navigator.pop(context, true);
+                              },
+                            ),
+                          )
                         ],
                       ),
                     ),
-                  ]),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 10, right: 10),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: ElevatedButton(
-                          child: Text("clean").tr(),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 2,
-
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                            //btnCancelar();
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: ElevatedButton(
-                          child: Text("filter").tr(),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 2,
-
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                          ),
-                          onPressed: () {
-                            //btnBuscar();
-                            //Navigator.pop(context, true);
-                          },
-                        ),
-                      )
-                    ],
                   ),
-                ),
+                )
               ],
             );
           });

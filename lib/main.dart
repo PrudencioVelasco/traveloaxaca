@@ -136,7 +136,7 @@ class MyApp extends StatelessWidget {
       theme: theme ?? provider.getTheme(),
       darkTheme: provider.getTheme(isDarkMode: true),
       themeMode: provider.getThemeMode(),
-      title: 'Travel Oaxaca',
+      title: 'Explora Oaxaca',
       debugShowCheckedModeBanner: false,
       home: LoadingPage(),
       routes: {

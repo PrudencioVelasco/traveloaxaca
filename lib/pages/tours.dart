@@ -75,7 +75,7 @@ class _ToursPageState extends State<ToursPage> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
-                  height: 290,
+                  height: 292,
                   //color: Colors.green,
                   width: MediaQuery.of(context).size.width,
                   child: ListView.builder(
@@ -86,7 +86,7 @@ class _ToursPageState extends State<ToursPage> {
                     itemBuilder: (BuildContext context, int index) {
                       if (_listaTours.isEmpty)
                         return LoadingListaToursPrincipalCard();
-                      return _botones2(_listaTours[index]);
+                      return _chois(_listaTours[index]);
                     },
                   ),
                 ),
@@ -98,7 +98,7 @@ class _ToursPageState extends State<ToursPage> {
     );
   }
 
-  Widget _botones2(Tour? item) {
+  Widget _chois(Tour? item) {
     return GestureDetector(
       onTap: () {
         nextScreen(context, DetalleTourPage(tour: item));
@@ -116,7 +116,7 @@ class _ToursPageState extends State<ToursPage> {
         ),
 
         margin: EdgeInsets.all(5),
-        elevation: 10,
+        //elevation: 10,
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +153,7 @@ class _ToursPageState extends State<ToursPage> {
                 children: [
                   Container(
                     width: 160,
-                    height: 40,
+                    height: 42,
                     //color: Colors.green,
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -188,7 +188,7 @@ class _ToursPageState extends State<ToursPage> {
                         itemCount: 5,
                         // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => Icon(
-                          Icons.star,
+                          Icons.star_border_outlined,
                           color: Colors.amber,
                         ),
                         onRatingUpdate: (rating) {

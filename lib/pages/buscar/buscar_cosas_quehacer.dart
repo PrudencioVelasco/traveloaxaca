@@ -139,8 +139,8 @@ class _BuscarLugarPageState extends State<BuscarLugarPage> {
                         return Text("loading...".tr());
                       }),
                   leading: CircleAvatar(
-                    child: Icon(FeatherIcons.mapPin),
-                    backgroundColor: Colors.white,
+                    child: Icon(FeatherIcons.send),
+                    // backgroundColor: Colors.white,
                   ),
                   onTap: () {
                     nextScreen(

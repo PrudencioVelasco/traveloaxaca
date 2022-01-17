@@ -35,9 +35,9 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Text("we didn't find any nearby hotels in this area").tr(),
+            content: Text("we didn't find any nearby places in this area").tr(),
             title: Text(
-              'no hotels found',
+              'no places found',
               style: TextStyle(fontWeight: FontWeight.w700),
             ).tr(),
             actions: <Widget>[
@@ -53,7 +53,7 @@ class _MapaRutasPageState extends State<MapaRutasPage> {
   }
 
   Future getData() async {
-    _lugares = (await _rutasBloc.getLugaresRuta(widget.data.idruta!))!;
+    _lugares = (await _rutasBloc.getLugaresRuta(widget.data.idruta!));
     if (_lugares.length == 0) {
       openEmptyDialog();
     } else {

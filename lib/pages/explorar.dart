@@ -9,6 +9,7 @@ import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/pages/aventuras.dart';
 import 'package:traveloaxaca/pages/tours.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
@@ -79,7 +80,8 @@ class _ExplorarState extends State<Explorar> {
               PopularPlaces(),
               //RutaPage(),
               ToursPage(),
-              RecienVisitadoPage()
+              RecienVisitadoPage(),
+              AventurasPage()
             ],
           ),
         ),
@@ -111,7 +113,7 @@ class Header extends StatelessWidget {
         ),
       ),
       // color: Colors.green,
-      margin: EdgeInsets.only(bottom: 20),
+      // margin: EdgeInsets.only(bottom: 2),
       child: Padding(
         padding:
             const EdgeInsets.only(left: 15, right: 15, top: 30, bottom: 20),
@@ -126,16 +128,16 @@ class Header extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(top: 5),
                       child: Text(
-                        Config().appName,
+                        "explore oaxaca".tr(),
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 26,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),
                       ),
                     ),
                     Text(
-                      'explore country',
+                      'explore mexico',
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,

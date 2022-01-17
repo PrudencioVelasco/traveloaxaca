@@ -112,7 +112,7 @@ class _FeaturedItemList extends StatelessWidget {
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     return Container(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      // padding: const EdgeInsets.only(left: 20, right: 20),
       width: w,
       child: InkWell(
         child: Stack(
@@ -123,11 +123,11 @@ class _FeaturedItemList extends StatelessWidget {
                 //color: Colors.grey[300],
                 height: 220,
                 width: w,
-                decoration: BoxDecoration(
+                /*decoration: BoxDecoration(
                     color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10)),*/
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  //  borderRadius: BorderRadius.circular(10),
                   child: (d!.primeraimagen != null)
                       ? CachedNetworkImage(
                           imageUrl: d!.primeraimagen!,
@@ -156,9 +156,9 @@ class _FeaturedItemList extends StatelessWidget {
               ),
             ),
             Positioned(
-              height: 120,
+              height: 100,
               width: w * 0.70,
-              left: w * 0.11,
+              left: w * 0.17,
               bottom: 10,
               child: Container(
                 decoration: BoxDecoration(
@@ -186,27 +186,6 @@ class _FeaturedItemList extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            Icons.location_on,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
-                          Expanded(
-                            child: Text(
-                              d!.direccion!,
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        ],
                       ),
                       Divider(
                         color: Colors.grey[300],

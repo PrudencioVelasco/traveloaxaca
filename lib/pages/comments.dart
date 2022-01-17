@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:image_collapse/gallery_item.dart';
+import 'package:image_collapse/gallery_view_wrapper.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -12,6 +14,7 @@ import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/comentario/agregar_comentario.dart';
 import 'package:traveloaxaca/comentario/reportar_comentario_lugar.dart';
 import 'package:traveloaxaca/models/comment.dart';
+import 'package:traveloaxaca/models/imagen_comentario_lugar.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/utils/empty.dart';
@@ -46,6 +49,9 @@ class _CommentsPageState extends State<CommentsPage> {
   List<Comentario?> _listComentarios = [];
   final GlobalKey _menuKey = GlobalKey();
   InternetBloc _internetBloc = new InternetBloc();
+  static final List<GalleryItem> _galleryItems = <GalleryItem>[];
+  String? titleGallery;
+  Color? appBarColor;
   @override
   void initState() {
     controller = new ScrollController()..addListener(_scrollListener);
@@ -374,10 +380,10 @@ class _CommentsPageState extends State<CommentsPage> {
                                               direction: Axis.horizontal,
                                               allowHalfRating: false,
                                               itemCount: 5,
-                                              itemPadding: EdgeInsets.symmetric(
-                                                  horizontal: 4.0),
+                                              //itemPadding: EdgeInsets.symmetric(
+                                              //    horizontal: 4.0),
                                               itemBuilder: (context, _) => Icon(
-                                                Icons.star,
+                                                Icons.star_border_outlined,
                                                 color: Colors.amber,
                                               ),
                                               onRatingUpdate: (rating) {
@@ -414,50 +420,59 @@ class _CommentsPageState extends State<CommentsPage> {
                                         Row(
                                           children: [
                                             Expanded(
-                                                child: GridView.count(
-                                              crossAxisCount: 3,
-                                              shrinkWrap: true,
-                                              children: List.generate(
-                                                  _listComentarios[index]!
-                                                      .imagenes!
-                                                      .length, (index2) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(
-                                                      left: 5.0),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl:
-                                                        _listComentarios[index]!
-                                                            .imagenes![index2]
-                                                            .imagenurl!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
+                                                child:GridView.builder(
+                                                    gridDelegate:
+                                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisSpacing: 5,
+                                                      mainAxisSpacing: 2,
+                                                      crossAxisCount: 3,
+                                                    ),
+                                                    scrollDirection: Axis.vertical,
+                                                    physics: NeverScrollableScrollPhysics(),
+                                                    shrinkWrap: true,
+                                                    itemCount: _listComentarios[index]!
+                                                        .imagenes!
+                                                        .length,
+                                                    itemBuilder: (context, index2) {
+                                                      return GestureDetector(
+                                                        onTap: () => openImageFullScreen(
+                                                            context, index, index2),
+                                                        child: Container(
+                                                          child: CachedNetworkImage(
+                                                            imageUrl: (_listComentarios[index]!
+                                                                .imagenes![index2]
+                                                                .imagenurl! !=
+                                                                '')
+                                                                ? _listComentarios[index]!
+                                                                .imagenes![index2]
+                                                                .imagenurl!
+                                                                : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
+                                                            imageBuilder:
+                                                                (context, imageProvider) =>
+                                                                Container(
+                                                                  decoration: BoxDecoration(
+                                                                    image: DecorationImage(
+                                                                      image: imageProvider,
+                                                                      fit: BoxFit.cover,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                            placeholder: (context, url) =>
+                                                                Center(
+                                                                  child: SizedBox(
+                                                                    child:
+                                                                    CircularProgressIndicator(),
+                                                                    height: 50.0,
+                                                                    width: 50.0,
+                                                                  ),
+                                                                ),
+                                                            errorWidget:
+                                                                (context, url, error) =>
+                                                                Icon(Icons.error),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Center(
-                                                      child: SizedBox(
-                                                        child:
-                                                            CircularProgressIndicator(),
-                                                        height: 50.0,
-                                                        width: 50.0,
-                                                      ),
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Icon(Icons.error),
-                                                    width: 300,
-                                                    height: 300,
-                                                  ),
-                                                );
-                                              }),
-                                            )),
+                                                      );
+                                                    }),),
                                           ],
                                         ),
                                     ],
@@ -524,6 +539,7 @@ class _CommentsPageState extends State<CommentsPage> {
             child: Container(
               height: 65,
               padding: EdgeInsets.only(top: 8, bottom: 10, right: 20, left: 20),
+              margin: EdgeInsets.only(bottom: 10),
               width: double.infinity,
               // color: Colors.white,
               child: Container(
@@ -564,7 +580,31 @@ class _CommentsPageState extends State<CommentsPage> {
       ),
     );
   }
-
+  void openImageFullScreen(context, int index, int indeximagen) {
+    List<ImagenComentarioLugar>? gallery = _listComentarios[index]!.imagenes;
+    _galleryItems.clear();
+    gallery!.forEach((imageUrl) {
+      _galleryItems.add(
+        GalleryItem(
+          id: imageUrl.idimagencomentariolugar.toString(),
+          imageUrl: imageUrl.imagenurl.toString(),
+        ),
+      );
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return GalleryViewWrapper(
+          appBarColor: appBarColor,
+          titleGallery: "photos".tr(),
+          galleryItem: _galleryItems,
+          backgroundDecoration: BoxDecoration(color: Color(0xff374056)),
+          initialIndex: indeximagen,
+          scrollDirection: Axis.horizontal,
+        );
+      }),
+    );
+  }
 // (_signInBloc.idusuario == d.idusuario) ??
 
 }

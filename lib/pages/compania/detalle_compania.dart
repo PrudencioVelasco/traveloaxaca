@@ -370,7 +370,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                                           itemPadding: EdgeInsets.symmetric(
                                               horizontal: 0.0),
                                           itemBuilder: (context, _) => Icon(
-                                            Icons.star,
+                                            Icons.star_border_outlined,
                                             color: Colors.amber,
                                           ),
                                           onRatingUpdate: (rating) {

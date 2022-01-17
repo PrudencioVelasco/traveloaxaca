@@ -17,13 +17,11 @@ import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:traveloaxaca/comentario/agregar_comentario.dart';
-import 'package:traveloaxaca/comentario/reportar_comentario_lugar.dart';
+import 'package:traveloaxaca/pages/lugar/galeria_fotos_lugar.dart';
 import 'package:traveloaxaca/comentario/subir_foto.dart';
 import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/atractivo.dart';
-import 'package:traveloaxaca/models/categoria.dart';
 import 'package:traveloaxaca/models/comment.dart';
-import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -32,8 +30,8 @@ import 'package:traveloaxaca/models/sitiosinteres.dart';
 import 'package:traveloaxaca/pages/comments.dart';
 import 'package:traveloaxaca/pages/guide.dart';
 import 'package:traveloaxaca/pages/hotel.dart';
+import 'package:traveloaxaca/pages/lugar/comentario.dart';
 import 'package:traveloaxaca/pages/restaurant.dart';
-import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
@@ -43,7 +41,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/widgets/mas_informacion_lugar.dart';
-import 'package:getwidget/getwidget.dart';
 import 'dart:io';
 
 class PlaceDetails extends StatefulWidget {
@@ -115,7 +112,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       _loveBloc.init(context, refresh);
     });
     getData();
-    _getDataComments();
+    //_getDataComments();
     getActividadLugar();
     getActractivoLugar();
     //totalLove();
@@ -172,51 +169,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   void getData() async {
     _sitiosInteres =
         (await _sitiosInteresBloc.getSitiosInteresv2(widget.data!.idlugar!))!;
-  }
-
-  Future _getDataComments() async {
-    setState(() => _hasData = true);
-    //QuerySnapshot data;
-    if (_lastVisible == 0) {
-//_listComentarios
-      _listComentarios = (await _commentsBloc.obtenerComentariosLugar(
-          widget.data!.idlugar!, 0, 7));
-    } else {
-      // data = await firestore
-      _data = (await _commentsBloc.obtenerComentariosLugar(
-          widget.data!.idlugar!, _idComentarioUltimo, 7));
-      //_listComentarios.add(_data);
-      _data.forEach((element) {
-        _listComentarios.add(element);
-      });
-    }
-    if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
-      if (_listComentarios.length >= 7) {
-        _idComentarioUltimo = _listComentarios.last!.idcomentario!;
-        _lastVisible = 1;
-      }
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } else {
-      if (_lastVisible == 0) {
-        setState(() {
-          _isLoading = false;
-          _hasData = false;
-          print('no items');
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-          _hasData = true;
-          print('no more items');
-        });
-      }
-    }
-    return null;
   }
 
   void getActividadLugar() async {
@@ -321,7 +273,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         });
   }
 
-  handleLoveClick() async {
+  handleLoveClick(BuildContext context) async {
     // final ib = Provider.of<InternetBloc>(context, listen: false);
     final _signInBlocProvider = Provider.of<SignInBloc>(context, listen: false);
     final _signLoveBloc = Provider.of<LoveBloc>(context, listen: false);
@@ -405,7 +357,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         actions: [
           IconButton(
             onPressed: () {
-              handleLoveClick();
+              handleLoveClick(context);
             },
             icon: (_marcarCorazon)
                 ? Icon(
@@ -500,60 +452,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            /* Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                TextButton.icon(
-                                  onPressed: () {
-                                    handleLoveClick();
-                                  },
-                                  icon: (_marcarCorazon)
-                                      ? Icon(
-                                          FontAwesomeIcons.solidHeart,
-                                          color: Colors.red,
-                                          size: 20,
-                                        )
-                                      : Icon(
-                                          FontAwesomeIcons.solidHeart,
-                                          color: Colors.grey,
-                                          size: 20,
-                                        ),
-                                  label: (_marcarCorazon)
-                                      ? Text(
-                                          "like",
-                                          style: TextStyle(color: Colors.red),
-                                        ).tr()
-                                      : Text(
-                                          "like",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle1,
-                                        ).tr(),
-                                ),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    nextScreen(
-                                        context,
-                                        CommentsPage(
-                                          lugar: widget.data!,
-                                          collectionName: "places",
-                                        ));
-                                  },
-                                  icon: Icon(
-                                    FontAwesomeIcons.comment,
-                                    color: Colors.grey[600],
-                                    size: 22,
-                                  ),
-                                  label: Text(
-                                      _totalComentarios.toString() +
-                                          " " +
-                                          _textcomentario,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle1),
-                                ),
-                              ],
-                            ),*/
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
@@ -597,7 +495,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                   itemPadding:
                                       EdgeInsets.symmetric(horizontal: 0.0),
                                   itemBuilder: (context, _) => Icon(
-                                    Icons.star,
+                                    Icons.star_border_outlined,
                                     color: Colors.amber,
                                   ),
                                   onRatingUpdate: (rating) {
@@ -843,59 +741,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                   ],
                                 ),
                               ),
-
-                            /*(_sitiosInteres.length > 0)
-                      ? Container(
-                          //margin: EdgeInsets.only(right: 100),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(
-                                  left: 0,
-                                  //top: 10,
-                                ),
-                                child: Text(
-                                  'attractive turistic',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ).tr(),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                height: 3,
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.circular(40)),
-                              ),
-                              Container(
-                                //height: 260,
-                                //  margin: EdgeInsets.only(right: 55),
-                                // color: Colors.green,
-
-                                width: MediaQuery.of(context).size.width,
-                                child: ListView.builder(
-                                  // padding: EdgeInsets.only(right: 15, top: 5),
-                                  scrollDirection: Axis.vertical,
-                                  shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  itemCount: _sitiosInteres.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return _buildPlayerModelList(
-                                        _sitiosInteres[index]);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : Text(''),*/
-
                             Container(
                               margin: EdgeInsets.only(top: 8, bottom: 8),
                               height: 3,
@@ -966,351 +811,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                             SizedBox(
                               height: 15,
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _hasData == false
-                                      ? Container(
-                                          margin: EdgeInsets.only(
-                                              top: 10, bottom: 30),
-                                          child: ListView(
-                                            scrollDirection: Axis.vertical,
-                                            shrinkWrap: true,
-                                            children: [
-                                              EmptyPage(
-                                                  icon: LineIcons.comments,
-                                                  message:
-                                                      'no comments found'.tr(),
-                                                  message1:
-                                                      'be the first to comment'
-                                                          .tr()),
-                                            ],
-                                          ),
-                                        )
-                                      : Container(
-                                          // color: Colors.red,
-                                          margin: EdgeInsets.only(top: 15),
-                                          child: ListView.separated(
-                                            scrollDirection: Axis.vertical,
-                                            shrinkWrap: true,
-                                            primary: false,
-                                            padding: EdgeInsets.all(5),
-                                            // controller: _scrollViewController,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            itemCount: _listComentarios.length,
-                                            separatorBuilder:
-                                                (BuildContext context,
-                                                        int index) =>
-                                                    SizedBox(
-                                              height: 0,
-                                            ),
-                                            itemBuilder: (_, int index) {
-                                              if (index <
-                                                  _listComentarios.length) {
-                                                //return reviewList(_listComentarios[index]!, context,_signInBloc);
-                                                return Container(
-                                                    //  padding: EdgeInsets.only(
-                                                    //      top: 5, bottom: 5),
-                                                    decoration: BoxDecoration(
-                                                      //color: Colors.white,
-                                                      border: Border(
-                                                        bottom: BorderSide(
-                                                            width: 1,
-                                                            color: Colors
-                                                                .grey.shade300),
-                                                      ),
-                                                      //  borderRadius: BorderRadius.circular(5)),
-                                                    ),
-                                                    child: ListTile(
-                                                        leading: (_listComentarios[
-                                                                    index]!
-                                                                .imageUrl!
-                                                                .isEmpty)
-                                                            ? Container(
-                                                                height: 50,
-                                                                width: 50,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      300],
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                ),
-                                                                child: Icon(
-                                                                    Icons
-                                                                        .person,
-                                                                    size: 28),
-                                                              )
-                                                            : CircleAvatar(
-                                                                radius: 25,
-                                                                backgroundColor:
-                                                                    Colors.grey[
-                                                                        200],
-                                                                backgroundImage:
-                                                                    CachedNetworkImageProvider(
-                                                                        _listComentarios[index]!
-                                                                            .imageUrl!)),
-                                                        title: Column(
-                                                          children: <Widget>[
-                                                            Container(
-                                                              child: Row(
-                                                                children: [
-                                                                  Text(
-                                                                    _listComentarios[
-                                                                            index]!
-                                                                        .userName!,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            12,
-                                                                        fontWeight:
-                                                                            FontWeight.w600),
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                      _listComentarios[
-                                                                              index]!
-                                                                          .fecha
-                                                                          .toString(),
-                                                                      style: TextStyle(
-                                                                          color: Colors.grey[
-                                                                              500],
-                                                                          fontSize:
-                                                                              11,
-                                                                          fontWeight:
-                                                                              FontWeight.w500)),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        subtitle: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Container(
-                                                                  //alignment: MainAxisAlignment.start,
-                                                                  //color: Colors.red,
-                                                                  child: RatingBar
-                                                                      .builder(
-                                                                    // ignoreGestures: true,
-                                                                    itemSize:
-                                                                        20,
-                                                                    initialRating:
-                                                                        _listComentarios[index]!
-                                                                            .rating!,
-                                                                    minRating: _listComentarios[
-                                                                            index]!
-                                                                        .rating!,
-                                                                    maxRating: _listComentarios[
-                                                                            index]!
-                                                                        .rating!,
-                                                                    ignoreGestures:
-                                                                        true,
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    allowHalfRating:
-                                                                        false,
-                                                                    itemCount:
-                                                                        5,
-                                                                    itemPadding:
-                                                                        EdgeInsets.symmetric(
-                                                                            horizontal:
-                                                                                4.0),
-                                                                    itemBuilder:
-                                                                        (context,
-                                                                                _) =>
-                                                                            Icon(
-                                                                      Icons
-                                                                          .star,
-                                                                      color: Colors
-                                                                          .amber,
-                                                                    ),
-                                                                    onRatingUpdate:
-                                                                        (rating) {
-                                                                      //_rating = rating;
-                                                                      //print(rating);
-                                                                    },
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child:
-                                                                      ReadMoreText(
-                                                                    _listComentarios[
-                                                                            index]!
-                                                                        .comentario!,
-                                                                    trimLines:
-                                                                        4,
-                                                                    colorClickableText:
-                                                                        Colors
-                                                                            .blue,
-                                                                    trimMode:
-                                                                        TrimMode
-                                                                            .Line,
-                                                                    trimCollapsedText:
-                                                                        'read more'
-                                                                            .tr(),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .justify,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            16),
-                                                                    trimExpandedText:
-                                                                        'read less'
-                                                                            .tr(),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            if (_listComentarios[
-                                                                        index]!
-                                                                    .imagenes!
-                                                                    .length >
-                                                                0)
-                                                              Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                      child: GridView
-                                                                          .count(
-                                                                    crossAxisCount:
-                                                                        3,
-                                                                    shrinkWrap:
-                                                                        true,
-                                                                    children: List.generate(
-                                                                        _listComentarios[index]!
-                                                                            .imagenes!
-                                                                            .length,
-                                                                        (index2) {
-                                                                      return Container(
-                                                                        margin: EdgeInsets.only(
-                                                                            left:
-                                                                                5.0),
-                                                                        child:
-                                                                            CachedNetworkImage(
-                                                                          imageUrl: _listComentarios[index]!
-                                                                              .imagenes![index2]
-                                                                              .imagenurl!,
-                                                                          imageBuilder: (context, imageProvider) =>
-                                                                              Container(
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              image: DecorationImage(
-                                                                                image: imageProvider,
-                                                                                fit: BoxFit.cover,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          placeholder: (context, url) =>
-                                                                              Center(
-                                                                            child:
-                                                                                SizedBox(
-                                                                              child: CircularProgressIndicator(),
-                                                                              height: 50.0,
-                                                                              width: 50.0,
-                                                                            ),
-                                                                          ),
-                                                                          errorWidget: (context, url, error) =>
-                                                                              Icon(Icons.error),
-                                                                          width:
-                                                                              300,
-                                                                          height:
-                                                                              300,
-                                                                        ),
-                                                                      );
-                                                                    }),
-                                                                  )),
-                                                                ],
-                                                              ),
-                                                          ],
-                                                        ),
-                                                        trailing: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .end,
-                                                          children: [
-                                                            PopupMenuButton(
-                                                                // key: _menuKey,
-                                                                itemBuilder: (_) =>
-                                                                    <
-                                                                        PopupMenuItem<
-                                                                            String>>[
-                                                                      if (_listComentarios[index]!
-                                                                              .idusuario ==
-                                                                          _signInBloc
-                                                                              .idusuario)
-                                                                        PopupMenuItem<String>(
-                                                                            child:
-                                                                                Text('delete?'.tr()),
-                                                                            value: 'eliminar'),
-                                                                      PopupMenuItem<
-                                                                              String>(
-                                                                          child: Text('report?'
-                                                                              .tr()),
-                                                                          value:
-                                                                              'reportar'),
-                                                                    ],
-                                                                onSelected:
-                                                                    (valor) {
-                                                                  print(valor);
-                                                                  if (valor ==
-                                                                      "reportar") {
-                                                                    nextScreen(
-                                                                        context,
-                                                                        ReportarComentarioLugarPage(
-                                                                            comentario:
-                                                                                _listComentarios[index]!));
-                                                                  }
-                                                                  if (valor ==
-                                                                      "eliminar") {
-                                                                    handleDelete(
-                                                                        context,
-                                                                        _listComentarios[
-                                                                            index]!);
-                                                                  }
-                                                                }),
-                                                          ],
-                                                        )));
-                                              }
-                                              return Opacity(
-                                                opacity:
-                                                    _isLoading! ? 1.0 : 0.0,
-                                                child: _lastVisible == 0
-                                                    ? LoadingCard(height: 100)
-                                                    : Center(
-                                                        child: SizedBox(
-                                                            width: 32.0,
-                                                            height: 32.0,
-                                                            child:
-                                                                new CupertinoActivityIndicator()),
-                                                      ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                ),
-                              ],
+                            ComentarioDetalleLugarPage(lugar: widget.data!),
+                            SizedBox(
+                              height: 15,
                             ),
                             if (_totalComentarios >= 7)
                               Row(
@@ -1348,51 +851,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                   )
                                 ],
                               ),
-                            /* Column(
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      ButtonBar(
-                        alignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            label: Text("Subir foto"),
-                            icon: Icon(Icons.add_a_photo_rounded),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.teal,
-                              onPrimary: Colors.white,
-                              onSurface: Colors.black,
-                              shadowColor: Colors.grey,
-                              padding: EdgeInsets.all(10.0),
-                              elevation: 8,
-                              shape: BeveledRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
+                            SizedBox(
+                              height: 15,
                             ),
-                            onPressed: () {},
-                          ),
-                          ElevatedButton.icon(
-                            label: Text('Escriba una opinion'),
-                            icon: Icon(Icons.add_comment_rounded),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.teal,
-                              onPrimary: Colors.white,
-                              onSurface: Colors.black,
-                              shadowColor: Colors.grey,
-                              padding: EdgeInsets.all(10.0),
-                              elevation: 8,
-                              shape: BeveledRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                            ),
-                            onPressed: () {
-                              nextScreen(context,
-                                  AgregarComentarioPage(lugar: widget.data));
-                            },
-                          ),
-                        ],
-                      )
-                    ],
-                  ),*/
                             if (_listalugares.length > 0)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1499,27 +960,31 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                 .toList()
                 .map((item) => Container(
                       child: Center(
-                        child: CachedNetworkImage(
-                          imageUrl: item.url!,
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
+                        child: GestureDetector(
+                          onTap: () => nextScreen(context,
+                              GaleriaFotosLugarPage(lugar: widget.data!)),
+                          child: CachedNetworkImage(
+                            imageUrl: item.url!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          placeholder: (context, url) => Center(
-                            child: SizedBox(
-                              child: CircularProgressIndicator(),
-                              height: 50.0,
-                              width: 50.0,
+                            placeholder: (context, url) => Center(
+                              child: SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 50.0,
+                                width: 50.0,
+                              ),
                             ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            height: height,
+                            fit: BoxFit.cover,
                           ),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                          height: height,
-                          fit: BoxFit.cover,
                         ),
                       ),
                     ))

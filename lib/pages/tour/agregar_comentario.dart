@@ -348,7 +348,7 @@ class _AgregarComentarioTourPageState extends State<AgregarComentarioTourPage> {
                         itemCount: 5,
                         itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => Icon(
-                          Icons.star,
+                          Icons.star_border_outlined,
                           color: Colors.amber,
                         ),
                         onRatingUpdate: (rating) {

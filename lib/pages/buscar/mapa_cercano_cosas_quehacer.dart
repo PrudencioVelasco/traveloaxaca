@@ -220,6 +220,8 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
   @override
   Widget build(BuildContext context) {
     // final _listMarkes = _buildMarkrs();
+    var brishtness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -238,7 +240,7 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
                 options: fluttermap.MapOptions(
                   minZoom: 5,
                   maxZoom: 18,
-                  zoom: 12,
+                  zoom: 8,
                   center: latlong.LatLng(widget.lugares.first!.latitud!,
                       widget.lugares.first!.longitud!),
                 ),
@@ -248,7 +250,9 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
                         'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                     additionalOptions: {
                       'accessToken': Config().apiKey,
-                      'id': Config().mapBoxStyle
+                      'id': (isDarkMode)
+                          ? Config().mapBoxStyleDark
+                          : Config().mapBoxStyleLight
                     },
                   ),
                   if (_buildMarkrs().length > 0)
@@ -568,7 +572,7 @@ class MapItemDetails extends StatelessWidget {
                                       width: 90,
                                       child: RatingBar.builder(
                                         // ignoreGestures: true,
-                                        itemSize: 20,
+                                        itemSize: 22,
                                         initialRating: companiaMapa.rating!,
                                         minRating: companiaMapa.rating!,
                                         maxRating: companiaMapa.rating!,
@@ -576,10 +580,10 @@ class MapItemDetails extends StatelessWidget {
                                         direction: Axis.horizontal,
                                         allowHalfRating: false,
                                         itemCount: 5,
-                                        itemPadding: EdgeInsets.symmetric(
-                                            horizontal: 4.0),
+                                        //itemPadding: EdgeInsets.symmetric(
+                                        //    horizontal: 4.0),
                                         itemBuilder: (context, _) => Icon(
-                                          Icons.star,
+                                          Icons.star_border_outlined,
                                           color: Colors.amber,
                                         ),
                                         onRatingUpdate: (rating) {

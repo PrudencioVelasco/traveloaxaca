@@ -39,7 +39,7 @@
     "search & explore": "Search & Explore Places",
     "recent searchs": "Recent Search(s)",
     "search for places": "Search for places",
-    "search-description": "You haven't search for any items yet.\n Try now - we will help you!",
+    "search-description": "You haven't search for any places yet.\n Try now - we will help you!",
     "we have found": "We have found",
     "try again": "Try again!",
     "states": "States",
@@ -170,5 +170,9 @@
     "please check your internet connection and reload the page": "Please check your internet connection and reload the page",
     "reload": "Reload",
     "agency": "Agency",
-    "destination travel":"Destination travel"
+    "destination travel":"Destination travel",
+    "read the guide":"Read the guide",
+    "photos": "Photos",
+    "explor oaxaca":"Explor Oaxaca",
+    "explor mexico":"Explor Mexico"
 }

@@ -17,6 +17,7 @@ import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:latlong2/latlong.dart' as latlong;
 import 'package:traveloaxaca/services/traffic_service.dart';
+import 'package:traveloaxaca/utils/snacbar.dart';
 
 class MiUbicacionPage extends StatefulWidget {
   final int? idclasificacion;
@@ -73,6 +74,7 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   Position? currentLocation;
   bool ubicado = false;
   final trafficService = new TrafficService();
+  var scaffoldKey = GlobalKey<ScaffoldState>();
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -213,150 +215,161 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
+        key: scaffoldKey,
         body: NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverAppBar(
-            title: FutureBuilder(
-                future: someFutureStringFunction(
-                    context, widget.nombreclasificacion!),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(
-                      snapshot.data.toString().toUpperCase() +
-                          " " +
-                          "nearby".tr().toUpperCase(),
-                      style: Theme.of(context).textTheme.headline6,
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("error");
-                  }
-                  return Text("loading...".tr());
-                }),
-            pinned: true,
-            floating: true,
-            forceElevated: innerBoxIsScrolled,
-          ),
-        ];
-      },
-      body: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Column(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                title: FutureBuilder(
+                    future: someFutureStringFunction(
+                        context, widget.nombreclasificacion!),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                          snapshot.data.toString().toUpperCase() +
+                              " " +
+                              "nearby".tr().toUpperCase(),
+                          style: Theme.of(context).textTheme.headline6,
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text("error");
+                      }
+                      return Text("loading...".tr());
+                    }),
+                pinned: true,
+                floating: true,
+                forceElevated: innerBoxIsScrolled,
+              ),
+            ];
+          },
+          body: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  margin: EdgeInsets.all(10),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            nextScreen(
-                                context,
-                                MapaPage(
-                                  idclasificacion: widget.idclasificacion,
-                                  nombreclasificacion:
-                                      widget.nombreclasificacion,
-                                  companias: _listaCompaniaSegundo,
-                                ));
-                          },
-                          child: Text("map".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            //onSurface: Colors.red,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 8, left: 8),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            modalSortBy(context);
-                          },
-                          child: Text("sort by".tr()),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.black,
-                            onSurface: Colors.black,
-                            //shadowColor: Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            elevation: 4,
-
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          ),
-                        ),
-                      ),
-                    ]),
-                  ),
-                ),
-              ],
-            ),
-            if (filtrando && _listaCompaniaSegundo.length == 0)
-              Expanded(
-                child: Column(
+                Column(
                   children: [
-                    EmptyPage(
-                      icon: FeatherIcons.clipboard,
-                      message: 'no places found'.tr(),
-                      message1: "try again".tr(),
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(right: 8, left: 8),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (!cargando && !sinresultado) {
+                                  nextScreen(
+                                      context,
+                                      MapaPage(
+                                        idclasificacion: widget.idclasificacion,
+                                        nombreclasificacion:
+                                            widget.nombreclasificacion,
+                                        companias: _listaCompaniaSegundo,
+                                      ));
+                                } else {
+                                  openSnacbar(
+                                      scaffoldKey, 'no places found'.tr());
+                                }
+                              },
+                              child: Text("map".tr()),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                //onSurface: Colors.red,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(right: 8, left: 8),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (!cargando && !sinresultado) {
+                                  modalSortBy(context);
+                                } else {
+                                  openSnacbar(
+                                      scaffoldKey, 'no places found'.tr());
+                                }
+                              },
+                              child: Text("sort by".tr()),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 4,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
                     ),
                   ],
                 ),
-              ),
-            Expanded(
-              child: (cargando)
-                  ? ListView.separated(
-                      padding: EdgeInsets.all(15),
-                      itemCount: 5,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          SizedBox(
-                        height: 10,
-                      ),
-                      itemBuilder: (BuildContext context, int index) {
-                        return LoadingCard(height: 120);
-                      },
-                    )
-                  : (sinresultado)
-                      ? EmptyPage(
+                if (filtrando && _listaCompaniaSegundo.length == 0)
+                  Expanded(
+                    child: Column(
+                      children: [
+                        EmptyPage(
                           icon: FeatherIcons.clipboard,
                           message: 'no places found'.tr(),
                           message1: "try again".tr(),
-                        )
-                      : ListView.separated(
-                          // padding: EdgeInsets.all(10),
-                          itemCount: _listaCompaniaSegundo.length,
-                          separatorBuilder: (context, index) => SizedBox(
-                            height: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: (cargando)
+                      ? ListView.separated(
+                          padding: EdgeInsets.all(15),
+                          itemCount: 5,
+                          separatorBuilder: (BuildContext context, int index) =>
+                              SizedBox(
+                            height: 10,
                           ),
                           itemBuilder: (BuildContext context, int index) {
-                            return ListCardCompaniaCerca(
-                              d: _listaCompaniaSegundo[index],
-                              tag: "search$index",
-                              color: Colors.white,
-                              tipo: "miubicacion",
-                            );
+                            return LoadingCard(height: 120);
                           },
-                        ),
+                        )
+                      : (sinresultado)
+                          ? EmptyPage(
+                              icon: FeatherIcons.clipboard,
+                              message: 'no places found'.tr(),
+                              message1: "try again".tr(),
+                            )
+                          : ListView.separated(
+                              // padding: EdgeInsets.all(10),
+                              itemCount: _listaCompaniaSegundo.length,
+                              separatorBuilder: (context, index) => SizedBox(
+                                height: 5,
+                              ),
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListCardCompaniaCerca(
+                                  d: _listaCompaniaSegundo[index],
+                                  tag: "search$index",
+                                  color: Colors.white,
+                                  tipo: "miubicacion",
+                                );
+                              },
+                            ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 
   void btnCancelar() async {

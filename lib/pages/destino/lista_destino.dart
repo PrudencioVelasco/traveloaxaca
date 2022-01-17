@@ -13,6 +13,7 @@ import 'package:traveloaxaca/utils/list_card.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:provider/src/provider.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:traveloaxaca/utils/snacbar.dart';
 
 class ListaDestinoPage extends StatefulWidget {
   final Ruta? ruta;
@@ -23,6 +24,7 @@ class ListaDestinoPage extends StatefulWidget {
 }
 
 class _ListaDestinoPageState extends State<ListaDestinoPage> {
+  var scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController _scrollViewController = ScrollController();
   bool isScrollingDown = false;
   bool _showAppbar = true;
@@ -78,74 +80,79 @@ class _ListaDestinoPageState extends State<ListaDestinoPage> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
+        key: scaffoldKey,
         body: NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverAppBar(
-            title: Text(
-              widget.ruta!.nombre.toString(),
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  if (!sinresultado) {
-                    nextScreen(
-                        context,
-                        MapaDestinoPage(
-                            nombre: widget.ruta!.nombre, lugares: _listaLugar));
-                  }
-                },
-                icon: Icon(Icons.map_outlined),
-              )
-            ],
-            pinned: true,
-            floating: true,
-            forceElevated: innerBoxIsScrolled,
-          ),
-        ];
-      },
-      body: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-                child: (cargando)
-                    ? ListView.separated(
-                        padding: EdgeInsets.all(15),
-                        itemCount: 5,
-                        separatorBuilder: (BuildContext context, int index) =>
-                            SizedBox(
-                          height: 10,
-                        ),
-                        itemBuilder: (BuildContext context, int index) {
-                          return LoadingCard(height: 120);
-                        },
-                      )
-                    : (sinresultado)
-                        ? EmptyPage(
-                            icon: FeatherIcons.clipboard,
-                            message: 'no places found'.tr(),
-                            message1: "try again".tr(),
-                          )
-                        : ListView.separated(
-                            // padding: EdgeInsets.all(10),
-                            itemCount: _listaLugar.length,
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: 5,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                title: Text(
+                  widget.ruta!.nombre.toString(),
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      if (!cargando && !sinresultado) {
+                        nextScreen(
+                            context,
+                            MapaDestinoPage(
+                                nombre: widget.ruta!.nombre,
+                                lugares: _listaLugar));
+                      } else {
+                        openSnacbar(scaffoldKey, 'no places found'.tr());
+                      }
+                    },
+                    icon: Icon(Icons.map_outlined),
+                  )
+                ],
+                pinned: true,
+                floating: true,
+                forceElevated: innerBoxIsScrolled,
+              ),
+            ];
+          },
+          body: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                    child: (cargando)
+                        ? ListView.separated(
+                            padding: EdgeInsets.all(15),
+                            itemCount: 5,
+                            separatorBuilder:
+                                (BuildContext context, int index) => SizedBox(
+                              height: 10,
                             ),
                             itemBuilder: (BuildContext context, int index) {
-                              return ListCard(
-                                d: _listaLugar[index],
-                                tag: "search$index",
-                                color: Colors.white,
-                              );
+                              return LoadingCard(height: 120);
                             },
-                          )),
-          ],
-        ),
-      ),
-    ));
+                          )
+                        : (sinresultado)
+                            ? EmptyPage(
+                                icon: FeatherIcons.clipboard,
+                                message: 'no places found'.tr(),
+                                message1: "try again".tr(),
+                              )
+                            : ListView.separated(
+                                // padding: EdgeInsets.all(10),
+                                itemCount: _listaLugar.length,
+                                separatorBuilder: (context, index) => SizedBox(
+                                  height: 5,
+                                ),
+                                itemBuilder: (BuildContext context, int index) {
+                                  return ListCardCosasHacerNearby(
+                                    d: _listaLugar[index],
+                                    tag: "search$index",
+                                    color: Colors.white,
+                                    tipo: "",
+                                  );
+                                },
+                              )),
+              ],
+            ),
+          ),
+        ));
   }
 }

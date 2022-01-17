@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
@@ -15,6 +16,7 @@ class RutasPrincipalesPage extends StatefulWidget {
 
 class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
   RutasBloc _rutasBloc = new RutasBloc();
+  bool _visible = true;
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) async {
@@ -45,7 +47,7 @@ class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         mainAxisSpacing: 5,
                         mainAxisExtent: 200,
-                        crossAxisSpacing: 12.0,
+                        crossAxisSpacing: 0.0,
                         crossAxisCount: 2,
                         childAspectRatio: 1.0,
                       ),
@@ -63,7 +65,7 @@ class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         mainAxisSpacing: 5,
                         mainAxisExtent: 200,
-                        crossAxisSpacing: 12.0,
+                        crossAxisSpacing: 0.0,
                         crossAxisCount: 2,
                         childAspectRatio: 1.0,
                       ),
@@ -83,25 +85,70 @@ class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
     return GestureDetector(
       onTap: () => {nextScreen(context, ListaDestinoPage(ruta: ruta))},
       child: Card(
-        child: Container(
+        child: Stack(children: <Widget>[
+          Center(
+            child: CachedNetworkImage(
+              imageUrl: (ruta.imagen != '')
+                  ? ruta.imagen!
+                  : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              placeholder: (context, url) => Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(),
+                  height: 50.0,
+                  width: 50.0,
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
+          ),
+          Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Container(
+              height: 70,
+              alignment: Alignment.bottomLeft,
+              width: MediaQuery.of(context).size.width * 0.41,
+              padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 10),
+              color: Colors.black.withOpacity(0.2),
+              child: Text(
+                ruta.nombre.toString(),
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
+          ]),
+        ]),
+        /* child: Container(
             // height: 300,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                // borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                    image: AssetImage("assets/images/playa.jpg"),
+                    image: (ruta.imagen != '')
+                        ? NetworkImage(ruta.imagen!)
+                        : NetworkImage(
+                            "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg"),
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter)),
             //margin: EdgeInsets.all(5),
             //padding: EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
                   height: 70,
+                  alignment: Alignment.bottomLeft,
                   width: MediaQuery.of(context).size.width * 0.41,
-                  padding: EdgeInsets.only(left: 5, right: 5, top: 3),
+                  padding:
+                      EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 10),
                   color: Colors.black.withOpacity(0.2),
                   child: Text(
                     ruta.nombre.toString(),
@@ -112,7 +159,7 @@ class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
                   ),
                 ),
               ],
-            )),
+            )),*/
         //margin: EdgeInsets.only(left: 20,r),
       ),
     );

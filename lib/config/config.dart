@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Config {
-  final String appName = 'Travel Oaxaca';
+  final String appName = 'Explora Oaxaca';
   final String mapAPIKey = 'AIzaSyDybQ1uOBgcVqsgMfj13EMiRlhB9Wv6LoY';
   final String countryName = 'Bangladesh';
   final String splashIcon = 'assets/images/splash.png';
-  final String logotipo = 'assets/images/logotipo.png';
+  final String logotipo = 'assets/images/exploraoaxaca.png';
   final String supportEmail = 'prudencio.vepa@gmail.com';
   final String privacyPolicyUrl = '';
   final String ourWebsiteUrl = '';
@@ -45,7 +45,8 @@ class Config {
   final String baseUrlGeo = 'https://api.mapbox.com/geocoding/v5';
   final String apiKey =
       'sk.eyJ1IjoiZHVndWVyIiwiYSI6ImNrd3puampxZTB3am0zMnE5dXp3cXpjcXcifQ.hZUrbDidn2hDJIvMSs3aPQ';
-  final String mapBoxStyle = "mapbox/streets-v11";
+  final String mapBoxStyleLight = "mapbox/streets-v11";
+  final String mapBoxStyleDark = "mapbox/dark-v10";
   final Color marketColor = const Color(0xFF3DC5A7);
   final double marketSizeExpanded = 55.0;
   final double marketSizeShrink = 38.0;

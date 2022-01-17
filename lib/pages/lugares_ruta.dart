@@ -44,7 +44,7 @@ class _LugaresRutaState extends State<LugaresRuta> {
   }
 
   getData() async {
-    _lugares = (await _rutasBloc.getLugaresRuta(widget.ruta.idruta!))!;
+    _lugares = (await _rutasBloc.getLugaresRuta(widget.ruta.idruta!));
     if (_lugares.length > 0) {
       _isLoading = false;
       _lastVisible = true;

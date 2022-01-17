@@ -78,7 +78,11 @@ class _HotelPageState extends State<HotelPage>
     } else {
       for (var item in response.features!) {
         Hotel d = Hotel(
-          item != null ? item.textEs! : '',
+          item != null
+              ? (item.textEs != null)
+                  ? item.textEs!
+                  : ''
+              : '',
           item != null ? item.placeName! : '',
           item!.center![1] ?? 0,
           item.center![0] ?? 0,
@@ -139,6 +143,8 @@ class _HotelPageState extends State<HotelPage>
 
   @override
   Widget build(BuildContext context) {
+    var brishtness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text("nearby hotels".tr(),
@@ -160,7 +166,9 @@ class _HotelPageState extends State<HotelPage>
                     'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                 additionalOptions: {
                   'accessToken': Config().apiKey,
-                  'id': Config().mapBoxStyle
+                  'id': (isDarkMode)
+                      ? Config().mapBoxStyleDark
+                      : Config().mapBoxStyleLight
                 },
               ),
               //  if (_buildMarkrs().length > 0)

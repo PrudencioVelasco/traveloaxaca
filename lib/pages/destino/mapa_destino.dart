@@ -150,6 +150,8 @@ class _MapaDestinoPageState extends State<MapaDestinoPage>
   @override
   Widget build(BuildContext context) {
     // final _listMarkes = _buildMarkrs();
+    var brishtness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -171,7 +173,9 @@ class _MapaDestinoPageState extends State<MapaDestinoPage>
                         'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                     additionalOptions: {
                       'accessToken': Config().apiKey,
-                      'id': Config().mapBoxStyle
+                      'id': (isDarkMode)
+                          ? Config().mapBoxStyleDark
+                          : Config().mapBoxStyleLight
                     },
                   ),
                   if (_buildMarkrs().length > 0)
@@ -217,7 +221,10 @@ class _MapaDestinoPageState extends State<MapaDestinoPage>
                                   blurRadius: 10,
                                   offset: Offset(3, 3))
                             ]),
-                        child: Icon(Icons.keyboard_backspace),
+                        child: Icon(
+                          Icons.keyboard_backspace,
+                          color: Colors.black,
+                        ),
                       ),
                       onTap: () {
                         Navigator.pop(context);
@@ -371,7 +378,7 @@ class MapItemDetails extends StatelessWidget {
                                         itemCount: 5,
 
                                         itemBuilder: (context, _) => Icon(
-                                          Icons.star,
+                                          Icons.star_border_outlined,
                                           color: Colors.amber,
                                         ),
                                         onRatingUpdate: (rating) {
