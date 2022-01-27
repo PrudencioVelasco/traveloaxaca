@@ -15,17 +15,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _currentIndex = 0;
-  PageController _pageController = PageController();
-  List<IconData> iconList = [
-    Icons.home,
-    Icons.list,
-    Icons.bookmark,
-    Icons.verified_user,
-  ];
-  PersistentTabController? _controller =
-      PersistentTabController(initialIndex: 0);
-  List _screens = [Explorar(), BuscarPage(), InformacionPage(), PerfilPage()];
+  PersistentTabController? _controller;
+  bool? _hideNavBar;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PersistentTabController(initialIndex: 0);
+    _hideNavBar = false;
+  }
+
   List<Widget> _buildScreens() {
     return [Explorar(), BuscarPage(), InformacionPage(), PerfilPage()];
   }
@@ -33,135 +32,144 @@ class _HomeState extends State<Home> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.apps),
-        title: ("explorer".tr()),
+        icon: Icon(Icons.home),
+        title: "explorer".tr(),
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.search),
-        title: ("search".tr()),
+        title: "search".tr(),
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(CupertinoIcons.info),
-        title: ("information".tr()),
+        icon: Icon(Icons.add),
+        title: "information".tr(),
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.settings),
-        title: ("profile".tr()),
+        title: "profile".tr(),
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
     ];
   }
 
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    _pageController.animateToPage(index,
-        curve: Curves.easeIn, duration: Duration(milliseconds: 400));
-  }
-
   @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: 0)).then((value) async {
-      //await context.read<AdsBloc>().initAdmob();
-      //await context.read<AdsBloc>().initFbAd();
-      // await context.read<NotificationBloc>().initFirebasePushNotification(context);
-
-      //await context.read<AdsBloc>().checkAdsEnable();
-      //context.read<AdsBloc>().enableAds();
-    });
-    refresh();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PersistentTabView.custom(
+        context,
+        controller: _controller,
+        screens: _buildScreens(),
+        confineInSafeArea: true,
+        itemCount: 4,
+        handleAndroidBackButtonPress: true,
+        stateManagement: true,
+        hideNavigationBar: _hideNavBar,
+        screenTransitionAnimation: ScreenTransitionAnimation(
+          // Screen transition animation on change of selected tab.
+          animateTabTransition: true,
+          curve: Curves.ease,
+          duration: Duration(milliseconds: 200),
+        ),
+        customWidget: CustomNavBarWidget(
+          items: _navBarsItems(),
+          onItemSelected: (index) {
+            setState(() {
+              _controller!.index = index; // THIS IS CRITICAL!! Don't miss it!
+            });
+          },
+          selectedIndex: _controller!.index,
+        ),
+      ),
+    );
   }
+}
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    //context.read<AdsBloc>().dispose();
-    super.dispose();
-  }
+class CustomNavBarWidget extends StatelessWidget {
+  final int selectedIndex;
+  final List<PersistentBottomNavBarItem> items;
+  final ValueChanged<int> onItemSelected;
 
-  void refresh() {
-    setState(() {});
+  CustomNavBarWidget({
+    Key? key,
+    required this.selectedIndex,
+    required this.items,
+    required this.onItemSelected,
+  });
+
+  Widget _buildItem(PersistentBottomNavBarItem item, bool isSelected) {
+    return Container(
+      alignment: Alignment.center,
+      height: kBottomNavigationBarHeight,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Flexible(
+            child: IconTheme(
+              data: IconThemeData(
+                  size: 26.0,
+                  color: isSelected
+                      ? (item.activeColorSecondary == null
+                          ? item.activeColorPrimary
+                          : item.activeColorSecondary)
+                      : item.inactiveColorPrimary == null
+                          ? item.activeColorPrimary
+                          : item.inactiveColorPrimary),
+              child: isSelected ? item.icon : item.inactiveIcon ?? item.icon,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Material(
+              type: MaterialType.transparency,
+              child: FittedBox(
+                  child: Text(
+                item.title!,
+                style: TextStyle(
+                    color: isSelected
+                        ? (item.activeColorSecondary == null
+                            ? item.activeColorPrimary
+                            : item.activeColorSecondary)
+                        : item.inactiveColorPrimary,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12.0),
+              )),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarsItems(),
-      confineInSafeArea: true,
-      backgroundColor: Colors.white, // Default is Colors.white.
-      handleAndroidBackButtonPress: true, // Default is true.
-      resizeToAvoidBottomInset:
-          true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: true, // Default is true.
-      hideNavigationBarWhenKeyboardShows:
-          true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
-      decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        colorBehindNavBar: Colors.white,
+    return Container(
+      color: Colors.white,
+      child: Container(
+        width: double.infinity,
+        height: kBottomNavigationBarHeight,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: items.map((item) {
+            int index = items.indexOf(item);
+            return Flexible(
+              child: GestureDetector(
+                onTap: () {
+                  this.onItemSelected(index);
+                },
+                child: _buildItem(item, selectedIndex == index),
+              ),
+            );
+          }).toList(),
+        ),
       ),
-      popAllScreensOnTapOfSelectedTab: true,
-      popActionScreens: PopActionScreensType.all,
-      itemAnimationProperties: ItemAnimationProperties(
-        // Navigation Bar's items animation properties.
-        duration: Duration(milliseconds: 200),
-        curve: Curves.ease,
-      ),
-      screenTransitionAnimation: ScreenTransitionAnimation(
-        // Screen transition animation on change of selected tab.
-        animateTabTransition: true,
-        curve: Curves.ease,
-        duration: Duration(milliseconds: 200),
-      ),
-      navBarStyle:
-          NavBarStyle.style3, // Choose the nav bar style with this property.
     );
   }
-  /* final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-
-        // backgroundColor: colorScheme.surface,
-        selectedItemColor: Colors.blueAccent,
-        unselectedItemColor: colorScheme.onSurface.withOpacity(.60),
-        selectedLabelStyle: textTheme.caption,
-        unselectedLabelStyle: textTheme.caption,
-
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: [
-          BottomNavigationBarItem(
-            label: 'explorer'.tr(),
-            icon: Icon(Icons.apps),
-          ),
-          BottomNavigationBarItem(
-            label: 'search'.tr(),
-            icon: Icon(Icons.search),
-          ),
-          BottomNavigationBarItem(
-            label: 'information'.tr(),
-            icon: Icon(Icons.info),
-          ),
-          BottomNavigationBarItem(
-            label: 'profile'.tr(),
-            icon: Icon(Icons.person),
-          ),
-        ],
-      ),
-    );*/
-
 }

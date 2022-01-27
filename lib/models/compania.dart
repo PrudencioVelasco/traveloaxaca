@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:traveloaxaca/models/imagen_compania.dart';
+
 Compania companiaFromJson(String str) => Compania.fromJson(json.decode(str));
 
 String companiaToJson(Compania data) => json.encode(data.toJson());
@@ -28,6 +30,7 @@ class Compania {
   String? contacto;
   double? duracion;
   double? distancia;
+  List<ImagenCompany>? imagenescompania = [];
   List<Compania> toList = [];
   Compania(
       {this.idclasificacion,
@@ -48,7 +51,8 @@ class Compania {
       this.correo,
       this.contacto,
       this.duracion,
-      this.distancia});
+      this.distancia,
+      this.imagenescompania});
 
   factory Compania.fromJson(Map<String, dynamic> json) => Compania(
         idclasificacion: json["idclasificacion"],
@@ -88,6 +92,10 @@ class Compania {
                     ? json["distancia"].toDouble()
                     : json["distancia"]
             : 0.0,
+        imagenescompania: json["imagenes"] == null
+            ? []
+            : List<ImagenCompany>.from(
+                json["imagenes"].map((model) => ImagenCompany.fromJson(model))),
       );
   Compania.fromJsonToList(List<dynamic> jsonList) {
     jsonList.forEach((element) {
@@ -115,6 +123,7 @@ class Compania {
         "contacto": contacto,
         "duracion": duracion,
         "distancia": distancia,
+        "imagenescompania": imagenescompania!.map((e) => e.toJson()).toList(),
       };
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();

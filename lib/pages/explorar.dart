@@ -10,6 +10,7 @@ import 'package:traveloaxaca/config/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/aventuras.dart';
+import 'package:traveloaxaca/pages/mapa_lugares_cercanos.dart';
 import 'package:traveloaxaca/pages/tours.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:traveloaxaca/blocs/featured_bloc.dart';
@@ -81,6 +82,7 @@ class _ExplorarState extends State<Explorar> {
               //RutaPage(),
               ToursPage(),
               RecienVisitadoPage(),
+              MapaLugaresCercanosPage(),
               AventurasPage()
             ],
           ),
@@ -137,12 +139,12 @@ class Header extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'explore mexico',
+                      'explore mexico'.tr(),
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Colors.white),
-                    ).tr()
+                    )
                   ],
                 ),
                 Spacer(),

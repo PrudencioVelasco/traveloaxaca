@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:traveloaxaca/api/environment.dart';
-import 'package:traveloaxaca/models/imagen_compani.dart';
+import 'package:traveloaxaca/models/imagen_compania.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 
 class ImagenBloc with ChangeNotifier {

@@ -29,6 +29,9 @@ class SignInBloc extends ChangeNotifier {
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
 
+  int _numeroPagina = 0;
+  int get numeroPagina => _numeroPagina;
+
   bool _hasError = false;
   bool get hasError => _hasError;
 
@@ -40,6 +43,11 @@ class SignInBloc extends ChangeNotifier {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     _appVersion = packageInfo.version;
     _packageName = packageInfo.packageName;
+    notifyListeners();
+  }
+
+  void cambiarPagina(int numero) async {
+    this._numeroPagina = numero;
     notifyListeners();
   }
 

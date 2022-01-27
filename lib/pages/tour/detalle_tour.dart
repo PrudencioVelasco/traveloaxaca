@@ -27,8 +27,10 @@ import 'package:traveloaxaca/pages/compania/detalle_compania.dart';
 import 'package:traveloaxaca/pages/tour/agregar_comentario.dart';
 import 'package:traveloaxaca/pages/tour/agregar_reporte.dart';
 import 'package:traveloaxaca/pages/tour/comentarios.dart';
+import 'package:traveloaxaca/pages/tour/galeria_fotos.dart';
 import 'package:traveloaxaca/pages/tour/mas_informacion.dart';
 import 'package:traveloaxaca/pages/tour/subir_foto.dart';
+import 'package:traveloaxaca/pages/tour/tour_comentario.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
@@ -101,7 +103,6 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
     });
     getDetalleCompania();
     getTelefonosCompania();
-    _getData();
     marcarCorazonInicial();
     numerosIniciales();
     obtenerRecientesTour();
@@ -149,41 +150,6 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
     refresh();
   }
 
-  Future _getData() async {
-    setState(() => _hasData = true);
-    if (_lastVisible == 0) {
-      _listComentarios = (await _commentsBloc.obtenerComentariosTour(
-          widget.tour!.idtour!, 0, 5));
-    }
-    if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
-      int total = (await _commentsBloc.obtenerComentariosTour(
-              widget.tour!.idtour!, 0, 0))
-          .length;
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _totalComentarios = total;
-        });
-      }
-    } else {
-      if (_lastVisible == 0) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-            _hasData = false;
-            print('no items');
-          });
-        }
-      } else {
-        setState(() {
-          _isLoading = false;
-          _hasData = true;
-          print('no more items');
-        });
-      }
-    }
-  }
-
   void refresh() {
     if (mounted) {
       setState(() {});
@@ -217,86 +183,6 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
     } else {
       openSignInDialog(context);
     }
-  }
-
-  handleDelete(context, ComentarioTour d) {
-    final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
-    final ib = Provider.of<InternetBloc>(context, listen: false);
-    showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: Text('message').tr(),
-            content: Text('delete from database?',
-                    style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700))
-                .tr(),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () async {
-                  await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
-                    mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
-                  } else {
-                    if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
-                      mensajeDialog(context, 'message'.tr(),
-                          'You can not delete others comment'.tr());
-                    } else {
-                      final _commentsBloc =
-                          Provider.of<CommentsBloc>(context, listen: false);
-                      ResponseApi? resultado = await _commentsBloc
-                          .eliminarCommentarioTour(d.idcomentario!);
-                      if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
-                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
-                        onRefreshData();
-                        // Navigator.pop(context);
-                      } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
-                        mensajeDialog(
-                            context, 'message'.tr(), resultado.message!);
-                      }
-                    }
-                  }
-                },
-                child: Text(
-                  'yes',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
-                ).tr(),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'no',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
-                ).tr(),
-              ),
-            ],
-          );
-        });
-  }
-
-  onRefreshData() {
-    setState(() {
-      _isLoading = true;
-      // _snap.clear();
-      _listComentarios.clear();
-      _lastVisible = 0;
-    });
-    _getData();
   }
 
   agregarComentarioClick() async {
@@ -457,7 +343,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                           child: Column(
                             children: [
                               Container(
-                                child: _sliderImages(context, height),
+                                child: (widget.tour!.imagenestour!.length > 0)
+                                    ? _sliderImages(context, height)
+                                    : _vacioListaImagen(),
                               ),
                               Container(
                                 padding: EdgeInsets.only(
@@ -968,8 +856,10 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                                                           .toString()
                                                                       : '',
                                                                   maxLines: 3,
-                                                                  style: TextStyle(
-                                                                    fontSize: 12,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        12,
                                                                   ),
                                                                   overflow:
                                                                       TextOverflow
@@ -1166,301 +1056,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                     SizedBox(
                                       height: 15,
                                     ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: _hasData == false
-                                              ? Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 10, bottom: 30),
-                                                  child: ListView(
-                                                    scrollDirection:
-                                                        Axis.vertical,
-                                                    shrinkWrap: true,
-                                                    children: [
-                                                      EmptyPage(
-                                                          icon: LineIcons
-                                                              .comments,
-                                                          message:
-                                                              'no comments found'
-                                                                  .tr(),
-                                                          message1:
-                                                              'be the first to comment'
-                                                                  .tr()),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Container(
-                                                  // color: Colors.red,
-                                                  margin:
-                                                      EdgeInsets.only(top: 15),
-                                                  child: ListView.separated(
-                                                    scrollDirection:
-                                                        Axis.vertical,
-                                                    shrinkWrap: true,
-                                                    primary: false,
-                                                    padding: EdgeInsets.all(5),
-                                                    // controller: _scrollViewController,
-                                                    physics:
-                                                        NeverScrollableScrollPhysics(),
-                                                    itemCount:
-                                                        _listComentarios.length,
-                                                    separatorBuilder:
-                                                        (BuildContext context,
-                                                                int index) =>
-                                                            SizedBox(
-                                                      height: 0,
-                                                    ),
-                                                    itemBuilder:
-                                                        (_, int index) {
-                                                      if (index <
-                                                          _listComentarios
-                                                              .length) {
-                                                        //return reviewList(_listComentarios[index]!, context,_signInBloc);
-                                                        return Container(
-                                                            //  padding: EdgeInsets.only(
-                                                            //      top: 5, bottom: 5),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              //color: Colors.white,
-                                                              border: Border(
-                                                                bottom: BorderSide(
-                                                                    width: 1,
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade300),
-                                                              ),
-                                                              //  borderRadius: BorderRadius.circular(5)),
-                                                            ),
-                                                            child: ListTile(
-                                                                leading: (_listComentarios[
-                                                                            index]!
-                                                                        .imageUrl!
-                                                                        .isEmpty)
-                                                                    ? Container(
-                                                                        height:
-                                                                            50,
-                                                                        width:
-                                                                            50,
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color:
-                                                                              Colors.grey[300],
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                        ),
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .person,
-                                                                            size:
-                                                                                28),
-                                                                      )
-                                                                    : CircleAvatar(
-                                                                        radius:
-                                                                            25,
-                                                                        backgroundColor:
-                                                                            Colors.grey[
-                                                                                200],
-                                                                        backgroundImage:
-                                                                            CachedNetworkImageProvider(_listComentarios[index]!
-                                                                                .imageUrl!)),
-                                                                title: Column(
-                                                                  children: <
-                                                                      Widget>[
-                                                                    Container(
-                                                                      child:
-                                                                          Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            _listComentarios[index]!.userName!,
-                                                                            style:
-                                                                                TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                    Container(
-                                                                      child:
-                                                                          Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.start,
-                                                                        children: [
-                                                                          Text(
-                                                                              _listComentarios[index]!.fecha.toString(),
-                                                                              style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500)),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                subtitle:
-                                                                    Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Row(
-                                                                      children: [
-                                                                        Container(
-                                                                          //alignment: MainAxisAlignment.start,
-                                                                          //color: Colors.red,
-                                                                          child:
-                                                                              RatingBar.builder(
-                                                                            // ignoreGestures: true,
-                                                                            itemSize:
-                                                                                20,
-                                                                            initialRating:
-                                                                                _listComentarios[index]!.rating!,
-                                                                            minRating:
-                                                                                _listComentarios[index]!.rating!,
-                                                                            maxRating:
-                                                                                _listComentarios[index]!.rating!,
-                                                                            ignoreGestures:
-                                                                                true,
-                                                                            direction:
-                                                                                Axis.horizontal,
-                                                                            allowHalfRating:
-                                                                                false,
-                                                                            itemCount:
-                                                                                5,
-                                                                            itemPadding:
-                                                                                EdgeInsets.symmetric(horizontal: 4.0),
-                                                                            itemBuilder: (context, _) =>
-                                                                                Icon(
-                                                                              Icons.star,
-                                                                              color: Colors.amber,
-                                                                            ),
-                                                                            onRatingUpdate:
-                                                                                (rating) {
-                                                                              //_rating = rating;
-                                                                              //print(rating);
-                                                                            },
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child:
-                                                                              ReadMoreText(
-                                                                            _listComentarios[index]!.comentario!,
-                                                                            trimLines:
-                                                                                4,
-                                                                            colorClickableText:
-                                                                                Colors.blue,
-                                                                            trimMode:
-                                                                                TrimMode.Line,
-                                                                            trimCollapsedText:
-                                                                                'read more'.tr(),
-                                                                            textAlign:
-                                                                                TextAlign.justify,
-                                                                            style:
-                                                                                TextStyle(fontSize: 16),
-                                                                            trimExpandedText:
-                                                                                'read less'.tr(),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    if (_listComentarios[index]!
-                                                                            .imagenes!
-                                                                            .length >
-                                                                        0)
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                              child: GridView.count(
-                                                                            crossAxisCount:
-                                                                                3,
-                                                                            shrinkWrap:
-                                                                                true,
-                                                                            children:
-                                                                                List.generate(_listComentarios[index]!.imagenes!.length, (index2) {
-                                                                              return CachedNetworkImage(
-                                                                                imageUrl: _listComentarios[index]!.imagenes![index2].imagenurl!,
-                                                                                imageBuilder: (context, imageProvider) => Container(
-                                                                                  decoration: BoxDecoration(
-                                                                                    image: DecorationImage(
-                                                                                      image: imageProvider,
-                                                                                      fit: BoxFit.cover,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                placeholder: (context, url) => Center(
-                                                                                  child: SizedBox(
-                                                                                    child: CircularProgressIndicator(),
-                                                                                    height: 50.0,
-                                                                                    width: 50.0,
-                                                                                  ),
-                                                                                ),
-                                                                                errorWidget: (context, url, error) => Icon(Icons.error),
-                                                                                width: 300,
-                                                                                height: 300,
-                                                                              );
-                                                                            }),
-                                                                          )),
-                                                                        ],
-                                                                      ),
-                                                                  ],
-                                                                ),
-                                                                trailing: Row(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .end,
-                                                                  children: [
-                                                                    PopupMenuButton(
-                                                                        // key: _menuKey,
-                                                                        itemBuilder: (_) =>
-                                                                            <PopupMenuItem<String>>[
-                                                                              if (_listComentarios[index]!.idusuario == _signInBloc.idusuario)
-                                                                                PopupMenuItem<String>(child: Text('delete?'.tr()), value: 'eliminar'),
-                                                                              PopupMenuItem<String>(child: Text('report?'.tr()), value: 'reportar'),
-                                                                            ],
-                                                                        onSelected: (valor) {
-                                                                          print(
-                                                                              valor);
-                                                                          if (valor ==
-                                                                              "reportar") {
-                                                                            nextScreen(context,
-                                                                                ReportarComentarioTourPage(comentario: _listComentarios[index]!));
-                                                                          }
-                                                                          if (valor ==
-                                                                              "eliminar") {
-                                                                            handleDelete(context,
-                                                                                _listComentarios[index]!);
-                                                                          }
-                                                                        }),
-                                                                  ],
-                                                                )));
-                                                      }
-                                                      return Opacity(
-                                                        opacity: _isLoading!
-                                                            ? 1.0
-                                                            : 0.0,
-                                                        child: _lastVisible == 0
-                                                            ? LoadingCard(
-                                                                height: 100)
-                                                            : Center(
-                                                                child: SizedBox(
-                                                                    width: 32.0,
-                                                                    height:
-                                                                        32.0,
-                                                                    child:
-                                                                        new CupertinoActivityIndicator()),
-                                                              ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                        ),
-                                      ],
-                                    ),
+                                    TourComentarioPage(tour: widget.tour!),
                                     if (_totalComentarios >= 5)
                                       Row(
                                         children: <Widget>[
@@ -1499,6 +1095,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                           )
                                         ],
                                       ),
+                                    SizedBox(
+                                      height: 25,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -1507,6 +1106,32 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                         ),
                       ))
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _vacioListaImagen() {
+    return Hero(
+      tag: 'Slider2',
+      child: Container(
+        color: Colors.white,
+        child: Container(
+          height: 250,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/no-image.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              "you can upload photos of this places".tr(),
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
         ),
       ),
     );
@@ -1534,11 +1159,33 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                 .toList()
                 .map((item) => Container(
                       child: Center(
-                          child: Image.network(
-                        item.url!,
-                        fit: BoxFit.cover,
-                        height: height,
-                      )),
+                        child: GestureDetector(
+                          onTap: () => nextScreen(
+                              context, GaleriaFotoTourPage(tour: widget.tour!)),
+                          child: CachedNetworkImage(
+                            imageUrl: item.url!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Center(
+                              child: SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 50.0,
+                                width: 50.0,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            height: height,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ))
                 .toList(),
           ),

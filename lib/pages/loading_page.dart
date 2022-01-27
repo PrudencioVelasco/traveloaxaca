@@ -35,18 +35,23 @@ class _LoadingPageState extends State<LoadingPage>
 
   @override
   Widget build(BuildContext context) {
+    var brishtness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
         body: EasySplashScreen(
-      logo: Image.asset(Config().logotipo),
+      backgroundColor: (!isDarkMode) ? Colors.white : Colors.black,
+      logoSize: 120,
+      logo: Image.asset(
+        Config().logotipo,
+        fit: BoxFit.contain,
+      ),
       title: Text(
         "explore oaxaca".tr(),
-        style: TextStyle(
-          fontSize: 19,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.headline6,
       ),
       showLoader: true,
       loadingText: Text("loading...".tr()),
+      loaderColor: (isDarkMode) ? Colors.white : Colors.black,
       futureNavigator: checkLoginState(context),
     )
         /*FutureBuilder(

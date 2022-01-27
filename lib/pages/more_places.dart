@@ -277,16 +277,16 @@ class _ListItem extends StatelessWidget {
                             //margin: EdgeInsets.only(bottom: 60),
                             child: RatingBar.builder(
                               // ignoreGestures: true,
-                              itemSize: 20,
+                              itemSize: 28,
                               initialRating: d.rating!,
                               ignoreGestures: true,
                               direction: Axis.horizontal,
                               allowHalfRating: false,
                               itemCount: 5,
-                              itemPadding:
-                                  EdgeInsets.symmetric(horizontal: 4.0),
+                              // itemPadding:
+                              //     EdgeInsets.symmetric(horizontal: 4.0),
                               itemBuilder: (context, _) => Icon(
-                                Icons.star,
+                                Icons.star_border_outlined,
                                 color: Colors.amber,
                               ),
                               onRatingUpdate: (rating) {

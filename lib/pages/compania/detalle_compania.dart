@@ -20,12 +20,14 @@ import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/models/comentario_compania.dart';
 import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/models/horario.dart';
-import 'package:traveloaxaca/models/imagen_compani.dart';
+import 'package:traveloaxaca/models/imagen_compania.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/models/telefono.dart';
 import 'package:traveloaxaca/pages/compania/agregar_comentario.dart';
 import 'package:traveloaxaca/pages/compania/agregar_reporte.dart';
 import 'package:traveloaxaca/pages/compania/comentarios.dart';
+import 'package:traveloaxaca/pages/compania/compania_comentario.dart';
+import 'package:traveloaxaca/pages/compania/galeria_compania.dart';
 import 'package:traveloaxaca/pages/compania/horario.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
@@ -84,7 +86,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
       }
     });
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {});
-    _getData();
+
     refresh();
   }
 
@@ -102,41 +104,6 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
     }
   }
 
-  Future _getData() async {
-    setState(() => _hasData = true);
-    if (_lastVisible == 0) {
-      _listComentarios = (await _commentsBloc.obtenerComentariosCompania(
-          widget.compania!.idcompania!, 0, 5));
-    }
-    if (_listComentarios.isNotEmpty && _listComentarios.length > 0) {
-      int total = (await _commentsBloc.obtenerComentariosCompania(
-              widget.compania!.idcompania!, 0, 0))
-          .length;
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _totalComentarios = total;
-        });
-      }
-    } else {
-      if (_lastVisible == 0) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-            _hasData = false;
-            print('no items');
-          });
-        }
-      } else {
-        setState(() {
-          _isLoading = false;
-          _hasData = true;
-          print('no more items');
-        });
-      }
-    }
-  }
-
   void refresh() {
     if (mounted) {
       setState(() {});
@@ -150,7 +117,6 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
       _listComentarios.clear();
       _lastVisible = 0;
     });
-    _getData();
   }
 
   handleDelete(context, ComentarioCompania d) {
@@ -314,7 +280,11 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                           child: Container(
                             child: Column(children: [
                               Container(
-                                child: _sliderImages(context, height, width),
+                                child:
+                                    (widget.compania!.imagenescompania!.length >
+                                            0)
+                                        ? _sliderImages(context, height)
+                                        : _vacioListaImagen(),
                               ),
                               Container(
                                 padding: EdgeInsets.only(
@@ -700,310 +670,8 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                                   SizedBox(
                                     height: 15,
                                   ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: _hasData == false
-                                            ? Container(
-                                                margin: EdgeInsets.only(
-                                                    top: 10, bottom: 30),
-                                                child: ListView(
-                                                  scrollDirection:
-                                                      Axis.vertical,
-                                                  shrinkWrap: true,
-                                                  children: [
-                                                    EmptyPage(
-                                                        icon:
-                                                            LineIcons.comments,
-                                                        message:
-                                                            'no comments found'
-                                                                .tr(),
-                                                        message1:
-                                                            'be the first to comment'
-                                                                .tr()),
-                                                  ],
-                                                ),
-                                              )
-                                            : Container(
-                                                // color: Colors.red,
-                                                margin:
-                                                    EdgeInsets.only(top: 15),
-                                                child: ListView.separated(
-                                                  scrollDirection:
-                                                      Axis.vertical,
-                                                  shrinkWrap: true,
-                                                  primary: false,
-                                                  padding: EdgeInsets.all(5),
-                                                  // controller: _scrollViewController,
-                                                  physics:
-                                                      NeverScrollableScrollPhysics(),
-                                                  itemCount:
-                                                      _listComentarios.length,
-                                                  separatorBuilder:
-                                                      (BuildContext context,
-                                                              int index) =>
-                                                          SizedBox(
-                                                    height: 0,
-                                                  ),
-                                                  itemBuilder: (_, int index) {
-                                                    if (index <
-                                                        _listComentarios
-                                                            .length) {
-                                                      //return reviewList(_listComentarios[index]!, context,_signInBloc);
-                                                      return Container(
-                                                          //  padding: EdgeInsets.only(
-                                                          //      top: 5, bottom: 5),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            //color: Colors.white,
-                                                            border: Border(
-                                                              bottom: BorderSide(
-                                                                  width: 1,
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .shade300),
-                                                            ),
-                                                            //  borderRadius: BorderRadius.circular(5)),
-                                                          ),
-                                                          child: ListTile(
-                                                              leading: (_listComentarios[
-                                                                          index]!
-                                                                      .imageUrl!
-                                                                      .isEmpty)
-                                                                  ? Container(
-                                                                      height:
-                                                                          50,
-                                                                      width: 50,
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        color: Colors
-                                                                            .grey[300],
-                                                                        shape: BoxShape
-                                                                            .circle,
-                                                                      ),
-                                                                      child: Icon(
-                                                                          Icons
-                                                                              .person,
-                                                                          size:
-                                                                              28),
-                                                                    )
-                                                                  : CircleAvatar(
-                                                                      radius:
-                                                                          25,
-                                                                      backgroundColor:
-                                                                          Colors.grey[
-                                                                              200],
-                                                                      backgroundImage:
-                                                                          CachedNetworkImageProvider(
-                                                                              _listComentarios[index]!.imageUrl!)),
-                                                              title: Column(
-                                                                children: <
-                                                                    Widget>[
-                                                                  Container(
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Text(
-                                                                          _listComentarios[index]!
-                                                                              .userName!,
-                                                                          style: TextStyle(
-                                                                              color: Colors.black,
-                                                                              fontSize: 12,
-                                                                              fontWeight: FontWeight.w600),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  Container(
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Text(
-                                                                            _listComentarios[index]!
-                                                                                .fecha
-                                                                                .toString(),
-                                                                            style: TextStyle(
-                                                                                color: Colors.grey[500],
-                                                                                fontSize: 11,
-                                                                                fontWeight: FontWeight.w500)),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              subtitle: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        //alignment: MainAxisAlignment.start,
-                                                                        //color: Colors.red,
-                                                                        child: RatingBar
-                                                                            .builder(
-                                                                          // ignoreGestures: true,
-                                                                          itemSize:
-                                                                              20,
-                                                                          initialRating:
-                                                                              _listComentarios[index]!.rating!,
-                                                                          minRating:
-                                                                              _listComentarios[index]!.rating!,
-                                                                          maxRating:
-                                                                              _listComentarios[index]!.rating!,
-                                                                          ignoreGestures:
-                                                                              true,
-                                                                          direction:
-                                                                              Axis.horizontal,
-                                                                          allowHalfRating:
-                                                                              false,
-                                                                          itemCount:
-                                                                              5,
-                                                                          itemPadding:
-                                                                              EdgeInsets.symmetric(horizontal: 4.0),
-                                                                          itemBuilder: (context, _) =>
-                                                                              Icon(
-                                                                            Icons.star,
-                                                                            color:
-                                                                                Colors.amber,
-                                                                          ),
-                                                                          onRatingUpdate:
-                                                                              (rating) {
-                                                                            //_rating = rating;
-                                                                            //print(rating);
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Expanded(
-                                                                        child:
-                                                                            ReadMoreText(
-                                                                          _listComentarios[index]!
-                                                                              .comentario!,
-                                                                          trimLines:
-                                                                              4,
-                                                                          colorClickableText:
-                                                                              Colors.blue,
-                                                                          trimMode:
-                                                                              TrimMode.Line,
-                                                                          trimCollapsedText:
-                                                                              'read more'.tr(),
-                                                                          textAlign:
-                                                                              TextAlign.justify,
-                                                                          style:
-                                                                              TextStyle(fontSize: 16),
-                                                                          trimExpandedText:
-                                                                              'read less'.tr(),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  if (_listComentarios[
-                                                                              index]!
-                                                                          .imagenes!
-                                                                          .length >
-                                                                      0)
-                                                                    Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                            child:
-                                                                                GridView.count(
-                                                                          crossAxisCount:
-                                                                              3,
-                                                                          shrinkWrap:
-                                                                              true,
-                                                                          children: List.generate(
-                                                                              _listComentarios[index]!.imagenes!.length,
-                                                                              (index2) {
-                                                                            return CachedNetworkImage(
-                                                                              imageUrl: _listComentarios[index]!.imagenes![index2].imagenurl!,
-                                                                              imageBuilder: (context, imageProvider) => Container(
-                                                                                decoration: BoxDecoration(
-                                                                                  image: DecorationImage(
-                                                                                    image: imageProvider,
-                                                                                    fit: BoxFit.cover,
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              placeholder: (context, url) => Center(
-                                                                                child: SizedBox(
-                                                                                  child: CircularProgressIndicator(),
-                                                                                  height: 50.0,
-                                                                                  width: 50.0,
-                                                                                ),
-                                                                              ),
-                                                                              errorWidget: (context, url, error) => Icon(Icons.error),
-                                                                              width: 300,
-                                                                              height: 300,
-                                                                            );
-                                                                          }),
-                                                                        )),
-                                                                      ],
-                                                                    ),
-                                                                ],
-                                                              ),
-                                                              trailing: Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  PopupMenuButton(
-                                                                      // key: _menuKey,
-                                                                      itemBuilder:
-                                                                          (_) =>
-                                                                              <PopupMenuItem<String>>[
-                                                                                if (_listComentarios[index]!.idusuario == _signInBloc.idusuario) PopupMenuItem<String>(child: Text('delete?'.tr()), value: 'eliminar'),
-                                                                                PopupMenuItem<String>(child: Text('report?'.tr()), value: 'reportar'),
-                                                                              ],
-                                                                      onSelected: (valor) {
-                                                                        print(
-                                                                            valor);
-                                                                        if (valor ==
-                                                                            "reportar") {
-                                                                          nextScreen(
-                                                                              context,
-                                                                              ReportarComentarioCompaniaPage(comentario: _listComentarios[index]!));
-                                                                        }
-                                                                        if (valor ==
-                                                                            "eliminar") {
-                                                                          handleDelete(
-                                                                              context,
-                                                                              _listComentarios[index]!);
-                                                                        }
-                                                                      }),
-                                                                ],
-                                                              )));
-                                                    }
-                                                    return Opacity(
-                                                      opacity: _isLoading!
-                                                          ? 1.0
-                                                          : 0.0,
-                                                      child: _lastVisible == 0
-                                                          ? LoadingCard(
-                                                              height: 100)
-                                                          : Center(
-                                                              child: SizedBox(
-                                                                  width: 32.0,
-                                                                  height: 32.0,
-                                                                  child:
-                                                                      new CupertinoActivityIndicator()),
-                                                            ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                      ),
-                                    ],
+                                  CompaniaComentarioPage(
+                                    compania: widget.compania!,
                                   ),
                                   if (_totalComentarios >= 5)
                                     Row(
@@ -1055,67 +723,85 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
     );
   }
 
-  Hero _sliderImages(BuildContext context, double height, double width) {
+  Widget _vacioListaImagen() {
+    return Hero(
+      tag: 'Slider2',
+      child: Container(
+        color: Colors.white,
+        child: Container(
+          height: 250,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/no-image.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              "you can upload photos of this places".tr(),
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Hero _sliderImages(BuildContext context, double height) {
     return Hero(
       tag: 'Slider',
       child: Container(
-        // color: Colors.white,
+        color: Colors.white,
         child: Container(
-            height: 250,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-                // color: Colors.black,
-                ),
-            child: FutureBuilder(
-              future: context
-                  .watch<ImagenBloc>()
-                  .obtenerImagenesCompania(widget.compania!.idcompania!),
-              builder: (context, AsyncSnapshot<List<ImagenCompany?>> snapshot) {
-                /*  if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else {*/
-                if (snapshot.hasData) {
-                  if (snapshot.data!.length > 0) {
-                    return CarouselSlider.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (BuildContext context, int itemIndex,
-                              int pageViewIndex) =>
-                          Container(
-                        child: Center(
-                            child: Image.network(
-                          snapshot.data![itemIndex]!.url!,
-                          fit: BoxFit.cover,
-                          height: height,
-                        )),
+          height: 250,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Colors.black,
+          ),
+          child: CarouselSlider(
+            options: CarouselOptions(
+              height: height,
+              viewportFraction: 1.0,
+              enlargeCenterPage: false,
+              autoPlay: true,
+            ),
+            items: widget.compania!.imagenescompania!
+                .toList()
+                .map((item) => Container(
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () => nextScreen(context,
+                              GaleriaCompaniaPage(compania: widget.compania!)),
+                          child: CachedNetworkImage(
+                            imageUrl: item.url!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Center(
+                              child: SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 50.0,
+                                width: 50.0,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            height: height,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                      options: CarouselOptions(
-                        height: height,
-                        viewportFraction: 1.0,
-                        enlargeCenterPage: false,
-                        autoPlay: true,
-                      ),
-                    );
-                  } else {
-                    return Image.asset(
-                      'assets/images/noimage.jpg',
-                      height: height,
-                      width: width,
-                    );
-                  }
-                } else if (snapshot.hasError) {
-                  return Text("fetch error");
-                } else {
-                  return Center(
-                    child: SizedBox(
-                      child: CircularProgressIndicator(),
-                      height: 50.0,
-                      width: 50.0,
-                    ),
-                  );
-                }
-                //}
-              },
-            )),
+                    ))
+                .toList(),
+          ),
+        ),
       ),
     );
   }

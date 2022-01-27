@@ -11,6 +11,28 @@ class LanguagePopup extends StatefulWidget {
 
 class _LanguagePopupState extends State<LanguagePopup> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<bool> cambiarLenguaje(int index) async {
+    if (index == 0) {
+      // context.resetLocale();
+      context.setLocale(Locale('en'));
+    } else {
+      //context.resetLocale();
+      context.setLocale(Locale('es'));
+    }
+    return true;
+  }
+
+  void refresh() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -36,14 +58,8 @@ class _LanguagePopupState extends State<LanguagePopup> {
           leading: Icon(Icons.language),
           title: Text(d),
           onTap: () async {
-            setState(() {
-              if (index == 0) {
-                context.setLocale(Locale('en'));
-              } else {
-                context.setLocale(Locale('es'));
-              }
-              Navigator.pop(context);
-            });
+            cambiarLenguaje(index);
+            Navigator.pop(context);
           },
         ),
         Divider()

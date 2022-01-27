@@ -21,6 +21,7 @@ import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
+import 'package:traveloaxaca/pages/explorar.dart';
 import 'package:traveloaxaca/pages/loading_page.dart';
 import 'package:traveloaxaca/pages/perfil.dart';
 import 'package:traveloaxaca/setting/provider/locale_provider.dart';
@@ -141,6 +142,8 @@ class MyApp extends StatelessWidget {
       home: LoadingPage(),
       routes: {
         'perfil': (_) => PerfilPage(),
+        '/explorar': (_) => Explorar(),
+        'loading': (_) => LoadingPage(),
         //  'principal_buscar': (context) => BuscarLugarCategoriaPage(),
         // 'acceso_gps': (_) => AccesoGpsPage(),
       },
