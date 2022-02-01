@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/pages/home.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:traveloaxaca/config/config.dart';
+import 'package:introduction_screen/introduction_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class IntroPage extends StatefulWidget {
   const IntroPage({Key? key}) : super(key: key);
@@ -11,110 +14,94 @@ class IntroPage extends StatefulWidget {
 }
 
 class _IntroPageState extends State<IntroPage> {
-  @override
-  Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 30,
-          ),
-          Container(
-            height: 45,
-            width: w * 0.70,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: TextButton(
-              child: Text(
-                'get started',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
-              ).tr(),
-              onPressed: () {
-                nextScreenReplace(context, Home());
-              },
-            ),
-          ),
-          SizedBox(
-            height: 0.15,
-          ),
-        ],
-      ),
+  final introKey = GlobalKey<IntroductionScreenState>();
+
+  void _onIntroEnd(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => Home()),
     );
   }
-}
 
-class IntroView extends StatelessWidget {
-  final String title;
-  final String description;
-  final String image;
-  const IntroView(
-      {Key? key,
-      required this.title,
-      required this.description,
-      required this.image})
-      : super(key: key);
+  Widget _buildImage(String assetName, [double width = 350]) {
+    return Image.asset('assets/images/$assetName', width: width);
+  }
 
   @override
   Widget build(BuildContext context) {
-    double h = MediaQuery.of(context).size.height;
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 50,
+    const bodyStyle = TextStyle(fontSize: 19.0);
+
+    const pageDecoration = const PageDecoration(
+      titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
+      bodyTextStyle: bodyStyle,
+      descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      pageColor: Colors.white,
+      imagePadding: EdgeInsets.zero,
+      // fullScreen: true,
+    );
+
+    return IntroductionScreen(
+      key: introKey,
+      globalBackgroundColor: Colors.white,
+      globalHeader: Align(
+        alignment: Alignment.topRight,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16, right: 16),
+            child: _buildImage('exploraoaxaca.png', 50),
           ),
-          Container(
-            alignment: Alignment.center,
-            height: h * 0.38,
-            child: Image(
-              image: AssetImage(image),
-              fit: BoxFit.contain,
-            ),
-          ),
-          SizedBox(
-            height: 25,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 25, right: 25),
-            child: Text(
-              title,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.grey[800]),
-            ).tr(),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10, bottom: 10),
-            height: 3,
-            width: 150,
-            decoration: BoxDecoration(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(40)),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Text(
-              description,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[800]),
-            ).tr(),
-          ),
-        ],
+        ),
+      ),
+      pages: [
+        PageViewModel(
+          title: "intro-title1".tr(),
+          body: "intro-description1".tr(),
+          image: _buildImage('travel1.png'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "intro-title2".tr(),
+          body: "intro-description2".tr(),
+          image: _buildImage('travel2.png'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "intro-title3".tr(),
+          body: "intro-description3".tr(),
+          image: _buildImage('travel5.png'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "intro-title4".tr(),
+          body: "intro-description4".tr(),
+          image: _buildImage('travel6.png'),
+          decoration: pageDecoration,
+        ),
+      ],
+      onDone: () => _onIntroEnd(context),
+      onSkip: () => _onIntroEnd(context), // You can override onSkip callback
+      showSkipButton: true,
+      skipFlex: 0,
+      nextFlex: 0,
+      //rtl: true, // Display as right-to-left
+      skip: Text('skip'.tr()),
+      next: Icon(Icons.arrow_forward),
+      done: Text('done'.tr(), style: TextStyle(fontWeight: FontWeight.w600)),
+      curve: Curves.fastLinearToSlowEaseIn,
+      controlsMargin: const EdgeInsets.all(16),
+      controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+      dotsDecorator: const DotsDecorator(
+        size: Size(10.0, 10.0),
+        color: Color(0xFFBDBDBD),
+        activeSize: Size(22.0, 10.0),
+        activeShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        ),
+      ),
+      dotsContainerDecorator: const ShapeDecoration(
+        // color: Colors.black87,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
       ),
     );
   }

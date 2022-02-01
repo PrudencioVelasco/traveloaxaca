@@ -26,7 +26,12 @@ class _HomeState extends State<Home> {
   }
 
   List<Widget> _buildScreens() {
-    return [Explorar(), BuscarPage(), InformacionPage(), PerfilPage()];
+    return [
+      Explorar(),
+      BuscarPage(),
+      //InformacionPage(),
+      PerfilPage()
+    ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
@@ -43,12 +48,12 @@ class _HomeState extends State<Home> {
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
-      PersistentBottomNavBarItem(
+      /*PersistentBottomNavBarItem(
         icon: Icon(Icons.add),
         title: "information".tr(),
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
-      ),
+      ),*/
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.settings),
         title: "profile".tr(),
@@ -66,7 +71,7 @@ class _HomeState extends State<Home> {
         controller: _controller,
         screens: _buildScreens(),
         confineInSafeArea: true,
-        itemCount: 4,
+        itemCount: 3,
         handleAndroidBackButtonPress: true,
         stateManagement: true,
         hideNavigationBar: _hideNavBar,

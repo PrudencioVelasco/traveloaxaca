@@ -689,21 +689,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                       // color: Colors.green,
 
                                       width: MediaQuery.of(context).size.width,
-                                      child: Html(
-                                        data:
-                                            '''${_sitiosInteres[0].descripcion}''',
-                                        shrinkWrap: true,
-                                        style: {
-                                          "body": Style(
-                                            maxLines: 4,
-                                            textAlign: TextAlign.justify,
-                                            fontSize: FontSize(16.0),
-                                            // fontWeight: FontWeight.w500,
-                                            // color: Colors.black,
-                                            textOverflow: TextOverflow.ellipsis,
-                                          ),
-                                        },
-                                      ),
+                                      child: Text(
+                                          _sitiosInteres[0]
+                                              .descripcion
+                                              .toString(),
+                                          maxLines: 8,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.justify,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          )),
                                     ),
                                     Row(
                                       children: <Widget>[

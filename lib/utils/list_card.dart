@@ -611,12 +611,38 @@ class ListCardCosasHacerNearby extends StatelessWidget {
                                 },
                               ),
                             ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Icon(
+                              FontAwesomeIcons.solidHeart,
+                              color: Colors.red,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "(" + d!.love.toString() + ")",
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey[600]),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              FontAwesomeIcons.comments,
+                              color: Colors.blueAccent,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
                             Text(
                               "(" + d!.comentario.toString() + ")",
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
-                            Spacer(),
                           ],
                         ),
                       ],
@@ -638,7 +664,29 @@ class ListCardCosasHacerNearby extends StatelessWidget {
                     child: ClipRRect(
                         //  borderRadius: BorderRadius.circular(5),
                         child: (d!.primeraimagen != null)
-                            ? CustomCacheImage(imageUrl: d!.primeraimagen!)
+                            ? CachedNetworkImage(
+                                imageUrl: d!.primeraimagen!,
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                placeholder: (context, url) => Center(
+                                  child: SizedBox(
+                                    child: CircularProgressIndicator(),
+                                    height: 50.0,
+                                    width: 50.0,
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                // height: height,
+                                fit: BoxFit.cover,
+                              )
                             : Image.asset(
                                 "assets/images/no-imagen-company.jpg",
                               ))),

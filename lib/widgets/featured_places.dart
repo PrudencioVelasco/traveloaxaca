@@ -197,7 +197,7 @@ class _FeaturedItemList extends StatelessWidget {
                           children: <Widget>[
                             Icon(
                               LineIcons.heart,
-                              size: 18,
+                              size: 20,
                               color: Colors.red,
                             ),
                             SizedBox(
@@ -214,8 +214,8 @@ class _FeaturedItemList extends StatelessWidget {
                               width: 30,
                             ),
                             Icon(
-                              LineIcons.comment,
-                              size: 18,
+                              LineIcons.comments,
+                              size: 20,
                               color: Colors.blue[300],
                             ),
                             SizedBox(

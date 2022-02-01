@@ -5,6 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
+import 'package:traveloaxaca/pages/done.dart';
+import 'package:traveloaxaca/pages/intro.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/widgets/language.dart';
@@ -30,6 +32,16 @@ class _SignInPageState extends State<SignInPage> {
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {});
   }
 
+  afterSignIn() {
+    if (widget.tag != '') {
+      //nextScreenReplace(context, DonePage());
+      Navigator.of(context, rootNavigator: true).pushReplacement(
+          MaterialPageRoute(builder: (context) => new IntroPage()));
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
   handleSkip() {
     final sb = context.read<SignInBloc>();
     //sb.setGuestUser();
@@ -49,12 +61,14 @@ class _SignInPageState extends State<SignInPage> {
     final loginOk = await sb.signInwithFacebook();
     if (loginOk) {
       //Regresa a la ventana anterior
-      Navigator.pop(context);
+      afterSignIn();
       setState(() => facebookSignInStarted = false);
     } else {
-      mostrarAlerta(
-          context, 'Login incorrecto', 'Revise sus credenciales nuevamente');
-      setState(() => facebookSignInStarted = false);
+      mostrarAlerta(context, 'sign in'.tr(),
+          'something is wrong. please try again.'.tr());
+      setState(
+        () => facebookSignInStarted = false,
+      );
     }
     //  }
   }
@@ -178,7 +192,7 @@ class _SignInPageState extends State<SignInPage> {
                                     width: 10,
                                   ),
                                   Text(
-                                    'Sign In with Facebook',
+                                    'sign in with facebook'.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,

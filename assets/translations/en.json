@@ -1,12 +1,14 @@
 {
-    "welcome message": "Explore every famous places of beautiful country Bangladesh and find nearby hotels & restaurents with the easiest way. Get realtime directions, estimated cost, explore travel blogs & much more.. ",
+    "welcome message": "Explore every famous places of beautiful statue of Oaxaca, México  and find nearby places turistic how beach, restaurant, hotel, tourist guide... ",
     "welcome to": "Welcome to",
     "intro-title1": "No Matter Where You Are",
     "intro-title2": "Explore Nearby Stuffs",
-    "intro-title3": "Realtime Travel Guide",
+    "intro-title3": "Share moments",
+    "intro-title4": "Organize your trip",
     "intro-description1": "Access to importent infoemation about your destination before and during your travel...",
-    "intro-description2": "Explore nearby hotels & retaurants near every tourist spots with the most most easiest way...",
-    "intro-description3": "Get directions, costs and other travel related stuffs in one place...",
+    "intro-description2": "Explore nearby archaeological area,beach,park, hotels & retaurants near every tourist spots with the most most easiest way...",
+    "intro-description3": "You can share moments, writing coments and upload photos...",
+    "intro-description4": "Save yours places in your schedule.",
     "get started": "Get Started",
     "explore country": "Explore Mexico",
     "search places": "Search Places",
@@ -54,6 +56,7 @@
     "save your favourite places here": "Save your favourite places here",
     "save your favourite blogs here": "Save your favourite blogs here",
     "skip": "Skip",
+    "done": "Done",
     "check your internet connection!": "Check your internet connection!",
     "something is wrong. please try again.": "Something is wrong. Please try again.",
     "sign in": "Sign In",
@@ -175,5 +178,6 @@
     "photos": "Photos",
     "explore oaxaca":"Explore Oaxaca",
     "explore mexico":"Explore Mexico",
-    "nearby places": "Nearby Places"
+    "nearby places": "Nearby Places",
+    "sign in with facebook":"Sign In with Facebook"
 }

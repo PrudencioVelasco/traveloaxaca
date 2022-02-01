@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
@@ -97,15 +98,19 @@ class _MapaPageState extends State<MapaPage>
   Future getUserLocation() async {
     currentLocation = await locateUser();
     if (currentLocation != null) {
-      setState(() {
-        _center = latlong.LatLng(
-            currentLocation!.latitude, currentLocation!.longitude);
-        cargando = false;
-      });
+      if (mounted) {
+        setState(() {
+          _center = latlong.LatLng(
+              currentLocation!.latitude, currentLocation!.longitude);
+          cargando = false;
+        });
+      }
     } else {
-      setState(() {
-        cargando = false;
-      });
+      if (mounted) {
+        setState(() {
+          cargando = false;
+        });
+      }
     }
   }
 
@@ -214,7 +219,6 @@ class _MapaPageState extends State<MapaPage>
             actions: <Widget>[
               TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
                     Navigator.pop(context);
                   },
                   child: Text('OK'))
@@ -489,7 +493,7 @@ class _MapaPageState extends State<MapaPage>
                               ),
                               onPressed: () {
                                 Navigator.pop(context, true);
-                                // btnCancelar();
+                                btnCancelar();
                               },
                             ),
                           ),
@@ -513,8 +517,8 @@ class _MapaPageState extends State<MapaPage>
                                         BorderRadius.all(Radius.circular(10))),
                               ),
                               onPressed: () {
-                                //btnBuscar();
-                                //Navigator.pop(context, true);
+                                btnBuscar();
+                                Navigator.pop(context, true);
                               },
                             ),
                           )
@@ -566,6 +570,11 @@ class _MapaPageState extends State<MapaPage>
     setState(() {
       filtrando = true;
       _alldata = (opcion == 1) ? _listaDataOriginal : filteredStrings;
+      if (_alldata.length == 0) {
+        // resultadointerno = false;
+        // cargando = false;
+        openEmptyDialog();
+      }
     });
   }
 
@@ -739,32 +748,60 @@ class MapItemDetails extends StatelessWidget {
                               Row(
                                 //   crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 20,
-                                      width: 90,
-                                      child: RatingBar.builder(
-                                        // ignoreGestures: true,
-                                        itemSize: 20,
-                                        initialRating: companiaMapa.rating!,
-                                        minRating: companiaMapa.rating!,
-                                        maxRating: companiaMapa.rating!,
-                                        ignoreGestures: true,
-                                        direction: Axis.horizontal,
-                                        allowHalfRating: false,
-                                        itemCount: 5,
-                                        itemPadding: EdgeInsets.symmetric(
-                                            horizontal: 4.0),
-                                        itemBuilder: (context, _) => Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                        ),
-                                        onRatingUpdate: (rating) {
-                                          //_rating = rating;
-                                          //print(rating);
-                                        },
-                                      ),
+                                  RatingBar.builder(
+                                    // ignoreGestures: true,
+                                    itemSize: 20,
+                                    initialRating: companiaMapa.rating!,
+                                    minRating: companiaMapa.rating!,
+                                    maxRating: companiaMapa.rating!,
+                                    ignoreGestures: true,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: false,
+                                    itemCount: 5,
+                                    //  itemPadding: EdgeInsets.symmetric(
+                                    //     horizontal: 4.0),
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star_border_outlined,
+                                      color: Colors.amber,
                                     ),
+                                    onRatingUpdate: (rating) {
+                                      //_rating = rating;
+                                      //print(rating);
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.solidHeart,
+                                    color: Colors.red,
+                                    size: 15,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "(" + companiaMapa.love.toString() + ")",
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey[600]),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.comments,
+                                    color: Colors.blueAccent,
+                                    size: 15,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "(" +
+                                        companiaMapa.comentario.toString() +
+                                        ")",
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey[600]),
                                   ),
                                 ],
                               ),

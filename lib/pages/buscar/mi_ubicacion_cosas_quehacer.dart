@@ -41,6 +41,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
   String? _ascValue;
   bool cargando = true;
   bool sinresultado = false;
+  bool resultadointerno = true;
   List<Map> _listaRating = [
     {"id": 1, "nombre": "1 start".tr()},
     {"id": 2, "nombre": "2 start".tr()},
@@ -53,6 +54,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
     {"id": 2, "nombre": "more loves".tr()},
   ];
   List<Lugar?> _listaLugar = [];
+  List<Lugar?> _listaLugarOriginal = [];
   List<Lugar?> _listaLugarSegundo = [];
   List<Actividad?> _listActividad = [];
   List<MultiSelectItem<Actividad>> _items = [];
@@ -139,40 +141,11 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
     }
   }
 
-  calcularDistancia(
-      double latitudmi, double longitudmi, double latitud, double longitud) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((latitudmi - latitud) * p) / 2 +
-        c(latitud * p) *
-            c(latitudmi * p) *
-            (1 - c((longitud - longitudmi) * p)) /
-            2;
-    return 12742 * asin(sqrt(a));
-  }
-
   Future allLugares() async {
     _listaLugar = await _lugarBloc.obtenerTodosLugaresCercanos(
         _center!.latitude, _center!.longitude);
     if (_listaLugar.length > 0) {
-      /*for (var row in _listaLugar) {
-        if (row!.latitud != 0 && row.longitud != 0) {
-          String coor = row.latitud.toString() + "," + row.longitud.toString();
-          _listaCoordenadas.add(coor);
-        }
-      }*/
       for (var item in _listaLugar) {
-        //if (item!.latitud != 0 && item.longitud != 0) {
-        /* final trafficResponse = await trafficService.getCoordsInicioYDestino2(
-              _center!.latitude,
-              _center!.longitude,
-              item.latitud!,
-              item.longitud!);
-          double? valor = (trafficResponse.code == "Ok")
-              ? trafficResponse.routes![0]!.duration
-              : 0.0;*/
-
         final trafficResponse = await trafficService.getCoordsInicioYDestino2(
             _center!.latitude,
             _center!.longitude,
@@ -209,6 +182,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
         setState(() {
           cargando = false;
           sinresultado = false;
+          _listaLugarOriginal = _listaLugarSegundo;
         });
       }
     } else {
@@ -216,6 +190,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
         setState(() {
           cargando = false;
           sinresultado = true;
+          _listaLugarOriginal = _listaLugarSegundo;
         });
       }
     }
@@ -387,7 +362,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
                             return LoadingCard(height: 120);
                           },
                         )
-                      : (sinresultado)
+                      : (sinresultado || !resultadointerno)
                           ? EmptyPage(
                               icon: FeatherIcons.clipboard,
                               message: 'no places found'.tr(),
@@ -415,161 +390,231 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
         ));
   }
 
+  void btnCancelar() async {
+    setState(() {
+      _selectedIndex = 0;
+      _ascValue = null;
+      _sortValue = null;
+      _listaLugarSegundo = _listaLugarOriginal;
+      resultadointerno = true;
+    });
+  }
+
+  btnBuscar() {
+    List<Lugar?> filteredStrings = [];
+    //_listaLugarSegundo = [];
+    //List<Lugar?> _listaLugarOriginal = [];
+    int opcion = 0;
+    if (_sortValue != null && _ascValue != null && _selectedIndex == 0) {
+      opcion = 1;
+      _listaLugarSegundo = [];
+      _listaLugarSegundo = _listaLugarOriginal;
+    }
+    if (_selectedIndex != 0) {
+      opcion = 0;
+      filteredStrings = _listaLugarOriginal
+          .where((element) => element!.actividades!
+              .any((res) => res!.idactividad == _selectedIndex))
+          .toList();
+    }
+    if (_sortValue != null) {
+      opcion = 0;
+      filteredStrings = _listaLugarOriginal
+          .where((item) =>
+              item!.rating == int.parse(_sortValue.toString()).toDouble())
+          .toList();
+    }
+    if (_ascValue != null) {
+      if (_ascValue!.toString() == "1") {
+        if (_sortValue != null) {
+          opcion = 0;
+          filteredStrings
+              .sort((a, b) => a!.love!.toInt().compareTo(b!.love!.toInt()));
+        } else {
+          opcion = 1;
+          _listaLugarOriginal
+              .sort((a, b) => a!.love!.toInt().compareTo(b!.love!.toInt()));
+        }
+      }
+      if (_ascValue!.toString() == "2") {
+        if (_sortValue != null) {
+          opcion = 0;
+          filteredStrings.sort((a, b) =>
+              a!.comentario!.toInt().compareTo(b!.comentario!.toInt()));
+        } else {
+          opcion = 1;
+          _listaLugarOriginal.sort((a, b) =>
+              a!.comentario!.toInt().compareTo(b!.comentario!.toInt()));
+        }
+      }
+    }
+    setState(() {
+      _listaLugarSegundo =
+          (opcion == 1) ? _listaLugarOriginal : filteredStrings;
+      if (_listaLugarSegundo.length == 0) {
+        resultadointerno = false;
+        // cargando = false;
+      }
+    });
+  }
+
   modalSortBy() {
     showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            margin: EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      margin: EdgeInsets.only(top: 5, bottom: 5),
-                      height: 5,
-                      width: 150,
-                      decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(40)),
+          return StatefulBuilder(builder: (context, setState) {
+            return Container(
+              margin: EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        margin: EdgeInsets.only(top: 5, bottom: 5),
+                        height: 5,
+                        width: 150,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(40)),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 12, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Icon(
-                            Icons.sort,
-                            // color: Color(0xff808080),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 12, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.sort,
+                              // color: Color(0xff808080),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text("rate").tr(),
-                              isDense: true,
-                              items: _listaRating.map((Map value) {
-                                return DropdownMenuItem(
-                                  value: value["id"].toString(),
-                                  child: Text(
-                                    value["nombre"].toString(),
-                                  ),
-                                );
-                              }).toList(),
-                              value: _sortValue,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _sortValue = newValue;
-                                });
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                hint: Text("rate").tr(),
+                                isDense: true,
+                                items: _listaRating.map((Map value) {
+                                  return DropdownMenuItem(
+                                    value: value["id"].toString(),
+                                    child: Text(
+                                      value["nombre"].toString(),
+                                    ),
+                                  );
+                                }).toList(),
+                                value: _sortValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _sortValue = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 8, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.sort_by_alpha,
+                              //  color: Color(0xff808080),
+                            ),
+                          ),
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                hint: Text("reactions").tr(),
+                                items: _listaComLove.map((Map value) {
+                                  return DropdownMenuItem(
+                                    value: value["id"].toString(),
+                                    child: Text(value["nombre"].toString(),
+                                        style: TextStyle(fontSize: 16)),
+                                  );
+                                }).toList(),
+                                value: _ascValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _ascValue = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("clean").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                                btnCancelar();
                               },
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 8, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Icon(
-                            Icons.sort_by_alpha,
-                            //  color: Color(0xff808080),
+                          SizedBox(
+                            width: 8,
                           ),
-                        ),
-                        Expanded(
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text("reactions").tr(),
-                              items: _listaComLove.map((Map value) {
-                                return DropdownMenuItem(
-                                  value: value["id"].toString(),
-                                  child: Text(value["nombre"].toString(),
-                                      style: TextStyle(fontSize: 16)),
-                                );
-                              }).toList(),
-                              value: _ascValue,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _ascValue = newValue;
-                                });
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("filter").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                btnBuscar();
+                                Navigator.pop(context, true);
                               },
                             ),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: ElevatedButton(
-                            child: Text("clean").tr(),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              onPrimary: Colors.black,
-                              onSurface: Colors.black,
-                              //shadowColor: Colors.grey,
-                              padding: EdgeInsets.all(10.0),
-                              elevation: 2,
-
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide(),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context, true);
-                              //btnCancelar();
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          child: ElevatedButton(
-                            child: Text("filter").tr(),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              onPrimary: Colors.black,
-                              onSurface: Colors.black,
-                              //shadowColor: Colors.grey,
-                              padding: EdgeInsets.all(10.0),
-                              elevation: 2,
-
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide(),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                            ),
-                            onPressed: () {
-                              //btnBuscar();
-                              //Navigator.pop(context, true);
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          });
         });
   }
 
@@ -639,7 +684,7 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
                               ),
                               onPressed: () {
                                 Navigator.pop(context, true);
-                                //btnCancelar();
+                                btnCancelar();
                               },
                             ),
                           ),
@@ -663,8 +708,8 @@ class _MiUbicacionLugarPageState extends State<MiUbicacionLugarPage> {
                                         BorderRadius.all(Radius.circular(10))),
                               ),
                               onPressed: () {
-                                //btnBuscar();
-                                //Navigator.pop(context, true);
+                                btnBuscar();
+                                Navigator.pop(context, true);
                               },
                             ),
                           )

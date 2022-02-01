@@ -96,17 +96,21 @@ class _ComentarioDetalleLugarPageState
       }
     } else {
       if (_lastVisible == 0) {
-        setState(() {
-          _isLoading = false;
-          _hasData = false;
-          print('no items');
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _hasData = false;
+            print('no items');
+          });
+        }
       } else {
-        setState(() {
-          _isLoading = false;
-          _hasData = true;
-          print('no more items');
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _hasData = true;
+            print('no more items');
+          });
+        }
       }
     }
     return null;

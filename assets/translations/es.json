@@ -1,14 +1,16 @@
 {
-    "welcome message": "Explore todos los lugares famosos del hermoso país de Bangladesh y encuentre hoteles y restaurantes cercanos de la manera más fácil.",
-    "welcome to": "Welcome to",
+    "welcome message": "Explore todos los lugares famosos del hermoso Estado de Oaxaca, México y encuentre zonas arqueológicas, playas, bosques, hotel, restaurante, guía turística, etc., de la manera más fácil.",
+    "welcome to": "Bienvenido a",
     "intro-title1": "No importa dónde estés",
     "intro-title2": "Explorar cosas cercanas",
-    "intro-title3": "Guía de viaje en tiempo real",
+    "intro-title3": "Comparte momentos",
+    "intro-title4": "Organiza tu viaje",
     "intro-description1": "Acceso a información importante sobre su destino antes y durante su viaje ...",
     "intro-description2": "Explore hoteles y restaurantes cercanos cerca de todos los puntos turísticos de la manera más fácil ...",
-    "intro-description3": "Obtenga direcciones, costos y otras cosas relacionadas con viajes en un solo lugar ...",
+    "intro-description3": "Puedes subir fotos y comentar los lugares que visitastes",
+    "intro-description4": "Guarda los lugares a visitar dentro de la agenda.",
     "get started": "Empezar",
-    "explore country": "Explore Mexico",
+    "explore country": "Explore México ",
     "search places": "Buscar lugares",
     "popular places": "Lugares populares",
     "special state-1 places": "Lugares en Sylhet",
@@ -54,6 +56,7 @@
     "save your favourite places here": "Inicia sesión para guardar tus lugares favoritos aquí",
     "save your favourite blogs here": "Guarda tus blogs favoritos aquí",
     "skip": "Omitir",
+    "done": "Listo",
     "check your internet connection!": "¡Comprueba tu conexión a Internet!",
     "something is wrong. please try again.": "Algo está mal. Inténtalo de nuevo.",
     "sign in": "Registrarse",
@@ -175,5 +178,6 @@
     "photos": "Fotos",
     "explore oaxaca":"Explora Oaxaca",
     "explore mexico":"Explora Mexico",
-    "nearby places": "Lugares Cercanos"
+    "nearby places": "Lugares Cercanos",
+    "sign in with facebook":"Entrar con Facebook"
 }

@@ -37,20 +37,13 @@ class _MasInformacionLugarPageState extends State<MasInformacionLugarPage> {
           // color: Colors.green,
           padding: EdgeInsets.all(10),
           width: MediaQuery.of(context).size.width,
-          child: Html(
-            data: '''${widget.sitiosinteres!.descripcion}''',
-            shrinkWrap: true,
-            style: {
-              "body": Style(
-                // maxLines: 4,
-                textAlign: TextAlign.justify,
-                fontSize: FontSize(16.0),
-                // fontWeight: FontWeight.w500,
-                // color: Colors.black,
-                // textOverflow: TextOverflow.ellipsis,
-              ),
-            },
-          ),
+          child: Text(widget.sitiosinteres!.descripcion.toString(),
+              // maxLines: 8,
+              // overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.justify,
+              style: TextStyle(
+                fontSize: 16,
+              )),
         ),
       ),
     );

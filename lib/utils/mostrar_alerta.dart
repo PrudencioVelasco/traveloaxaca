@@ -49,7 +49,6 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
                         case PermissionStatus.limited:
                           // TODO: Handle this case.
                           break;
-
                       }
                       Navigator.pop(context);
                       Navigator.of(context, rootNavigator: true).pop();
@@ -79,9 +78,9 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
                     final status = await Permission.location.request();
                     switch (status) {
                       case PermissionStatus.granted:
-                      // Navigator.of(context).pushNamedAndRemoveUntil(
-                      //     "/explorar", (route) => false);
-                      // await Navigator.of(context).pushReplacementNamed('/explore');
+                        // Navigator.of(context).pushNamedAndRemoveUntil(
+                        //     "/explorar", (route) => false);
+                        // await Navigator.of(context).pushReplacementNamed('/explore');
                         Navigator.pop(context);
                         Navigator.of(context, rootNavigator: true).pop();
                         await Navigator.push(
@@ -91,16 +90,15 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
                         Navigator.of(context, rootNavigator: true).pop();
                         break;
 
-                    //  case PermissionStatus.undetermined:
+                      //  case PermissionStatus.undetermined:
                       case PermissionStatus.denied:
                       case PermissionStatus.restricted:
                       case PermissionStatus.permanentlyDenied:
                         openAppSettings();
                         break;
                       case PermissionStatus.limited:
-                      // TODO: Handle this case.
+                        // TODO: Handle this case.
                         break;
-
                     }
                     Navigator.pop(context);
                     Navigator.of(context, rootNavigator: true).pop();
@@ -121,7 +119,8 @@ mostrarAlerta(BuildContext context, String titulo, String subtitulo) {
                     child: Text('Ok'),
                     elevation: 5,
                     textColor: Colors.blue,
-                    onPressed: () => Navigator.pop(context))
+                    onPressed: () =>
+                        Navigator.of(context, rootNavigator: true).pop())
               ],
             ));
   }
@@ -135,7 +134,8 @@ mostrarAlerta(BuildContext context, String titulo, String subtitulo) {
               CupertinoDialogAction(
                 isDefaultAction: true,
                 child: Text('Ok'),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
               )
             ],
           ));

@@ -304,12 +304,38 @@ class ListCardCompaniaCerca extends StatelessWidget {
                                 },
                               ),
                             ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Icon(
+                              FontAwesomeIcons.solidHeart,
+                              color: Colors.red,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "(" + d!.love.toString() + ")",
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey[600]),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              FontAwesomeIcons.comments,
+                              color: Colors.blueAccent,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
                             Text(
                               "(" + d!.comentario.toString() + ")",
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
-                            Spacer(),
                           ],
                         ),
                       ],

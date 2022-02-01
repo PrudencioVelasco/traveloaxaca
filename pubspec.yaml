@@ -104,6 +104,8 @@ dependencies:
   easy_splash_screen: ^1.0.3
   bottom_nav: ^1.0.1
   restart_app: ^1.1.0
+  intro_slider: ^3.0.3
+  introduction_screen: ^2.1.0
       
 flutter_icons:
   android: "launcher_icon"

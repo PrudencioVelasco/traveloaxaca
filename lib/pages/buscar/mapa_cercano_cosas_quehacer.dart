@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:translator/translator.dart';
+import 'package:traveloaxaca/blocs/actividad_bloc.dart';
 import 'dart:async';
 import 'package:traveloaxaca/blocs/lugar_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
+import 'package:traveloaxaca/models/actividad.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/lugarmapa.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
@@ -41,20 +45,39 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
   fluttermap.MapController? _controller;
   PageController _pageController = PageController();
   List<LugarMapa> _alldata = [];
+  List<LugarMapa> _alldataOriginal = [];
+  List<LugarMapa> _listaLugarSegundo = [];
   int? prevPage;
-
+  List<Actividad?> _listActividad = [];
   List<Lugar?> _listaLugar = [];
   LugarBloc _lugarBloc = new LugarBloc();
   final trafficService = new TrafficService();
   double _latitudInicial = 0;
   double _longitudInicial = 0;
   int selectIndex = 0;
+  int _selectedIndex = 0;
   bool presionado = false;
   LugarMapa? detalleCompania;
   latlong.LatLng? _center;
   Position? currentLocation;
   bool cargando = true;
   bool ubicado = false;
+  String? _sortValue;
+  String? _ascValue;
+  List<String?> _filters = [];
+  ActividadBloc _actividadBloc = new ActividadBloc();
+  List<Map> _listaRating = [
+    {"id": 1, "nombre": "1 start".tr()},
+    {"id": 2, "nombre": "2 start".tr()},
+    {"id": 3, "nombre": "3 start".tr()},
+    {"id": 4, "nombre": "4 start".tr()},
+    {"id": 5, "nombre": "5 start".tr()},
+  ];
+  List<Map> _listaComLove = [
+    {"id": 1, "nombre": "more comments".tr()},
+    {"id": 2, "nombre": "more loves".tr()},
+  ];
+  final translator = GoogleTranslator();
   @override
   void initState() {
     _animationController =
@@ -68,6 +91,11 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
     //getData().then((value) => _buildMarkrs());
     refresh();
     //latitudLongitudInicial();
+    allActividades2();
+  }
+
+  Future allActividades2() async {
+    _listActividad = await _actividadBloc.obtenerActividades();
   }
 
   Future<Position?> locateUser() async {
@@ -188,11 +216,80 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
     }
     setState(() {
       cargando = false;
+      _alldataOriginal = _alldata;
     });
   }
 
   Future allCompanias() async {
     _listaLugar = await _lugarBloc.obtenerTodosLugares();
+  }
+
+  void btnCancelar() async {
+    setState(() {
+      _selectedIndex = 0;
+      _ascValue = null;
+      _sortValue = null;
+      _alldata = _alldataOriginal;
+      //resultadointerno = true;
+    });
+  }
+
+  btnBuscar() {
+    List<LugarMapa> filteredStrings = [];
+    //_listaLugarSegundo = [];
+    //List<Lugar?> _listaLugarOriginal = [];
+    int opcion = 0;
+    if (_sortValue != null && _ascValue != null && _selectedIndex == 0) {
+      opcion = 1;
+      _listaLugarSegundo = [];
+      _listaLugarSegundo = _alldataOriginal;
+    }
+    if (_selectedIndex != 0) {
+      opcion = 0;
+      filteredStrings = _alldataOriginal
+          .where((element) => element.actividades!
+              .any((res) => res!.idactividad == _selectedIndex))
+          .toList();
+    }
+    if (_sortValue != null) {
+      opcion = 0;
+      filteredStrings = _alldataOriginal
+          .where((item) =>
+              item.rating == int.parse(_sortValue.toString()).toDouble())
+          .toList();
+    }
+    if (_ascValue != null) {
+      if (_ascValue!.toString() == "1") {
+        if (_sortValue != null) {
+          opcion = 0;
+          filteredStrings
+              .sort((a, b) => a.love!.toInt().compareTo(b.love!.toInt()));
+        } else {
+          opcion = 1;
+          _alldataOriginal
+              .sort((a, b) => a.love!.toInt().compareTo(b.love!.toInt()));
+        }
+      }
+      if (_ascValue!.toString() == "2") {
+        if (_sortValue != null) {
+          opcion = 0;
+          filteredStrings.sort(
+              (a, b) => a.comentario!.toInt().compareTo(b.comentario!.toInt()));
+        } else {
+          opcion = 1;
+          _alldataOriginal.sort(
+              (a, b) => a.comentario!.toInt().compareTo(b.comentario!.toInt()));
+        }
+      }
+    }
+    setState(() {
+      _alldata = (opcion == 1) ? _alldataOriginal : filteredStrings;
+      if (_alldata.length == 0) {
+        // resultadointerno = false;
+        // cargando = false;
+        openEmptyDialog();
+      }
+    });
   }
 
   void openEmptyDialog() {
@@ -209,12 +306,23 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
                   },
                   child: Text('OK'))
             ],
           );
         });
+  }
+
+  Future<String> someFutureStringFunction(
+      BuildContext context, String texto) async {
+    Locale myLocale = Localizations.localeOf(context);
+    if (myLocale.languageCode == "en") {
+      var translation = await translator.translate(texto, from: 'es', to: 'en');
+      return translation.toString();
+    } else {
+      return texto.toString();
+    }
   }
 
   @override
@@ -330,7 +438,9 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
                       Container(
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            modalActivity(context);
+                          },
                           child: Text("activity".tr()),
                           style: ElevatedButton.styleFrom(
                             primary: Colors.white,
@@ -351,7 +461,7 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
                         margin: EdgeInsets.only(right: 8, left: 8),
                         child: ElevatedButton(
                           onPressed: () {
-                            // modalSortBy();
+                            modalSortBy();
                           },
                           child: Text("sort by".tr()),
                           style: ElevatedButton.styleFrom(
@@ -387,6 +497,384 @@ class _MapaCercanoPageState extends State<MapaCercanoPage>
     setState(() {
       _controller = controller;
     });
+  }
+
+  modalSortBy() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Container(
+              margin: EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        margin: EdgeInsets.only(top: 5, bottom: 5),
+                        height: 5,
+                        width: 150,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(40)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 12, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.sort,
+                              // color: Color(0xff808080),
+                            ),
+                          ),
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                hint: Text("rate").tr(),
+                                isDense: true,
+                                items: _listaRating.map((Map value) {
+                                  return DropdownMenuItem(
+                                    value: value["id"].toString(),
+                                    child: Text(
+                                      value["nombre"].toString(),
+                                    ),
+                                  );
+                                }).toList(),
+                                value: _sortValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _sortValue = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 8, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.sort_by_alpha,
+                              //  color: Color(0xff808080),
+                            ),
+                          ),
+                          Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                hint: Text("reactions").tr(),
+                                items: _listaComLove.map((Map value) {
+                                  return DropdownMenuItem(
+                                    value: value["id"].toString(),
+                                    child: Text(value["nombre"].toString(),
+                                        style: TextStyle(fontSize: 16)),
+                                  );
+                                }).toList(),
+                                value: _ascValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _ascValue = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("clean").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                                btnCancelar();
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("filter").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                btnBuscar();
+                                Navigator.pop(context, true);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  modalActivity(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  margin: EdgeInsets.only(top: 5, bottom: 5),
+                  height: 5,
+                  width: 150,
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(40)),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Expanded(
+                  child: Container(
+                    // color: Colors.green,
+                    // height: MediaQuery.of(context).size.height * 0.42,
+                    padding: new EdgeInsets.only(bottom: 10),
+                    child: ListView(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
+                          Container(
+                              child: getFilterChipsWidgets(setState, context)),
+                        ]),
+                  ),
+                ),
+                SafeArea(
+                  child: Container(
+                    height: 65,
+                    padding: EdgeInsets.only(
+                        top: 8, bottom: 10, right: 20, left: 20),
+                    margin: EdgeInsets.only(bottom: 20),
+                    width: double.infinity,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 10, right: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("clean").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                                btnCancelar();
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Text("filter").tr(),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: Colors.black,
+                                onSurface: Colors.black,
+                                //shadowColor: Colors.grey,
+                                padding: EdgeInsets.all(10.0),
+                                elevation: 2,
+
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              onPressed: () {
+                                btnBuscar();
+                                Navigator.pop(context, true);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            );
+          });
+        });
+  }
+
+  Widget getFilterChipsWidgets(StateSetter setState, BuildContext context) {
+    List<Widget> tags_list = [];
+    for (var i = 0; i < _listActividad.length; i++) {
+      FilterChip item = new FilterChip(
+        label: FutureBuilder(
+            future: someFutureStringFunction(
+                context, _listActividad[i]!.nombreactividad!),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  snapshot.data.toString(),
+                );
+              } else if (snapshot.hasError) {
+                return Text("error");
+              }
+              return Text("loading...".tr());
+            }),
+        selected: _selectedIndex == _listActividad[i]!.idtipoactividad,
+        onSelected: (bool value) {
+          setState(() {
+            if (value) {
+              _selectedIndex = _listActividad[i]!.idtipoactividad!;
+            }
+          });
+        },
+        pressElevation: 15,
+        selectedColor: Colors.grey[400],
+        backgroundColor: Colors.transparent,
+        shape: StadiumBorder(side: BorderSide()),
+      );
+      tags_list.add(
+        Container(
+          margin: EdgeInsets.all(2),
+          child: item,
+        ),
+      );
+    }
+    return Wrap(children: tags_list);
+  }
+
+  Widget _conQuienVisito(Actividad? item) {
+    return StatefulBuilder(
+      builder: (context, setStateChild) {
+        return InkWell(
+          child: Container(
+            padding: EdgeInsets.all(5),
+            alignment: Alignment.topCenter,
+            margin: EdgeInsets.only(top: 0),
+            child: ChoiceChip(
+              elevation: 5,
+              pressElevation: 5,
+              label: Text(item!.nombreactividad!),
+              selected: _selectedIndex == item.idtipoactividad,
+              selectedColor: Colors.red,
+              padding: EdgeInsets.all(10),
+              labelStyle:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              backgroundColor: Colors.grey[500],
+              onSelected: (bool selected) {
+                setStateChild(() {
+                  if (selected) {
+                    _selectedIndex = item.idtipoactividad!;
+                    print(_selectedIndex);
+                  }
+                });
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildChoiceChips() {
+    return Container(
+      height: MediaQuery.of(context).size.height / 4,
+      child: ListView.builder(
+        itemCount: _listActividad.length,
+        itemBuilder: (BuildContext context, int index) {
+          return FilterChip(
+            backgroundColor: Colors.tealAccent[200],
+            avatar: CircleAvatar(
+              backgroundColor: Colors.cyan,
+              child: Text(
+                _listActividad[index]!.nombreactividad!.toUpperCase(),
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            label: Text(
+              _listActividad[index]!.nombreactividad!,
+            ),
+            selected: _filters.contains(_listActividad[index]!.idtipoactividad),
+            selectedColor: Colors.purpleAccent,
+            onSelected: (bool selected) {
+              setState(() {
+                if (selected) {
+                  _filters
+                      .add(_listActividad[index]!.idtipoactividad.toString());
+                } else {
+                  _filters.removeWhere((name) {
+                    return name ==
+                        _listActividad[index]!.idtipoactividad.toString();
+                  });
+                }
+              });
+            },
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -566,32 +1054,60 @@ class MapItemDetails extends StatelessWidget {
                               Row(
                                 //   crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 20,
-                                      width: 90,
-                                      child: RatingBar.builder(
-                                        // ignoreGestures: true,
-                                        itemSize: 22,
-                                        initialRating: companiaMapa.rating!,
-                                        minRating: companiaMapa.rating!,
-                                        maxRating: companiaMapa.rating!,
-                                        ignoreGestures: true,
-                                        direction: Axis.horizontal,
-                                        allowHalfRating: false,
-                                        itemCount: 5,
-                                        //itemPadding: EdgeInsets.symmetric(
-                                        //    horizontal: 4.0),
-                                        itemBuilder: (context, _) => Icon(
-                                          Icons.star_border_outlined,
-                                          color: Colors.amber,
-                                        ),
-                                        onRatingUpdate: (rating) {
-                                          //_rating = rating;
-                                          //print(rating);
-                                        },
-                                      ),
+                                  RatingBar.builder(
+                                    // ignoreGestures: true,
+                                    itemSize: 22,
+                                    initialRating: companiaMapa.rating!,
+                                    minRating: companiaMapa.rating!,
+                                    maxRating: companiaMapa.rating!,
+                                    ignoreGestures: true,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: false,
+                                    itemCount: 5,
+                                    //itemPadding: EdgeInsets.symmetric(
+                                    //    horizontal: 4.0),
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star_border_outlined,
+                                      color: Colors.amber,
                                     ),
+                                    onRatingUpdate: (rating) {
+                                      //_rating = rating;
+                                      //print(rating);
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.solidHeart,
+                                    color: Colors.red,
+                                    size: 15,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "(" + companiaMapa.love.toString() + ")",
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey[600]),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.comments,
+                                    color: Colors.blueAccent,
+                                    size: 15,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "(" +
+                                        companiaMapa.comentario.toString() +
+                                        ")",
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey[600]),
                                   ),
                                 ],
                               ),

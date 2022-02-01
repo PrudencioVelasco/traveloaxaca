@@ -110,7 +110,7 @@ class Header extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/final.jpg"),
+          image: AssetImage("assets/images/header.png"),
           fit: BoxFit.cover,
         ),
       ),
@@ -134,7 +134,7 @@ class Header extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),
