@@ -213,13 +213,13 @@ class CommentsBloc extends ChangeNotifier {
   }
 
   Future<List<ComentarioCompania?>> obtenerComentariosCompania(
-      int idtour, int idcomentario, int limite) async {
+      int idcompania, int idcomentario, int limite) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
       Uri url = Uri.http(_url, '$_api/obtenerComentariosCompania');
       String bodyParams = json.encode({
-        'idtour': idtour,
+        'idcompania': idcompania,
         'idcomentario': (idcomentario == 0) ? '' : idcomentario,
         'limite': (limite == 0) ? '' : limite,
       });
@@ -253,6 +253,26 @@ class CommentsBloc extends ChangeNotifier {
     try {
       Uri url = Uri.http(_url, '$_api/totalComentarioLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      return responseApi.data;
+    } catch (error) {
+      print('Error: $error');
+      return 0;
+    }
+  }
+
+  Future<int> obtenerTotalComentariosCompania(int idcompania) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    try {
+      Uri url = Uri.http(_url, '$_api/totalComentarioCompania');
+      String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -319,24 +339,90 @@ class CommentsBloc extends ChangeNotifier {
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
       if (responseApi.success!) {
         List<MultipartFile> imageList = [];
-        for (Asset asset in imagenes) {
-          ByteData byteData = await asset.getByteData();
-          List<int> imageData = byteData.buffer.asUint8List();
-          MultipartFile multipartFile = new MultipartFile.fromBytes(
-            imageData,
-            filename: asset.name,
-            contentType: MediaType("image", "jpg"),
-          );
-          imageList.add(multipartFile);
-        }
-        FormData formData = FormData.fromMap(
-            {"multipartFiles": imageList, "idcomentario": responseApi.data});
-        var response = await _dio.put(urlSubirFoto.toString(),
-            data: formData, options: Options(headers: {'x-token': token}));
-        if (response.statusCode == 200) {
-          return true;
+        if (imagenes.length > 0) {
+          for (Asset asset in imagenes) {
+            ByteData byteData = await asset.getByteData();
+            List<int> imageData = byteData.buffer.asUint8List();
+            MultipartFile multipartFile = new MultipartFile.fromBytes(
+              imageData,
+              filename: asset.name,
+              contentType: MediaType("image", "jpg"),
+            );
+            imageList.add(multipartFile);
+          }
+          FormData formData = FormData.fromMap(
+              {"multipartFiles": imageList, "idcomentario": responseApi.data});
+          var response = await _dio.put(urlSubirFoto.toString(),
+              data: formData, options: Options(headers: {'x-token': token}));
+          if (response.statusCode == 200) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } catch (error) {
+      print('Error: $error');
+      return false;
+    }
+  }
+
+  Future<bool> agregarComentarioCompania(
+      int idcompania,
+      double rating,
+      String comentario,
+      int conquienvisito,
+      DateTime fechavisita,
+      List<Asset> imagenes) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    String? token = await _signInBloc.getToken();
+    try {
+      Uri url = Uri.http(_url, '$_api/agregarComentarioCompania');
+      Uri urlSubirFoto = Uri.http(_url, '$_api/subirFotosComentarioCompania');
+      String bodyParams = json.encode({
+        'idcompania': idcompania,
+        'idconquienvisito': conquienvisito,
+        'rating': rating,
+        'comentario': comentario,
+        'fechavisito': fechavisita.toString()
+      });
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8',
+        'x-token': token!
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      if (responseApi.success!) {
+        List<MultipartFile> imageList = [];
+        if (imagenes.length > 0) {
+          for (Asset asset in imagenes) {
+            ByteData byteData = await asset.getByteData();
+            List<int> imageData = byteData.buffer.asUint8List();
+            MultipartFile multipartFile = new MultipartFile.fromBytes(
+              imageData,
+              filename: asset.name,
+              contentType: MediaType("image", "jpg"),
+            );
+            imageList.add(multipartFile);
+          }
+          FormData formData = FormData.fromMap(
+              {"multipartFiles": imageList, "idcomentario": responseApi.data});
+          var response = await _dio.put(urlSubirFoto.toString(),
+              data: formData, options: Options(headers: {'x-token': token}));
+          if (response.statusCode == 200) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return true;
         }
       } else {
         return false;
@@ -430,27 +516,31 @@ class CommentsBloc extends ChangeNotifier {
       final dataresponse = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
       if (responseApi.success!) {
-        List<MultipartFile> imageList = [];
-        for (Asset asset in imagenes) {
-          ByteData byteData = await asset.getByteData();
-          List<int> imageData = byteData.buffer.asUint8List();
-          MultipartFile multipartFile = new MultipartFile.fromBytes(
-            imageData,
-            filename: asset.name,
-            contentType: MediaType("image", "jpg"),
-          );
-          imageList.add(multipartFile);
-        }
-        FormData formData = FormData.fromMap({
-          "multipartFiles": imageList,
-          "idcomentariotour": responseApi.data
-        });
-        var response = await _dio.put(urlSubirFoto.toString(),
-            data: formData, options: Options(headers: {'x-token': token}));
-        if (response.statusCode == 200) {
-          return true;
+        if (imagenes.length > 0) {
+          List<MultipartFile> imageList = [];
+          for (Asset asset in imagenes) {
+            ByteData byteData = await asset.getByteData();
+            List<int> imageData = byteData.buffer.asUint8List();
+            MultipartFile multipartFile = new MultipartFile.fromBytes(
+              imageData,
+              filename: asset.name,
+              contentType: MediaType("image", "jpg"),
+            );
+            imageList.add(multipartFile);
+          }
+          FormData formData = FormData.fromMap({
+            "multipartFiles": imageList,
+            "idcomentariotour": responseApi.data
+          });
+          var response = await _dio.put(urlSubirFoto.toString(),
+              data: formData, options: Options(headers: {'x-token': token}));
+          if (response.statusCode == 200) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          return true;
         }
       } else {
         return false;

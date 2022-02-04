@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/conquien_visito_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/models/conquien_visitaste.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -154,53 +156,36 @@ class _AgregarComentarioPageState extends State<AgregarComentarioPage> {
   }
 
   Future agregarComentario() async {
-    setState(() {
-      _deshabilitar = true;
-    });
-    bool dato = await _commentsBloc.agregarComentarioLugar(
-        widget.lugar!.idlugar!,
-        _rating,
-        ctrlComentario.text,
-        _selectedIndex,
-        selectedDate,
-        images);
-    if (dato) {
-      setState(() {
-        _deshabilitar = false;
-      });
-      Alert(
-        context: context,
-        type: AlertType.success,
-        title: "message".tr(),
-        desc: "success".tr(),
-        buttons: [
-          DialogButton(
-            child: Text(
-              "Ok",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () => {
-              if (Navigator.canPop(context))
-                {
-                  Navigator.pop(context),
-                  clearText(),
-                }
-              else
-                {
-                  SystemNavigator.pop(),
-                  clearText(),
-                }
-            },
-            width: 120,
-          )
-        ],
-      ).show();
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    var verificarConeccion = await ib.checarInternar();
+    if (verificarConeccion == false) {
+      Navigator.of(context, rootNavigator: true).pop();
+      mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
     } else {
-      mostrarAlerta(context, 'message'.tr(),
-          'something is wrong. please try again.'.tr());
       setState(() {
-        _deshabilitar = false;
+        _deshabilitar = true;
       });
+      bool dato = await _commentsBloc.agregarComentarioLugar(
+          widget.lugar!.idlugar!,
+          _rating,
+          ctrlComentario.text,
+          _selectedIndex,
+          selectedDate,
+          images);
+      if (dato) {
+        setState(() {
+          _deshabilitar = false;
+        });
+        // Navigator.of(context, rootNavigator: true).pop();
+        mostrarAlerta(context, 'message'.tr(), 'success'.tr());
+        clearText();
+      } else {
+        mostrarAlerta(context, 'message'.tr(),
+            'something is wrong. please try again.'.tr());
+        setState(() {
+          _deshabilitar = false;
+        });
+      }
     }
   }
 

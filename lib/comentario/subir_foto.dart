@@ -3,8 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
+import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/snacbar.dart';
@@ -94,50 +96,32 @@ class _SubirFotoComentarioLugarState extends State<SubirFotoComentarioLugar> {
   }
 
   Future btnSubirFotos() async {
-    setState(() {
-      _deshabilitar = true;
-    });
-    bool dato =
-        await _commentsBloc.subirFotosLugar(widget.lugar!.idlugar!, images);
-
-    if (dato) {
-      //return _onAlertButtonPressed(context) {
-      setState(() {
-        _deshabilitar = false;
-      });
-      Alert(
-        context: context,
-        type: AlertType.success,
-        title: "message".tr(),
-        desc: "success".tr(),
-        buttons: [
-          DialogButton(
-            child: Text(
-              "Ok",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () => {
-              if (Navigator.canPop(context))
-                {
-                  Navigator.pop(context),
-                  clearText(),
-                }
-              else
-                {
-                  SystemNavigator.pop(),
-                  clearText(),
-                }
-            },
-            width: 120,
-          )
-        ],
-      ).show();
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    var verificarConeccion = await ib.checarInternar();
+    if (verificarConeccion == false) {
+      Navigator.of(context, rootNavigator: true).pop();
+      mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
     } else {
-      mostrarAlerta(context, 'message'.tr(),
-          'something is wrong. please try again.'.tr());
       setState(() {
-        _deshabilitar = false;
+        _deshabilitar = true;
       });
+      bool dato =
+          await _commentsBloc.subirFotosLugar(widget.lugar!.idlugar!, images);
+
+      if (dato) {
+        //return _onAlertButtonPressed(context) {
+        setState(() {
+          _deshabilitar = false;
+        });
+        mostrarAlerta(context, 'message'.tr(), 'success'.tr());
+        clearText();
+      } else {
+        mostrarAlerta(context, 'message'.tr(),
+            'something is wrong. please try again.'.tr());
+        setState(() {
+          _deshabilitar = false;
+        });
+      }
     }
   }
 
@@ -158,6 +142,7 @@ class _SubirFotoComentarioLugarState extends State<SubirFotoComentarioLugar> {
         }
       },
       child: Scaffold(
+          key: scaffoldKey,
           appBar: AppBar(
             leading: IconButton(
               onPressed: () {
@@ -170,7 +155,7 @@ class _SubirFotoComentarioLugarState extends State<SubirFotoComentarioLugar> {
                 margin: EdgeInsets.all(5.0),
                 child: TextButton(
                   onPressed: () async {
-                    if (images.length > 0) {
+                    if (images.length == 0) {
                       openSnacbar(scaffoldKey, 'select images'.tr());
                     } else {
                       (!_deshabilitar) ? btnSubirFotos() : null;

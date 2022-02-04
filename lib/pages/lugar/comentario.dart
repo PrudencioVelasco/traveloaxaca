@@ -126,6 +126,16 @@ class _ComentarioDetalleLugarPageState
     }
   }
 
+  onRefreshData() {
+    setState(() {
+      _isLoading = true;
+      // _snap.clear();
+      _listComentarios.clear();
+      _lastVisible = 0;
+    });
+    _getDataComments();
+  }
+
   handleDelete(context, Comentario d) {
     final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
     final ib = Provider.of<InternetBloc>(context, listen: false);
@@ -144,12 +154,13 @@ class _ComentarioDetalleLugarPageState
               TextButton(
                 onPressed: () async {
                   await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
+                  var verificarConeccion = await ib.checarInternar();
+                  if (verificarConeccion == false) {
+                    Navigator.of(context, rootNavigator: true).pop();
                     mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
                   } else {
                     if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop();
                       mensajeDialog(context, 'message'.tr(),
                           'You can not delete others comment'.tr());
                     } else {
@@ -159,15 +170,14 @@ class _ComentarioDetalleLugarPageState
                           await _commentsBloc.eliminarCommentarioLugar(
                               d.idcomentario!, widget.lugar.idlugar!);
                       if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
+                        //  mostrarAlerta(]
+                        onRefreshData();
+                        Navigator.of(context, rootNavigator: true).pop();
                         mensajeDialog(context, 'message'.tr(), 'success'.tr());
-                        // onRefreshData();
+
                         // Navigator.pop(context);
                       } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
+                        Navigator.of(context, rootNavigator: true).pop();
                         mensajeDialog(
                             context, 'message'.tr(), resultado.message!);
                       }
@@ -183,7 +193,8 @@ class _ComentarioDetalleLugarPageState
                 ).tr(),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
                 child: Text(
                   'no',
                   style: TextStyle(

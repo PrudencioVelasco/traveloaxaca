@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/causa_reporte_bloc.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/models/causa_reporte.dart';
 import 'package:traveloaxaca/models/comment.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -69,48 +71,30 @@ class _ReportarComentarioLugarPageState
   }
 
   Future agregarReporteComentarioLugar() async {
-    setState(() {
-      _deshabilitar = true;
-    });
-    ResponseApi? dato = await _commentsBloc.agregarReporteComentarioLugar(
-        widget.comentario!.idcomentario!, _id, ctrlComentario.text);
-    if (dato!.success!) {
-      //return _onAlertButtonPressed(context) {
-      setState(() {
-        _deshabilitar = false;
-      });
-      Alert(
-        context: context,
-        type: AlertType.success,
-        title: "message".tr(),
-        desc: "success".tr(),
-        buttons: [
-          DialogButton(
-            child: Text(
-              "Ok",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () => {
-              if (Navigator.canPop(context))
-                {
-                  Navigator.pop(context),
-                  clearText(),
-                }
-              else
-                {
-                  SystemNavigator.pop(),
-                  clearText(),
-                }
-            },
-            width: 120,
-          )
-        ],
-      ).show();
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    var verificarConeccion = await ib.checarInternar();
+    if (verificarConeccion == false) {
+      Navigator.of(context, rootNavigator: true).pop();
+      mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
     } else {
-      mostrarAlerta(context, 'message'.tr(), dato.message!);
       setState(() {
-        _deshabilitar = false;
+        _deshabilitar = true;
       });
+      ResponseApi? dato = await _commentsBloc.agregarReporteComentarioLugar(
+          widget.comentario!.idcomentario!, _id, ctrlComentario.text);
+      if (dato!.success!) {
+        //return _onAlertButtonPressed(context) {
+        setState(() {
+          _deshabilitar = false;
+        });
+        mostrarAlerta(context, 'message'.tr(), 'success'.tr());
+        clearText();
+      } else {
+        mostrarAlerta(context, 'message'.tr(), dato.message!);
+        setState(() {
+          _deshabilitar = false;
+        });
+      }
     }
   }
 

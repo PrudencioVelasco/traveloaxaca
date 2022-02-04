@@ -1,5 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class InternetBloc extends ChangeNotifier {
   bool _hasInternet = false;
@@ -15,13 +16,27 @@ class InternetBloc extends ChangeNotifier {
   bool get hasInternet => _hasInternet;
 
   checkInternet() async {
-    var result = await (Connectivity().checkConnectivity());
-    if (result == ConnectivityResult.none) {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        _hasInternet = true;
+      }
+    } on SocketException catch (_) {
       _hasInternet = false;
-    } else {
-      _hasInternet = true;
     }
 
     notifyListeners();
+  }
+
+  Future<bool?> checarInternar() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } on SocketException catch (_) {
+      return false;
+    }
+    // return false;
   }
 }

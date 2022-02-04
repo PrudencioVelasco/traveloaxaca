@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/causa_reporte_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/models/causa_reporte.dart';
 import 'package:traveloaxaca/models/comentario_tour.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
+import 'package:traveloaxaca/utils/snacbar.dart';
 
 class ReportarComentarioTourPage extends StatefulWidget {
   final ComentarioTour? comentario;
@@ -33,7 +36,7 @@ class _ReportarComentarioTourPageState
   List<CausaReporte?> _causaReporte = [];
   TourBloc _tourBloc = new TourBloc();
   final translator = GoogleTranslator();
-
+  var scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -80,48 +83,30 @@ class _ReportarComentarioTourPageState
   }
 
   Future agregarReporteComentarioLugar() async {
-    setState(() {
-      _deshabilitar = true;
-    });
-    ResponseApi? dato = await _tourBloc.agregarReporteComentarioTour(
-        widget.comentario!.idcomentario!, _id, ctrlComentario.text);
-    if (dato!.success!) {
-      //return _onAlertButtonPressed(context) {
-      setState(() {
-        _deshabilitar = false;
-      });
-      Alert(
-        context: context,
-        type: AlertType.success,
-        title: "message".tr(),
-        desc: "success".tr(),
-        buttons: [
-          DialogButton(
-            child: Text(
-              "Ok",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () => {
-              if (Navigator.canPop(context))
-                {
-                  Navigator.pop(context),
-                  clearText(),
-                }
-              else
-                {
-                  SystemNavigator.pop(),
-                  clearText(),
-                }
-            },
-            width: 120,
-          )
-        ],
-      ).show();
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    var verificarConeccion = await ib.checarInternar();
+    if (verificarConeccion == false) {
+      Navigator.of(context, rootNavigator: true).pop();
+      mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
     } else {
-      mostrarAlerta(context, 'message'.tr(), dato.message!);
       setState(() {
-        _deshabilitar = false;
+        _deshabilitar = true;
       });
+      ResponseApi? dato = await _tourBloc.agregarReporteComentarioTour(
+          widget.comentario!.idcomentario!, _id, ctrlComentario.text);
+      if (dato!.success!) {
+        //return _onAlertButtonPressed(context) {
+        setState(() {
+          _deshabilitar = false;
+        });
+        mostrarAlerta(context, 'message'.tr(), 'success'.tr());
+        clearText();
+      } else {
+        mostrarAlerta(context, 'message'.tr(), dato.message!);
+        setState(() {
+          _deshabilitar = false;
+        });
+      }
     }
   }
 
@@ -138,6 +123,7 @@ class _ReportarComentarioTourPageState
         }
       },
       child: Scaffold(
+        key: scaffoldKey,
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
@@ -157,9 +143,10 @@ class _ReportarComentarioTourPageState
                     });
                     (!_deshabilitar) ? agregarReporteComentarioLugar() : null;
                   } else {
-                    setState(() {
-                      _errorMorivo = "select a option".tr();
-                    });
+                    //  setState(() {
+                    //    _errorMorivo = "select a option".tr();
+                    //  });
+                    openSnacbar(scaffoldKey, "select a option".tr());
                   }
                 },
                 child: Text(

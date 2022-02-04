@@ -9,30 +9,24 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:provider/src/provider.dart';
-import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
-import 'package:traveloaxaca/blocs/imagen_bloc.dart';
 import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/models/comentario_compania.dart';
 import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/models/horario.dart';
-import 'package:traveloaxaca/models/imagen_compania.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/models/telefono.dart';
 import 'package:traveloaxaca/pages/compania/agregar_comentario.dart';
-import 'package:traveloaxaca/pages/compania/agregar_reporte.dart';
 import 'package:traveloaxaca/pages/compania/comentarios.dart';
 import 'package:traveloaxaca/pages/compania/compania_comentario.dart';
 import 'package:traveloaxaca/pages/compania/galeria_compania.dart';
 import 'package:traveloaxaca/pages/compania/horario.dart';
-import 'package:traveloaxaca/utils/empty.dart';
-import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:traveloaxaca/utils/sign_in_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -60,7 +54,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
   String _textVer = "view".tr();
   String _textReviews = "comments".tr();
   bool? _isConnected;
-
+  CommentsBloc _commentBloc = new CommentsBloc();
   @override
   void initState() {
     super.initState();
@@ -86,8 +80,18 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
       }
     });
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {});
-
+    numerosIniciales();
     refresh();
+  }
+
+  Future numerosIniciales() async {
+    int totalC = await _commentBloc
+        .obtenerTotalComentariosCompania(widget.compania!.idcompania!);
+    if (mounted) {
+      setState(() {
+        _totalComentarios = totalC;
+      });
+    }
   }
 
   Future<void> _checkInternetConnection() async {
@@ -110,6 +114,18 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
     }
   }
 
+  agregarComentarioClick() async {
+    final _signInBlocProvider = Provider.of<SignInBloc>(context, listen: false);
+    final autenticado = await _signInBlocProvider.isLoggedIn();
+    if (autenticado == true) {
+      nextScreen(
+          context, AgregarComentarioCompaniaPage(compania: widget.compania));
+      // }
+    } else {
+      openSignInDialog(context);
+    }
+  }
+
   onRefreshData() {
     setState(() {
       _isLoading = true;
@@ -117,77 +133,6 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
       _listComentarios.clear();
       _lastVisible = 0;
     });
-  }
-
-  handleDelete(context, ComentarioCompania d) {
-    final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
-    final ib = Provider.of<InternetBloc>(context, listen: false);
-    showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: Text('message').tr(),
-            content: Text('delete from database?',
-                    style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700))
-                .tr(),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () async {
-                  await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
-                    mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
-                  } else {
-                    if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
-                      mensajeDialog(context, 'message'.tr(),
-                          'You can not delete others comment'.tr());
-                    } else {
-                      final _commentsBloc =
-                          Provider.of<CommentsBloc>(context, listen: false);
-                      ResponseApi? resultado =
-                          await _commentsBloc.eliminarCommentarioCompania(
-                              d.idcomentario!, widget.compania!.idcompania!);
-                      if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
-                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
-                        onRefreshData();
-                        // Navigator.pop(context);
-                      } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
-                        mensajeDialog(
-                            context, 'message'.tr(), resultado.message!);
-                      }
-                    }
-                  }
-                },
-                child: Text(
-                  'yes',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
-                ).tr(),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'no',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
-                ).tr(),
-              ),
-            ],
-          );
-        });
   }
 
   @override
@@ -281,8 +226,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                             child: Column(children: [
                               Container(
                                 child:
-                                    (widget.compania!.imagenescompania!.length >
-                                            0)
+                                    (widget.compania!.imagenescompania != null)
                                         ? _sliderImages(context, height)
                                         : _vacioListaImagen(),
                               ),
@@ -298,7 +242,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                                         widget.compania!.nombre.toString(),
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headline1,
+                                            .headline6,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       )),
@@ -531,7 +475,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                                             child: Text(
                                               'about us',
                                               style: TextStyle(
-                                                fontSize: 25,
+                                                fontSize: 20,
                                                 fontWeight: FontWeight.w800,
                                               ),
                                             ).tr(),
@@ -612,7 +556,7 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                                           child: Text(
                                             'contribute',
                                             style: TextStyle(
-                                              fontSize: 25,
+                                              fontSize: 20,
                                               fontWeight: FontWeight.w800,
                                             ),
                                           ).tr(),
@@ -658,10 +602,8 @@ class _DetalleCompaniaPageState extends State<DetalleCompaniaPage> {
                                                     Radius.circular(20))),
                                           ),
                                           onPressed: () {
-                                            nextScreen(
-                                                context,
-                                                AgregarComentarioCompaniaPage(
-                                                    compania: widget.compania));
+                                            agregarComentarioClick();
+                                            ;
                                           },
                                         ),
                                       )

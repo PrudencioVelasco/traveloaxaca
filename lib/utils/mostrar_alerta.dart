@@ -14,10 +14,11 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
               content: Text(subtitulo),
               actions: <Widget>[
                 MaterialButton(
-                    child: Text('Ok'),
+                    child: Text('No'),
                     elevation: 5,
                     textColor: Colors.blue,
-                    onPressed: () => Navigator.pop(context)),
+                    onPressed: () =>
+                        Navigator.of(context, rootNavigator: true).pop()),
                 MaterialButton(
                     child: Text('Activar'),
                     elevation: 5,
@@ -66,7 +67,8 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
               CupertinoDialogAction(
                 isDefaultAction: true,
                 child: Text('Ok'),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
               ),
               MaterialButton(
                   child: Text('Activar'),
@@ -150,7 +152,7 @@ mensajeDialog(BuildContext context, String titulo, String subtitulo) {
           content: Text(subtitulo),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
               child: Text('OK'),
             ),
           ],

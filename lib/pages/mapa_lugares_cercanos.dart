@@ -12,6 +12,7 @@ import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/widgets/full_mapa_lugares_cercanos.dart';
 import 'package:easy_localization/easy_localization.dart';
+
 class MapaLugaresCercanosPage extends StatefulWidget {
   MapaLugaresCercanosPage({Key? key}) : super(key: key);
 
@@ -186,6 +187,28 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
     return _marketList;
   }
 
+  void openEmptyDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text("we didn't find any nearby places in this area").tr(),
+            title: Text(
+              'no places found',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ).tr(),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    // Navigator.pop(context);
+                  },
+                  child: Text('OK'))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     var brishtness = MediaQuery.of(context).platformBrightness;
@@ -201,11 +224,12 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
               top: 10,
               bottom: 10,
             ),
-            child: Text("nearby places".tr(), style: TextStyle(
-      fontSize: 25,
-      fontWeight: FontWeight.w700,
-      //color: Colors.grey[800]
-    )),
+            child: Text("nearby places".tr(),
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w700,
+                  //color: Colors.grey[800]
+                )),
           ),
           Container(
             height: 300,
@@ -214,13 +238,14 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
               child: Stack(
                 children: <Widget>[
                   //if (!cargando)
-                  if (_center != null)
+                  if (_center != null && !cargando)
                     FlutterMap(
                       options: MapOptions(
                           minZoom: 5,
                           maxZoom: 18,
                           zoom: 8,
-                          center: LatLng(_center!.latitude, _center!.longitude)),
+                          center:
+                              LatLng(_center!.latitude, _center!.longitude)),
                       nonRotatedLayers: [
                         TileLayerOptions(
                           urlTemplate:
@@ -242,14 +267,27 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
                               Marker(
                                 width: 60,
                                 height: 60,
-                                point: LatLng(_center!.latitude, _center!.longitude),
+                                point: LatLng(
+                                    _center!.latitude, _center!.longitude),
                                 builder: (_) {
-                                  return MyLocationMarket(_animationController!);
+                                  return MyLocationMarket(
+                                      _animationController!);
                                 },
                               )
                             ],
                           ),
                       ],
+                    ),
+                  if (_center == null && !cargando)
+                    Container(
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Text(
+                        'please active your GPS for look the map'.tr(),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ),
 
                   if (cargando)

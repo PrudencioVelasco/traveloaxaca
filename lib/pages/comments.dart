@@ -146,13 +146,13 @@ class _CommentsPageState extends State<CommentsPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () async {
-                  await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
+                  var verificarConeccion = await ib.checarInternar();
+                  if (verificarConeccion == false) {
+                    Navigator.of(context, rootNavigator: true).pop();
                     mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
                   } else {
                     if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop();
                       mensajeDialog(context, 'message'.tr(),
                           'You can not delete others comment'.tr());
                     } else {
@@ -162,15 +162,11 @@ class _CommentsPageState extends State<CommentsPage> {
                           await _commentsBloc.eliminarCommentarioLugar(
                               d.idcomentario!, widget.lugar.idlugar!);
                       if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
-                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                         onRefreshData();
-                        // Navigator.pop(context);
+                        Navigator.of(context, rootNavigator: true).pop();
+                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                       } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
+                        Navigator.of(context, rootNavigator: true).pop();
                         mensajeDialog(
                             context, 'message'.tr(), resultado.message!);
                       }
@@ -186,7 +182,8 @@ class _CommentsPageState extends State<CommentsPage> {
                 ).tr(),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
                 child: Text(
                   'no',
                   style: TextStyle(
@@ -199,35 +196,6 @@ class _CommentsPageState extends State<CommentsPage> {
           );
         });
   }
-
-  Future handleSubmit() async {
-    final ib = Provider.of<InternetBloc>(context, listen: false);
-    final _commentBloc = Provider.of<CommentsBloc>(context, listen: false);
-    final SignInBloc sb = context.read<SignInBloc>();
-    if (!sb.autenticando) {
-      openSignInDialog(context);
-    } else {
-      await ib.checkInternet();
-      if (textCtrl.text == '' || textCtrl.text.isEmpty) {
-        print('Comment is empty');
-      } else {
-        if (ib.hasInternet == false) {
-          mostrarAlerta(context, 'Internet', 'No tiene conexion a Internet.');
-        } else {
-          ResponseApi? resultado = await _commentBloc.agregarCommentario(
-              widget.lugar.idlugar!, textCtrl.text);
-          if (resultado!.success! == true) {
-            onRefreshData();
-            textCtrl.clear();
-            FocusScope.of(context).requestFocus(new FocusNode());
-          } else {
-            mostrarAlerta(context, 'Registro incorrecto', resultado.message!);
-          }
-        }
-      }
-    }
-  }
-  // }
 
   onRefreshData() {
     setState(() {
@@ -420,59 +388,77 @@ class _CommentsPageState extends State<CommentsPage> {
                                         Row(
                                           children: [
                                             Expanded(
-                                                child:GridView.builder(
-                                                    gridDelegate:
-                                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                                      crossAxisSpacing: 5,
-                                                      mainAxisSpacing: 2,
-                                                      crossAxisCount: 3,
-                                                    ),
-                                                    scrollDirection: Axis.vertical,
-                                                    physics: NeverScrollableScrollPhysics(),
-                                                    shrinkWrap: true,
-                                                    itemCount: _listComentarios[index]!
-                                                        .imagenes!
-                                                        .length,
-                                                    itemBuilder: (context, index2) {
-                                                      return GestureDetector(
-                                                        onTap: () => openImageFullScreen(
-                                                            context, index, index2),
-                                                        child: Container(
-                                                          child: CachedNetworkImage(
-                                                            imageUrl: (_listComentarios[index]!
-                                                                .imagenes![index2]
-                                                                .imagenurl! !=
-                                                                '')
-                                                                ? _listComentarios[index]!
-                                                                .imagenes![index2]
-                                                                .imagenurl!
-                                                                : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
-                                                            imageBuilder:
-                                                                (context, imageProvider) =>
-                                                                Container(
-                                                                  decoration: BoxDecoration(
-                                                                    image: DecorationImage(
-                                                                      image: imageProvider,
-                                                                      fit: BoxFit.cover,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                            placeholder: (context, url) =>
-                                                                Center(
-                                                                  child: SizedBox(
-                                                                    child:
-                                                                    CircularProgressIndicator(),
-                                                                    height: 50.0,
-                                                                    width: 50.0,
-                                                                  ),
-                                                                ),
-                                                            errorWidget:
-                                                                (context, url, error) =>
-                                                                Icon(Icons.error),
+                                              child: GridView.builder(
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisSpacing: 5,
+                                                    mainAxisSpacing: 2,
+                                                    crossAxisCount: 3,
+                                                  ),
+                                                  scrollDirection:
+                                                      Axis.vertical,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  itemCount:
+                                                      _listComentarios[index]!
+                                                          .imagenes!
+                                                          .length,
+                                                  itemBuilder:
+                                                      (context, index2) {
+                                                    return GestureDetector(
+                                                      onTap: () =>
+                                                          openImageFullScreen(
+                                                              context,
+                                                              index,
+                                                              index2),
+                                                      child: Container(
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: (_listComentarios[
+                                                                          index]!
+                                                                      .imagenes![
+                                                                          index2]
+                                                                      .imagenurl! !=
+                                                                  '')
+                                                              ? _listComentarios[
+                                                                      index]!
+                                                                  .imagenes![
+                                                                      index2]
+                                                                  .imagenurl!
+                                                              : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
+                                                          imageBuilder: (context,
+                                                                  imageProvider) =>
+                                                              Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              image:
+                                                                  DecorationImage(
+                                                                image:
+                                                                    imageProvider,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
                                                           ),
+                                                          placeholder:
+                                                              (context, url) =>
+                                                                  Center(
+                                                            child: SizedBox(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                              height: 50.0,
+                                                              width: 50.0,
+                                                            ),
+                                                          ),
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              Icon(Icons.error),
                                                         ),
-                                                      );
-                                                    }),),
+                                                      ),
+                                                    );
+                                                  }),
+                                            ),
                                           ],
                                         ),
                                     ],
@@ -580,6 +566,7 @@ class _CommentsPageState extends State<CommentsPage> {
       ),
     );
   }
+
   void openImageFullScreen(context, int index, int indeximagen) {
     List<ImagenComentarioLugar>? gallery = _listComentarios[index]!.imagenes;
     _galleryItems.clear();

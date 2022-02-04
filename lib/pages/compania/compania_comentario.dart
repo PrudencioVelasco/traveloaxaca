@@ -104,13 +104,13 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () async {
-                  await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
+                  var verificarConeccion = await ib.checarInternar();
+                  if (verificarConeccion == false) {
+                    Navigator.of(context, rootNavigator: true).pop();
                     mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
                   } else {
                     if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop();
                       mensajeDialog(context, 'message'.tr(),
                           'You can not delete others comment'.tr());
                     } else {
@@ -120,15 +120,11 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
                           await _commentsBloc.eliminarCommentarioCompania(
                               d.idcomentario!, widget.compania.idcompania!);
                       if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
-                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                         onRefreshData();
-                        // Navigator.pop(context);
+                        Navigator.of(context, rootNavigator: true).pop();
+                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                       } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
+                        Navigator.of(context, rootNavigator: true).pop();
                         mensajeDialog(
                             context, 'message'.tr(), resultado.message!);
                       }
@@ -144,7 +140,8 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
                 ).tr(),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
                 child: Text(
                   'no',
                   style: TextStyle(

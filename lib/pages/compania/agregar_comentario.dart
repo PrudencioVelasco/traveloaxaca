@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/conquien_visito_bloc.dart';
+import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/models/conquien_visitaste.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -142,57 +144,42 @@ class _AgregarComentarioCompaniaPageState
       _selectedIndex = 0;
       _rating = 3;
       selectedDate = DateTime.now();
+      images = [];
     });
   }
 
   Future agregarComentario() async {
-    /*  setState(() {
-      _deshabilitar = true;
-    });
-    ResponseApi? dato = await _commentsBloc.agregarComentarioLugar(
-        widget.compania!.idcompania!,
-        _rating,
-        ctrlComentario.text,
-        _selectedIndex,
-        selectedDate);
-    if (dato!.success!) {
-      //return _onAlertButtonPressed(context) {
-      setState(() {
-        _deshabilitar = false;
-      });
-      Alert(
-        context: context,
-        type: AlertType.success,
-        title: "message".tr(),
-        desc: "success".tr(),
-        buttons: [
-          DialogButton(
-            child: Text(
-              "Ok",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () => {
-              if (Navigator.canPop(context))
-                {
-                  Navigator.pop(context),
-                  clearText(),
-                }
-              else
-                {
-                  SystemNavigator.pop(),
-                  clearText(),
-                }
-            },
-            width: 120,
-          )
-        ],
-      ).show();
+    final ib = Provider.of<InternetBloc>(context, listen: false);
+    var verificarConeccion = await ib.checarInternar();
+    if (verificarConeccion == false) {
+      Navigator.of(context, rootNavigator: true).pop();
+      mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
     } else {
-      mostrarAlerta(context, 'message'.tr(), dato.message!);
       setState(() {
-        _deshabilitar = false;
+        _deshabilitar = true;
       });
-    }*/
+      bool dato = await _commentsBloc.agregarComentarioCompania(
+          widget.compania!.idcompania!,
+          _rating,
+          ctrlComentario.text,
+          _selectedIndex,
+          selectedDate,
+          images);
+      if (dato) {
+        setState(() {
+          _deshabilitar = false;
+        });
+        // Navigator.of(context, rootNavigator: true).pop();
+        mostrarAlerta(context, 'message'.tr(), 'success'.tr());
+        clearText();
+      } else {
+        mostrarAlerta(context, 'message'.tr(),
+            'something is wrong. please try again.'.tr());
+        setState(() {
+          _deshabilitar = false;
+        });
+      }
+    }
   }
 
   Widget buildGridView() {
@@ -349,7 +336,7 @@ class _AgregarComentarioCompaniaPageState
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
-                       // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => Icon(
                           Icons.star_border_outlined,
                           color: Colors.amber,
@@ -510,21 +497,23 @@ class _AgregarComentarioCompaniaPageState
                                     Positioned(
                                       right: 0,
                                       top: 0,
-                                      child:
-                                      Material(type: MaterialType.transparency,
+                                      child: Material(
+                                        type: MaterialType.transparency,
                                         child: Ink(
                                           decoration: BoxDecoration(
-                                              border: Border.all(color:  Colors.black.withOpacity(0.5),),
+                                              border: Border.all(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                              ),
                                               //color: Colors.indigo[900],
-                                              shape: BoxShape.circle
-                                          ),
+                                              shape: BoxShape.circle),
                                           child: InkWell(
-                                            borderRadius: BorderRadius.circular(0.0),
+                                            borderRadius:
+                                                BorderRadius.circular(0.0),
                                             onTap: () => setState(() {
                                               images.removeAt(index);
                                             }),
                                             child: Container(
-
                                               child: Icon(
                                                 Icons.cancel,
                                                 color: Colors.white,
@@ -533,7 +522,6 @@ class _AgregarComentarioCompaniaPageState
                                             ),
                                           ),
                                         ),
-
                                       ),
                                     )
                                   ],
@@ -541,10 +529,6 @@ class _AgregarComentarioCompaniaPageState
                               }),
                             ),
                           ),
-                        ),
-                        new IconButton(
-                          icon: Icon(Icons.remove_circle),
-                          onPressed: () {},
                         ),
                       ],
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

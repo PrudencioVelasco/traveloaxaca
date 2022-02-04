@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/ruta.dart';
@@ -28,9 +29,16 @@ class _DetalleAventurasPageState extends State<DetalleAventurasPage> {
   bool sinresultado = false;
   List<Lugar?> _listaLugar = [];
   RutasBloc _rutasBloc = new RutasBloc();
+  final BannerAd myBanner = BannerAd(
+    adUnitId: BannerAd.testAdUnitId,
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
   @override
   void initState() {
-    // TODO: implement initState
+    myBanner.load();
+    super.initState();
     _checkInternetConnection();
     obtenerLugares();
   }
@@ -72,7 +80,14 @@ class _DetalleAventurasPageState extends State<DetalleAventurasPage> {
   }
 
   @override
+  void dispose() {
+    myBanner.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final AdWidget adWidget = AdWidget(ad: myBanner);
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
         body: NestedScrollView(
@@ -94,6 +109,18 @@ class _DetalleAventurasPageState extends State<DetalleAventurasPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  child: adWidget,
+                  width: myBanner.size.width.toDouble(),
+                  height: myBanner.size.height.toDouble(),
+                ),
+              ],
+            ),
             Expanded(
                 child: (cargando)
                     ? ListView.separated(

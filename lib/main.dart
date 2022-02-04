@@ -29,9 +29,11 @@ import 'package:traveloaxaca/setting/provider/theme_provider.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:traveloaxaca/setting/res/device_utils.dart';
 import 'package:traveloaxaca/setting/res/theme_utils.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   bool english = true;
   final String defaultLocale = Platform.localeName;
   if (defaultLocale.isNotEmpty) {
@@ -87,9 +89,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SignInBloc(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => InternetBloc(),
-        ),
+        ChangeNotifierProvider<InternetBloc>(
+            create: (context) => InternetBloc()),
         ChangeNotifierProvider<PopularPlacesBloc>(
           create: (context) => PopularPlacesBloc(),
         ),

@@ -9,12 +9,11 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
 import 'package:traveloaxaca/blocs/compania_bloc.dart';
-import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/love_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
@@ -25,15 +24,11 @@ import 'package:traveloaxaca/models/telefono.dart';
 import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/compania/detalle_compania.dart';
 import 'package:traveloaxaca/pages/tour/agregar_comentario.dart';
-import 'package:traveloaxaca/pages/tour/agregar_reporte.dart';
 import 'package:traveloaxaca/pages/tour/comentarios.dart';
 import 'package:traveloaxaca/pages/tour/galeria_fotos.dart';
 import 'package:traveloaxaca/pages/tour/mas_informacion.dart';
 import 'package:traveloaxaca/pages/tour/subir_foto.dart';
 import 'package:traveloaxaca/pages/tour/tour_comentario.dart';
-import 'package:traveloaxaca/utils/empty.dart';
-import 'package:traveloaxaca/utils/loading_cards.dart';
-import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:traveloaxaca/utils/sign_in_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -70,9 +65,15 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
   bool _marcarCorazon = false;
   int _totalLoves = 0;
   bool? _isConnected;
-
+  final BannerAd myBanner = BannerAd(
+    adUnitId: BannerAd.testAdUnitId,
+    size: AdSize.mediumRectangle,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
   @override
   void initState() {
+    myBanner.load();
     super.initState();
     _checkInternetConnection();
     _isLoading = true;
@@ -235,7 +236,14 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
   }
 
   @override
+  void dispose() {
+    myBanner.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final AdWidget adWidget = AdWidget(ad: myBanner);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final _tourBlocProvider = Provider.of<TourBloc>(context, listen: true);
@@ -564,7 +572,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                             child: Text(
                                               'information',
                                               style: TextStyle(
-                                                fontSize: 25,
+                                                fontSize: 22,
                                                 fontWeight: FontWeight.w800,
                                               ),
                                             ).tr(),
@@ -670,7 +678,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                             child: Text(
                                               'activity',
                                               style: TextStyle(
-                                                fontSize: 25,
+                                                fontSize: 22,
                                                 fontWeight: FontWeight.w800,
                                               ),
                                             ).tr(),
@@ -957,6 +965,24 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
                                           return CircularProgressIndicator();
                                         }
                                       },
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.center,
+                                          child: adWidget,
+                                          width: myBanner.size.width.toDouble(),
+                                          height:
+                                              myBanner.size.height.toDouble(),
+                                        )
+                                      ],
                                     ),
                                     SizedBox(
                                       height: 15,

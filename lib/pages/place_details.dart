@@ -42,6 +42,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:readmore/readmore.dart';
 import 'package:traveloaxaca/widgets/mas_informacion_lugar.dart';
 import 'dart:io';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class PlaceDetails extends StatefulWidget {
   final Lugar? data;
@@ -88,16 +89,20 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   List<Comentario?> _data = [];
   int _idComentarioUltimo = 0;
   bool? _isConnected;
+  final BannerAd myBanner = BannerAd(
+    adUnitId: BannerAd.testAdUnitId,
+    size: AdSize.mediumRectangle,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
 
   @override
   void initState() {
+    myBanner.load();
     _checkInternetConnection();
     super.initState();
     Future.delayed(Duration(milliseconds: 0)).then((value) async {
-      // context.read<AdsBloc>().initiateAds();
       context.read<LugarBloc>().saerchInitialize();
-      // getAllImages(widget.data!.idlugar!);
-      // getAllCategorias(widget.data!.idlugar!);
       obtenerLugaresDentroLugar(widget.data!.idlugar!);
       Provider.of<CommentsBloc>(context, listen: false)
           .totalComentariosLugar(widget.data!.idlugar!);
@@ -112,11 +117,8 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       _loveBloc.init(context, refresh);
     });
     getData();
-    //_getDataComments();
     getActividadLugar();
     getActractivoLugar();
-    //totalLove();
-    //totalComment();
     marcarCorazonInicial();
     numerosIniciales();
     refresh();
@@ -136,10 +138,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
       });
     }
   }
-
-  /*void totalLove() async {
-    await _loveBloc.principalTotalLoves(widget.data!.idlugar!);
-  }*/
 
   Future numerosIniciales() async {
     int totalL = await _loveBloc.obtenerTotalLove(widget.data!.idlugar!);
@@ -162,10 +160,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     }
   }
 
-  /*void totalComment() async {
-    await _commentBloc.totalComentariosLugar(widget.data!.idlugar!);
-  }*/
-
   void getData() async {
     _sitiosInteres =
         (await _sitiosInteresBloc.getSitiosInteresv2(widget.data!.idlugar!))!;
@@ -187,20 +181,10 @@ class _PlaceDetailsState extends State<PlaceDetails> {
     }
   }
 
-  /*void getAllImages(int idlugar) async {
-    lista = await _con.obtenerImagenesLugar(idlugar);
-    refresh();
-  }*/
-
   void obtenerLugaresDentroLugar(int idlugar) async {
     _listalugares = await _con.obtenerLugaresDentroLugar(idlugar);
     refresh();
   }
-
-  /*void getAllCategorias(int idlugar) async {
-    _listaCategoria = (await _categoriaBloc.obtenercategoriasPorLugar(idlugar));
-    refresh();
-  }*/
 
   handleDelete(context, Comentario d) {
     final SignInBloc sb = Provider.of<SignInBloc>(context, listen: false);
@@ -338,8 +322,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    myBanner.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // final SignInBloc sb = context.watch<SignInBloc>();
+    final AdWidget adWidget = AdWidget(ad: myBanner);
+
     final _loveBlocProvider = Provider.of<LoveBloc>(context, listen: true);
     final _commentBlocProvider =
         Provider.of<CommentsBloc>(context, listen: true);
@@ -736,6 +728,24 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                                   ],
                                 ),
                               ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: adWidget,
+                                  width: myBanner.size.width.toDouble(),
+                                  height: myBanner.size.height.toDouble(),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
                             Container(
                               margin: EdgeInsets.only(top: 8, bottom: 8),
                               height: 3,

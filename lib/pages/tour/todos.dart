@@ -4,18 +4,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/tour/detalle_tour.dart';
 import 'package:traveloaxaca/utils/empty.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
-
-List<String> allNames = ["ahmed", "ali", "john", "user"];
-var mainColor = Color(0xff1B3954);
-var textColor = Color(0xff727272);
-var accentColor = Color(0xff16ADE1);
-var whiteText = Color(0xffF5F5F5);
 
 class TodosToursPage extends StatefulWidget {
   @override
@@ -31,8 +26,15 @@ class TodosToursPageState extends State<TodosToursPage> {
   TourBloc _tourBloc = new TourBloc();
   String _parametro = "";
   bool cargando = true;
+  final BannerAd myBanner = BannerAd(
+    adUnitId: BannerAd.testAdUnitId,
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
   TextEditingController _textsearch = new TextEditingController();
   void initState() {
+    myBanner.load();
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _tourBloc.init(context, refresh);
@@ -52,8 +54,6 @@ class TodosToursPageState extends State<TodosToursPage> {
 
   Future getAllToursOriginal() async {
     _listaToursOriginal = (await _tourBloc.todosLosTours(null));
-    // _listaToursOriginal = (await _tourBloc.todosLosTours(null));
-    // refresh();
   }
 
   void refresh() {
@@ -74,8 +74,16 @@ class TodosToursPageState extends State<TodosToursPage> {
     {"id": 1, "nombre": "more comments".tr()},
     {"id": 2, "nombre": "more loves".tr()},
   ];
+
+  @override
+  void dispose() {
+    myBanner.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final AdWidget adWidget = AdWidget(ad: myBanner);
     var size = MediaQuery.of(context).size;
     final double itemHeight = (size.height - kToolbarHeight - 24);
     final double itemWidt = size.width / 2;
@@ -126,6 +134,12 @@ class TodosToursPageState extends State<TodosToursPage> {
             margin: EdgeInsets.only(left: 10, right: 10),
             child: Column(
               children: [
+                Container(
+                  alignment: Alignment.center,
+                  child: adWidget,
+                  width: myBanner.size.width.toDouble(),
+                  height: myBanner.size.height.toDouble(),
+                ),
                 if (cargando)
                   Center(
                     child: Column(

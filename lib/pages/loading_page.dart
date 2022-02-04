@@ -6,6 +6,7 @@ import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/imagen.dart';
 import 'package:traveloaxaca/pages/home.dart';
 import 'package:easy_splash_screen/easy_splash_screen.dart';
+import 'package:traveloaxaca/pages/sign_in_inicio.dart';
 import 'package:traveloaxaca/setting/res/resources.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -78,7 +79,7 @@ class _LoadingPageState extends State<LoadingPage>
     if (autenticado) {
       return Future.value(new Home());
     } else {
-      return Future.value(new Home());
+      return Future.value(new SignInInicio());
     }
   }
 }

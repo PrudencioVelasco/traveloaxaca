@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:image_collapse/gallery_item.dart';
+import 'package:image_collapse/gallery_view_wrapper.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -11,6 +13,7 @@ import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/models/comentario_compania.dart';
 import 'package:traveloaxaca/models/compania.dart';
+import 'package:traveloaxaca/models/imagen_comentario_compania.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:traveloaxaca/pages/compania/agregar_comentario.dart';
 import 'package:traveloaxaca/pages/compania/agregar_reporte.dart';
@@ -48,6 +51,9 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
   List<ComentarioCompania?> _listComentarios = [];
   final GlobalKey _menuKey = GlobalKey();
   InternetBloc _internetBloc = new InternetBloc();
+  static final List<GalleryItem> _galleryItems = <GalleryItem>[];
+  String? titleGallery;
+  Color? appBarColor;
   @override
   void initState() {
     controller = new ScrollController()..addListener(_scrollListener);
@@ -142,13 +148,13 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () async {
-                  await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
+                  var verificarConeccion = await ib.checarInternar();
+                  if (verificarConeccion == false) {
+                    Navigator.of(context, rootNavigator: true).pop();
                     mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
                   } else {
                     if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop();
                       mensajeDialog(context, 'message'.tr(),
                           'You can not delete others comment'.tr());
                     } else {
@@ -158,15 +164,11 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
                           await _commentsBloc.eliminarCommentarioCompania(
                               d.idcomentario!, widget.compania.idcompania!);
                       if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
-                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                         onRefreshData();
-                        // Navigator.pop(context);
+                        Navigator.of(context, rootNavigator: true).pop();
+                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                       } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
+                        Navigator.of(context, rootNavigator: true).pop();
                         mensajeDialog(
                             context, 'message'.tr(), resultado.message!);
                       }
@@ -182,7 +184,8 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
                 ).tr(),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
                 child: Text(
                   'no',
                   style: TextStyle(
@@ -195,35 +198,6 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
           );
         });
   }
-
-  Future handleSubmit() async {
-    final ib = Provider.of<InternetBloc>(context, listen: false);
-    final _commentBloc = Provider.of<CommentsBloc>(context, listen: false);
-    final SignInBloc sb = context.read<SignInBloc>();
-    if (!sb.autenticando) {
-      openSignInDialog(context);
-    } else {
-      await ib.checkInternet();
-      if (textCtrl.text == '' || textCtrl.text.isEmpty) {
-        print('Comment is empty');
-      } else {
-        if (ib.hasInternet == false) {
-          mostrarAlerta(context, 'Internet', 'No tiene conexion a Internet.');
-        } else {
-          ResponseApi? resultado = await _commentBloc.agregarCommentario(
-              widget.compania.idcompania!, textCtrl.text);
-          if (resultado!.success! == true) {
-            onRefreshData();
-            textCtrl.clear();
-            FocusScope.of(context).requestFocus(new FocusNode());
-          } else {
-            mostrarAlerta(context, 'Registro incorrecto', resultado.message!);
-          }
-        }
-      }
-    }
-  }
-  // }
 
   onRefreshData() {
     setState(() {
@@ -424,45 +398,77 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
                                         Row(
                                           children: [
                                             Expanded(
-                                                child: GridView.count(
-                                              crossAxisCount: 3,
-                                              shrinkWrap: true,
-                                              children: List.generate(
-                                                  _listComentarios[index]!
-                                                      .imagenes!
-                                                      .length, (index2) {
-                                                return CachedNetworkImage(
-                                                  imageUrl:
+                                              child: GridView.builder(
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisSpacing: 5,
+                                                    mainAxisSpacing: 2,
+                                                    crossAxisCount: 3,
+                                                  ),
+                                                  scrollDirection:
+                                                      Axis.vertical,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  itemCount:
                                                       _listComentarios[index]!
-                                                          .imagenes![index2]
-                                                          .imagenurl!,
-                                                  imageBuilder: (context,
-                                                          imageProvider) =>
-                                                      Container(
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover,
+                                                          .imagenes!
+                                                          .length,
+                                                  itemBuilder:
+                                                      (context, index2) {
+                                                    return GestureDetector(
+                                                      onTap: () =>
+                                                          openImageFullScreen(
+                                                              context,
+                                                              index,
+                                                              index2),
+                                                      child: Container(
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: (_listComentarios[
+                                                                          index]!
+                                                                      .imagenes![
+                                                                          index2]
+                                                                      .imagenurl! !=
+                                                                  '')
+                                                              ? _listComentarios[
+                                                                      index]!
+                                                                  .imagenes![
+                                                                      index2]
+                                                                  .imagenurl!
+                                                              : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
+                                                          imageBuilder: (context,
+                                                                  imageProvider) =>
+                                                              Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              image:
+                                                                  DecorationImage(
+                                                                image:
+                                                                    imageProvider,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          placeholder:
+                                                              (context, url) =>
+                                                                  Center(
+                                                            child: SizedBox(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                              height: 50.0,
+                                                              width: 50.0,
+                                                            ),
+                                                          ),
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              Icon(Icons.error),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                  placeholder: (context, url) =>
-                                                      Center(
-                                                    child: SizedBox(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                      height: 50.0,
-                                                      width: 50.0,
-                                                    ),
-                                                  ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Icon(Icons.error),
-                                                  width: 300,
-                                                  height: 300,
-                                                );
-                                              }),
-                                            )),
+                                                    );
+                                                  }),
+                                            ),
                                           ],
                                         ),
                                     ],
@@ -572,6 +578,31 @@ class _ComentariosCompaniaPageState extends State<ComentariosCompaniaPage> {
     );
   }
 
+  void openImageFullScreen(context, int index, int indeximagen) {
+    List<ImagenComentarioCompania>? gallery = _listComentarios[index]!.imagenes;
+    _galleryItems.clear();
+    gallery!.forEach((imageUrl) {
+      _galleryItems.add(
+        GalleryItem(
+          id: imageUrl.idimagencomentariocompania.toString(),
+          imageUrl: imageUrl.imagenurl.toString(),
+        ),
+      );
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return GalleryViewWrapper(
+          appBarColor: appBarColor,
+          titleGallery: "photos".tr(),
+          galleryItem: _galleryItems,
+          backgroundDecoration: BoxDecoration(color: Color(0xff374056)),
+          initialIndex: indeximagen,
+          scrollDirection: Axis.horizontal,
+        );
+      }),
+    );
+  }
 // (_signInBloc.idusuario == d.idusuario) ??
 
 }

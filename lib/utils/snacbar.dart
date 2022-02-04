@@ -7,9 +7,7 @@ void openSnacbar(_scaffoldKey, snacMessage) {
       height: 60,
       child: Text(
         snacMessage,
-        style: TextStyle(
-          fontSize: 14,
-        ),
+        style: TextStyle(fontSize: 14, color: Colors.white),
       ),
     ),
     action: SnackBarAction(

@@ -141,13 +141,13 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () async {
-                  await ib.checkInternet();
-                  if (ib.hasInternet == true) {
-                    Navigator.pop(context);
+                  var verificarConeccion = await ib.checarInternar();
+                  if (verificarConeccion == false) {
+                    Navigator.of(context, rootNavigator: true).pop();
                     mensajeDialog(context, 'message'.tr(), 'no internet'.tr());
                   } else {
                     if (sb.idusuario != d.idusuario) {
-                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop();
                       mensajeDialog(context, 'message'.tr(),
                           'You can not delete others comment'.tr());
                     } else {
@@ -156,15 +156,11 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                       ResponseApi? resultado = await _commentsBloc
                           .eliminarCommentarioTour(d.idcomentario!);
                       if (resultado!.success!) {
-                        //  mostrarAlerta(
-                        //      context, 'Eliminado', resultado.message!);
-                        Navigator.pop(context);
-                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                         onRefreshData();
-                        // Navigator.pop(context);
+                        Navigator.of(context, rootNavigator: true).pop();
+                        mensajeDialog(context, 'message'.tr(), 'success'.tr());
                       } else {
-                        Navigator.pop(context);
-                        // openToast(context, resultado.message!);
+                        Navigator.of(context, rootNavigator: true).pop();
                         mensajeDialog(
                             context, 'message'.tr(), resultado.message!);
                       }
@@ -180,7 +176,8 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
                 ).tr(),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
                 child: Text(
                   'no',
                   style: TextStyle(
@@ -193,35 +190,6 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
           );
         });
   }
-
-  Future handleSubmit() async {
-    final ib = Provider.of<InternetBloc>(context, listen: false);
-    final _commentBloc = Provider.of<CommentsBloc>(context, listen: false);
-    final SignInBloc sb = context.read<SignInBloc>();
-    if (!sb.autenticando) {
-      openSignInDialog(context);
-    } else {
-      await ib.checkInternet();
-      if (textCtrl.text == '' || textCtrl.text.isEmpty) {
-        print('Comment is empty');
-      } else {
-        if (ib.hasInternet == false) {
-          mostrarAlerta(context, 'Internet', 'No tiene conexion a Internet.');
-        } else {
-          ResponseApi? resultado = await _commentBloc.agregarCommentario(
-              widget.tour.idtour!, textCtrl.text);
-          if (resultado!.success! == true) {
-            onRefreshData();
-            textCtrl.clear();
-            FocusScope.of(context).requestFocus(new FocusNode());
-          } else {
-            mostrarAlerta(context, 'Registro incorrecto', resultado.message!);
-          }
-        }
-      }
-    }
-  }
-  // }
 
   onRefreshData() {
     setState(() {
@@ -530,8 +498,7 @@ class _ComentariosTourPageState extends State<ComentariosTourPage> {
               width: double.infinity,
               //  color: Colors.white,
               child: Container(
-                margin: EdgeInsets.only(bottom:
-                10),
+                margin: EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(25)),

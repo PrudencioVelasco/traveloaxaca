@@ -127,10 +127,12 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
         .map((animal) =>
             MultiSelectItem<Actividad>(animal!, animal.nombreactividad!))
         .toList();
-    setState(() {
-      _items = _items1;
-      // _listaActividad = data;
-    });
+    if (mounted) {
+      setState(() {
+        _items = _items1;
+        // _listaActividad = data;
+      });
+    }
   }
 
   void refresh() {

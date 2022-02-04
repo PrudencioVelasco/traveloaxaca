@@ -14,14 +14,14 @@ import 'package:traveloaxaca/widgets/language.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SignInPage extends StatefulWidget {
-  final String tag;
-  SignInPage({Key? key, required this.tag}) : super(key: key);
+class SignInInicio extends StatefulWidget {
+  SignInInicio({Key? key}) : super(key: key);
 
-  _SignInPageState createState() => _SignInPageState();
+  @override
+  State<SignInInicio> createState() => _SignInInicioState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignInInicioState extends State<SignInInicio> {
   bool googleSignInStarted = false;
   bool facebookSignInStarted = false;
   bool appleSignInStarted = false;
@@ -35,13 +35,8 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   afterSignIn() {
-    if (widget.tag != '') {
-      //nextScreenReplace(context, DonePage());
-      Navigator.of(context, rootNavigator: true).pushReplacement(
-          MaterialPageRoute(builder: (context) => new IntroPage()));
-    } else {
-      Navigator.pop(context);
-    }
+    Navigator.of(context, rootNavigator: true).pushReplacement(
+        MaterialPageRoute(builder: (context) => new IntroPage()));
   }
 
   handleSkip() {
@@ -80,19 +75,15 @@ class _SignInPageState extends State<SignInPage> {
     final _signInBlocProvider = Provider.of<SignInBloc>(context);
 
     return Scaffold(
-      // backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       key: scaffoldKey,
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => handleSkip(),
+            icon: Icon(
+              Icons.close,
+            )),
         actions: [
-          widget.tag.isNotEmpty
-              ? Container()
-              : TextButton(
-                  onPressed: () => handleSkip(),
-                  child: Text('skip',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      )).tr()),
           IconButton(
             alignment: Alignment.center,
             padding: EdgeInsets.all(0),

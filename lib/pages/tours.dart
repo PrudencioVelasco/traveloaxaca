@@ -42,60 +42,64 @@ class _ToursPageState extends State<ToursPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      // padding: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(left: 5, top: 10, right: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return (_listaTours.length == 0)
+        ? Container()
+        : Column(
+            // padding: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
             children: <Widget>[
               Container(
-                margin: EdgeInsets.only(
-                  left: 10,
-                  top: 10,
-                ),
-                child: Row(
+                margin: EdgeInsets.only(left: 5, top: 10, right: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'best tours',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w700,
+                    Container(
+                      margin: EdgeInsets.only(
+                        left: 10,
+                        top: 10,
                       ),
-                    ).tr(),
-                    Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: () => nextScreen(context, TodosToursPage()),
-                    )
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            'best tours',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ).tr(),
+                          Spacer(),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: () =>
+                                nextScreen(context, TodosToursPage()),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Container(
+                        height: 292,
+                        //color: Colors.green,
+                        width: MediaQuery.of(context).size.width,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          physics: BouncingScrollPhysics(),
+                          itemCount:
+                              _listaTours.isEmpty ? 3 : _listaTours.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (_listaTours.isEmpty)
+                              return LoadingListaToursPrincipalCard();
+                            return _chois(_listaTours[index]);
+                          },
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  height: 292,
-                  //color: Colors.green,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
-                    itemCount: _listaTours.isEmpty ? 3 : _listaTours.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (_listaTours.isEmpty)
-                        return LoadingListaToursPrincipalCard();
-                      return _chois(_listaTours[index]);
-                    },
-                  ),
-                ),
-              ),
             ],
-          ),
-        ),
-      ],
-    );
+          );
   }
 
   Widget _chois(Tour? item) {
