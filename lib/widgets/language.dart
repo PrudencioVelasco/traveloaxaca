@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:traveloaxaca/config/config.dart';
+import 'package:traveloaxaca/pages/home.dart';
 
 class LanguagePopup extends StatefulWidget {
   const LanguagePopup({Key? key}) : super(key: key);
@@ -58,8 +59,16 @@ class _LanguagePopupState extends State<LanguagePopup> {
           leading: Icon(Icons.language),
           title: Text(d),
           onTap: () async {
-            cambiarLenguaje(index);
-            Navigator.pop(context);
+            if (index == 0) {
+              // context.resetLocale();
+              context.setLocale(Locale('en'));
+            } else {
+              //context.resetLocale();
+              context.setLocale(Locale('es'));
+            }
+            //Navigator.of(context, rootNavigator: true).pop();
+            await Navigator.push(
+                context, new MaterialPageRoute(builder: (context) => Home()));
           },
         ),
         Divider()

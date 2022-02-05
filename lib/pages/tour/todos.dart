@@ -46,9 +46,12 @@ class TodosToursPageState extends State<TodosToursPage> {
 
   Future getAllTours() async {
     _listaTours = (await _tourBloc.todosLosTours(null));
-    setState(() {
-      cargando = false;
-    });
+    if (mounted) {
+      setState(() {
+        cargando = false;
+      });
+    }
+
     refresh();
   }
 
@@ -87,6 +90,8 @@ class TodosToursPageState extends State<TodosToursPage> {
     var size = MediaQuery.of(context).size;
     final double itemHeight = (size.height - kToolbarHeight - 24);
     final double itemWidt = size.width / 2;
+    var brishtness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brishtness == Brightness.dark;
     return Scaffold(
         appBar: AppBar(
           title: Container(
@@ -180,7 +185,7 @@ class TodosToursPageState extends State<TodosToursPage> {
                   if (_listaTours.length > 0)
                     Container(
                       margin: EdgeInsets.only(top: 10),
-                      child: _cartas(),
+                      child: _cartas(isDarkMode),
                     )
                   else
                     Container(
@@ -197,7 +202,7 @@ class TodosToursPageState extends State<TodosToursPage> {
         ));
   }
 
-  Widget _cartas() {
+  Widget _cartas(isDarkMode) {
     return GridView.builder(
       itemCount: _listaTours.length,
       shrinkWrap: true,
@@ -318,7 +323,9 @@ class TodosToursPageState extends State<TodosToursPage> {
                                         ))),
                                 TextSpan(
                                     style: TextStyle(
-                                      color: Colors.grey[600],
+                                      color: (isDarkMode)
+                                          ? Colors.white
+                                          : Colors.black54,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -336,7 +343,9 @@ class TodosToursPageState extends State<TodosToursPage> {
                                         ))),
                                 TextSpan(
                                     style: TextStyle(
-                                      color: Colors.grey[600],
+                                      color: (isDarkMode)
+                                          ? Colors.white
+                                          : Colors.black54,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w500,
                                     ),

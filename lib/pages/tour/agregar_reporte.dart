@@ -290,7 +290,7 @@ class _ReportarComentarioTourPageState
         //style: TextStyle(color: Colors.red),
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          fillColor: Colors.white,
+          //fillColor: Colors.white,
           filled: true,
           // icon: Icon(Icons.email),
           hintText: "add note".tr(),

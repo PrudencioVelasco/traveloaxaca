@@ -263,13 +263,6 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   TextButton(
-                      onPressed: () => handleSkip(),
-                      child: Text('skip',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          )).tr()),
-                  TextButton(
                       onPressed: () {
                         _launchURL();
                       },

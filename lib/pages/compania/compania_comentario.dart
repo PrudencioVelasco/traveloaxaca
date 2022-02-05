@@ -177,6 +177,7 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
                   child: ListView(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     children: [
                       EmptyPage(
                           icon: LineIcons.comments,
@@ -255,6 +256,9 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
                                           // key: _menuKey,
                                           itemBuilder: (_) =>
                                               <PopupMenuItem<String>>[
+                                                PopupMenuItem<String>(
+                                                    child: Text('report?'.tr()),
+                                                    value: 'reportar'),
                                                 if (_listComentarios[index]!
                                                         .idusuario ==
                                                     _signInBloc.idusuario)
@@ -262,9 +266,6 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
                                                       child:
                                                           Text('delete?'.tr()),
                                                       value: 'eliminar'),
-                                                PopupMenuItem<String>(
-                                                    child: Text('report?'.tr()),
-                                                    value: 'reportar'),
                                               ],
                                           onSelected: (valor) {
                                             print(valor);

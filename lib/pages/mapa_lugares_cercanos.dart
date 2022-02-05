@@ -122,17 +122,22 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
   Future getUserLocation() async {
     currentLocation = await locateUser();
     if (currentLocation != null) {
-      setState(() {
-        _center = LatLng(currentLocation!.latitude, currentLocation!.longitude);
-        ubicado = true;
-        print(_center);
-      });
+      if (mounted) {
+        setState(() {
+          _center =
+              LatLng(currentLocation!.latitude, currentLocation!.longitude);
+          ubicado = true;
+          print(_center);
+        });
+      }
     } else {
-      setState(() {
-        ubicado = false;
-        print("object");
-        print(_center);
-      });
+      if (mounted) {
+        setState(() {
+          ubicado = false;
+          print("object");
+          print(_center);
+        });
+      }
     }
   }
 

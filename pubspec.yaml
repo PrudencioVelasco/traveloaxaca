@@ -103,11 +103,11 @@ dependencies:
   image_collapse: ^0.0.2
   easy_splash_screen: ^1.0.3
   bottom_nav: ^1.0.1
-  restart_app: ^1.1.0
   intro_slider: ^3.0.3
   introduction_screen: ^2.1.0
-  google_mobile_ads: ^1.0.1
-      
+  google_mobile_ads: ^1.0.1 
+  bottom_nav_layout: ^3.0.9
+  
 flutter_icons:
   android: "launcher_icon"
   ios: true

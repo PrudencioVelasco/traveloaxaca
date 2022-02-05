@@ -596,7 +596,7 @@ class _AgregarComentarioCompaniaPageState
         //style: TextStyle(color: Colors.red),
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          fillColor: Colors.white,
+         // fillColor: Colors.white,
           filled: true,
           //errorText: _errorTextComentio,
           // icon: Icon(Icons.email),

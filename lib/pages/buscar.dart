@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -13,6 +15,7 @@ import 'package:traveloaxaca/pages/rutas_principales.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:translator/translator.dart';
+import 'package:traveloaxaca/utils/connectionStatusSingleton.dart';
 
 class BuscarPage extends StatefulWidget {
   BuscarPage({Key? key}) : super(key: key);
@@ -32,9 +35,15 @@ class _BuscarPageState extends State<BuscarPage> {
   String? parametro;
   String inputText = "";
   int? _selectIndex;
+  bool isOffline = false;
   var isLight = true;
+  StreamSubscription? _connectionChangeStream;
   @override
   void initState() {
+    ConnectionStatusSingleton connectionStatus =
+        ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream =
+        connectionStatus.connectionChange.listen(connectionChanged);
     // Future.delayed(Duration()).then((value) => _con.saerchInitialize());
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       // _con.init(context);
@@ -61,99 +70,149 @@ class _BuscarPageState extends State<BuscarPage> {
     }
   }
 
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     //var brishtness = MediaQuery.of(context).platformBrightness;
     //bool isDarkMode = brishtness == Brightness.dark;
-    return Scaffold(
-        // backgroundColor: Colors.white,
-        body: SafeArea(
-      child: RefreshIndicator(
-        onRefresh: () async {},
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 30, left: 20),
-                        child: Text(
-                          "search".tr(),
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Header(),
-              FutureBuilder(
-                  future: _categoriaBloc.obtenerTodascategoriasPrincipal(),
-                  builder: (context, AsyncSnapshot<List<Categoria?>> snapshot) {
-                    if (snapshot.hasData) {
-                      return Container(
-                        height: 50,
-                        // color: Colors.redAccent,
-                        margin: EdgeInsets.only(left: 15, right: 15, top: 10),
-                        width: MediaQuery.of(context).size.width,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          physics: BouncingScrollPhysics(),
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return _categorias(snapshot.data![index], context);
-                          },
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text("Error");
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  }),
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                      top: 20,
-                      left: 25,
-                    ),
+    return (isOffline)
+        ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    margin: EdgeInsets.only(left: 25, right: 25, top: 10),
                     child: Text(
-                      'destination travel'.tr(),
+                      'are you offline?'.tr(),
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    )),
+                Container(
+                  margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                  child: Text(
+                    'please check your internet connection and reload the page'
+                        .tr(),
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-              RutasPrincipalesPage()
-              /* Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.25,
-                child: MapboxMap(
-                  styleString:
-                      !isDarkMode ? MapboxStyles.LIGHT : MapboxStyles.DARK,
-                  accessToken: Config().apiKey,
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: const CameraPosition(
-                      target: LatLng(16.29019334715737, -97.82625818770822),
-                      zoom: 14),
-                  onStyleLoadedCallback: _onStyleLoadedCallback,
                 ),
-              )*/
-            ],
-          ),
-        ),
-      ),
-    ));
+                Container(
+                  margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          child: Text('reload').tr(),
+                          // icon: Icon(Icons.add_comment_rounded),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Colors.black,
+                            onSurface: Colors.black,
+                            //shadowColor: Colors.grey,
+                            padding: EdgeInsets.all(10.0),
+                            elevation: 6,
+
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                          ),
+                          onPressed: () => setState(() {}),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        : Scaffold(
+            // backgroundColor: Colors.white,
+            body: SafeArea(
+            child: RefreshIndicator(
+              onRefresh: () async {},
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 30, left: 20),
+                              child: Text(
+                                "search".tr(),
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                    Header(),
+                    FutureBuilder(
+                        future:
+                            _categoriaBloc.obtenerTodascategoriasPrincipal(),
+                        builder: (context,
+                            AsyncSnapshot<List<Categoria?>> snapshot) {
+                          if (snapshot.hasData) {
+                            return Container(
+                              height: 50,
+                              // color: Colors.redAccent,
+                              margin:
+                                  EdgeInsets.only(left: 15, right: 15, top: 10),
+                              width: MediaQuery.of(context).size.width,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return _categorias(
+                                      snapshot.data![index], context);
+                                },
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text("Error");
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        }),
+                    Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            top: 20,
+                            left: 25,
+                          ),
+                          child: Text(
+                            'destination travel'.tr(),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    RutasPrincipalesPage()
+                  ],
+                ),
+              ),
+            ),
+          ));
   }
 
   Widget _categorias(Categoria? item, BuildContext context) {
@@ -210,65 +269,6 @@ class _BuscarPageState extends State<BuscarPage> {
           ]),
         ));
   }
-
-  /*@override
-  bool get wantKeepAlive => true;
-  Widget _chois(Categoria? item, BuildContext context) {
-    return InkWell(
-      child: Container(
-        padding: EdgeInsets.all(5),
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: 0),
-        child: ChoiceChip(
-          // elevation: 4,
-          //pressElevation: 5,
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.grey, width: 1),
-              borderRadius: BorderRadius.all(Radius.circular(20))),
-          label: FutureBuilder(
-              future:
-                  someFutureStringFunction(context, item!.nombreclasificacion!),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(snapshot.data.toString().toUpperCase());
-                } else if (snapshot.hasError) {
-                  return Text("error");
-                }
-                return Text("loading...".tr());
-              }),
-          selected: _selectIndex == item.idclasificacion,
-          padding: EdgeInsets.all(16),
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          //backgroundColor: Colors.white,
-          selectedColor: ChipTheme.of(context).secondarySelectedColor,
-
-          onSelected: (bool value) {
-            setState(() {
-              _selectIndex = item.idclasificacion;
-              if (item.idclasificacion == 13) {
-                nextScreen(context, TodosToursPage());
-              } else if (item.idclasificacion == 16) {
-                nextScreen(
-                    context,
-                    BuscarLugarPage(
-                      nombre: item.nombreclasificacion,
-                      idclasificacion: item.idclasificacion,
-                    ));
-              } else {
-                // nextScreen(context, PermisoGpsPage(
-                nextScreen(
-                    context,
-                    BuscarLugarCategoriaPage(
-                      nombre: item.nombreclasificacion,
-                      idclasificacion: item.idclasificacion,
-                    ));
-              }
-            });
-          },
-        ),
-      ),
-    );
-  }*/
 }
 
 class Header extends StatelessWidget {

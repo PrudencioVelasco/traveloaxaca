@@ -65,7 +65,9 @@ class _MorePlacesPageState extends State<MorePlacesPage> {
   }
 
   void refresh() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   onRefresh() {

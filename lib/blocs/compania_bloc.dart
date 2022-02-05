@@ -221,6 +221,33 @@ class CompaniaBloc with ChangeNotifier {
     }
   }
 
+  Future<ResponseApi?> agregarReporteComentarioCompania(
+      int idcomentario, int idmotivo, String? comentario) async {
+    String _url = Environment.API_DELIVERY;
+    String _api = '/monarca/comentario';
+    try {
+      Uri url = Uri.http(_url, '$_api/agregarReporteComentarioCompania');
+
+      String bodyParams = json.encode({
+        'idcomentario': idcomentario,
+        'idcausareporte': idmotivo,
+        'comentario': comentario
+      });
+
+      Map<String, String> headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Charset': 'utf-8'
+      };
+      final res = await http.post(url, headers: headers, body: bodyParams);
+      final dataresponse = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(dataresponse);
+      // await totalComentariosLugar(idlugar);
+      return responseApi;
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   onRefresh() {
     notifyListeners();
   }

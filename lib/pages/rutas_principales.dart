@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -6,6 +8,8 @@ import 'package:traveloaxaca/models/ruta.dart';
 import 'package:traveloaxaca/pages/destino/lista_destino.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:traveloaxaca/utils/connectionStatusSingleton.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class RutasPrincipalesPage extends StatefulWidget {
   RutasPrincipalesPage({Key? key}) : super(key: key);
@@ -17,12 +21,25 @@ class RutasPrincipalesPage extends StatefulWidget {
 class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
   RutasBloc _rutasBloc = new RutasBloc();
   bool _visible = true;
+  StreamSubscription? _connectionChangeStream;
+
+  bool isOffline = false;
   void initState() {
     super.initState();
+    ConnectionStatusSingleton connectionStatus =
+        ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream =
+        connectionStatus.connectionChange.listen(connectionChanged);
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) async {
       _rutasBloc.init(context, refresh);
     });
     refresh();
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   void refresh() {
@@ -33,52 +50,108 @@ class _RutasPrincipalesPageState extends State<RutasPrincipalesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
-      child: Column(
-        children: [
-          FutureBuilder(
-              future: _rutasBloc.getData(),
-              builder: (context, AsyncSnapshot<List<Ruta?>> snapshot) {
-                if (snapshot.hasData) {
-                  return GridView.builder(
-                      padding: EdgeInsets.all(5),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisSpacing: 5,
-                        mainAxisExtent: 200,
-                        crossAxisSpacing: 0.0,
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.0,
+    return (isOffline)
+        ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                    child: Text(
+                      'are you offline?'.tr(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (BuildContext ctx, index) {
-                        return _chois(snapshot.data![index]!);
-                      });
-                } else if (snapshot.hasError) {
-                  return Text("Error");
-                } else {
-                  return GridView.builder(
-                      padding: EdgeInsets.all(5),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisSpacing: 5,
-                        mainAxisExtent: 200,
-                        crossAxisSpacing: 0.0,
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.0,
+                    )),
+                Container(
+                  margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                  child: Text(
+                    'please check your internet connection and reload the page'
+                        .tr(),
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          child: Text('reload').tr(),
+                          // icon: Icon(Icons.add_comment_rounded),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Colors.black,
+                            onSurface: Colors.black,
+                            //shadowColor: Colors.grey,
+                            padding: EdgeInsets.all(10.0),
+                            elevation: 6,
+
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                          ),
+                          onPressed: () => setState(() {}),
+                        ),
                       ),
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 4,
-                      itemBuilder: (BuildContext ctx, index) {
-                        return LoadingRutaTuristicaCard();
-                      });
-                }
-              }),
-        ],
-      ),
-    );
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        : Container(
+            margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
+            child: Column(
+              children: [
+                FutureBuilder(
+                    future: _rutasBloc.getData(),
+                    builder: (context, AsyncSnapshot<List<Ruta?>> snapshot) {
+                      if (snapshot.hasData) {
+                        return GridView.builder(
+                            padding: EdgeInsets.all(5),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              mainAxisSpacing: 5,
+                              mainAxisExtent: 200,
+                              crossAxisSpacing: 0.0,
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.0,
+                            ),
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (BuildContext ctx, index) {
+                              return _chois(snapshot.data![index]!);
+                            });
+                      } else if (snapshot.hasError) {
+                        return Text("Error");
+                      } else {
+                        return GridView.builder(
+                            padding: EdgeInsets.all(5),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              mainAxisSpacing: 5,
+                              mainAxisExtent: 200,
+                              crossAxisSpacing: 0.0,
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.0,
+                            ),
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: 4,
+                            itemBuilder: (BuildContext ctx, index) {
+                              return LoadingRutaTuristicaCard();
+                            });
+                      }
+                    }),
+              ],
+            ),
+          );
   }
 
   Widget _chois(Ruta ruta) {

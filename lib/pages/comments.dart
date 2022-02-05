@@ -470,6 +470,9 @@ class _CommentsPageState extends State<CommentsPage> {
                                           // key: _menuKey,
                                           itemBuilder: (_) =>
                                               <PopupMenuItem<String>>[
+                                                PopupMenuItem<String>(
+                                                    child: Text('report?'.tr()),
+                                                    value: 'reportar'),
                                                 if (_listComentarios[index]!
                                                         .idusuario ==
                                                     _signInBloc.idusuario)
@@ -477,9 +480,6 @@ class _CommentsPageState extends State<CommentsPage> {
                                                       child:
                                                           Text('delete?'.tr()),
                                                       value: 'eliminar'),
-                                                PopupMenuItem<String>(
-                                                    child: Text('report?'.tr()),
-                                                    value: 'reportar'),
                                               ],
                                           onSelected: (valor) {
                                             print(valor);

@@ -57,6 +57,7 @@ class _PerfilPageState extends State<PerfilPage>
     return Scaffold(
       appBar: AppBar(
         // foregroundColor: Colors.grey[600],
+        automaticallyImplyLeading: false,
         title: Text(
           'profile',
           style: Theme.of(context).textTheme.headline6,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:traveloaxaca/pages/explorar.dart';
+import 'package:traveloaxaca/pages/home.dart';
 
 mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
   if (Platform.isAndroid) {
@@ -37,7 +38,7 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
                           await Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => Explorar()));
+                                  builder: (context) => Home()));
                           Navigator.of(context, rootNavigator: true).pop();
                           break;
 
@@ -88,7 +89,7 @@ mostrarAlertaGPS(BuildContext context, String titulo, String subtitulo) {
                         await Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => Explorar()));
+                                builder: (context) => Home()));
                         Navigator.of(context, rootNavigator: true).pop();
                         break;
 

@@ -164,7 +164,6 @@ class TourBloc with ChangeNotifier {
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8',
-        'x-token': token!
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);

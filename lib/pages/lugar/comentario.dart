@@ -219,6 +219,7 @@ class _ComentarioDetalleLugarPageState
                   margin: EdgeInsets.only(top: 10, bottom: 30),
                   child: ListView(
                     scrollDirection: Axis.vertical,
+                    physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     children: [
                       EmptyPage(
@@ -298,6 +299,9 @@ class _ComentarioDetalleLugarPageState
                                           // key: _menuKey,
                                           itemBuilder: (_) =>
                                               <PopupMenuItem<String>>[
+                                                PopupMenuItem<String>(
+                                                    child: Text('report?'.tr()),
+                                                    value: 'reportar'),
                                                 if (_listComentarios[index]!
                                                         .idusuario ==
                                                     _signInBloc.idusuario)
@@ -305,9 +309,6 @@ class _ComentarioDetalleLugarPageState
                                                       child:
                                                           Text('delete?'.tr()),
                                                       value: 'eliminar'),
-                                                PopupMenuItem<String>(
-                                                    child: Text('report?'.tr()),
-                                                    value: 'reportar'),
                                               ],
                                           onSelected: (valor) {
                                             print(valor);

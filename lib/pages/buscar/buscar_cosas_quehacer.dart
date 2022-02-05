@@ -66,25 +66,20 @@ class _BuscarLugarPageState extends State<BuscarLugarPage> {
               child: TextFormField(
                 autofocus: true,
                 controller: context.watch<BusquedaQueHacerBloc>().textfieldCtrl,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "search".tr(),
                   hintStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[600]),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 15),
                     child: IconButton(
                       icon: Icon(
                         Icons.keyboard_backspace,
-                        color: Colors.grey[600],
                       ),
-                      color: Colors.grey[600],
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -93,7 +88,6 @@ class _BuscarLugarPageState extends State<BuscarLugarPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       Icons.close,
-                      color: Colors.grey[800],
                       size: 25,
                     ),
                     onPressed: () {

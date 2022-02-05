@@ -1,11 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
 import 'package:traveloaxaca/models/ruta.dart';
-import 'package:traveloaxaca/pages/destino/lista_destino.dart';
 import 'package:traveloaxaca/pages/detalle_aventuras.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';

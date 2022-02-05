@@ -555,7 +555,6 @@ class CommentsBloc extends ChangeNotifier {
       int idcomentario, int idmotivo, String? comentario) async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
-    String? token = await _signInBloc.getToken();
     try {
       Uri url = Uri.http(_url, '$_api/agregarReporteComentarioLugar');
       String bodyParams = json.encode({
@@ -566,7 +565,6 @@ class CommentsBloc extends ChangeNotifier {
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8',
-        'x-token': token!
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
       final dataresponse = json.decode(res.body);

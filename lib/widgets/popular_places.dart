@@ -7,7 +7,6 @@ import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/more_places.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
-import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -25,9 +24,9 @@ class _PopularPlaces extends State<PopularPlaces> {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) async {
       pb.init(context, refresh);
-      getAllCategorias();
     });
-    refresh();
+    getAllCategorias();
+    // refresh();
   }
 
   void getAllCategorias() async {
@@ -43,55 +42,57 @@ class _PopularPlaces extends State<PopularPlaces> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(
-            left: 15,
-            top: 10,
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(
+              left: 15,
+              top: 10,
+            ),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  'popular places',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w700,
+                    //color: Colors.grey[800]
+                  ),
+                ).tr(),
+                Spacer(),
+                IconButton(
+                  icon: Icon(Icons.arrow_forward),
+                  onPressed: () => nextScreen(
+                      context,
+                      MorePlacesPage(
+                        title: 'popular',
+                        color: Colors.pinkAccent.shade400,
+                      )),
+                )
+              ],
+            ),
           ),
-          child: Row(
-            children: <Widget>[
-              Text(
-                'popular places',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w700,
-                  //color: Colors.grey[800]
-                ),
-              ).tr(),
-              Spacer(),
-              IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed: () => nextScreen(
-                    context,
-                    MorePlacesPage(
-                      title: 'popular',
-                      color: Colors.pinkAccent.shade400,
-                    )),
-              )
-            ],
-          ),
-        ),
-        Container(
-          height: 260,
-          //color: Colors.green,
-          width: MediaQuery.of(context).size.width,
-          child: ListView.builder(
-            padding: EdgeInsets.only(left: 15, right: 15),
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: lugar.isEmpty ? 3 : lugar.length,
-            itemBuilder: (BuildContext context, int index) {
-              if (lugar.isEmpty) return LoadingPopularPlacesCard();
-              return ItemList(
-                d: lugar[index],
-              );
-              //return LoadingCard1();
-            },
-          ),
-        )
-      ],
+          Container(
+            height: 260,
+            //color: Colors.green,
+            width: MediaQuery.of(context).size.width,
+            child: ListView.builder(
+              padding: EdgeInsets.only(left: 15, right: 15),
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: lugar.isEmpty ? 3 : lugar.length,
+              itemBuilder: (BuildContext context, int index) {
+                if (lugar.isEmpty) return LoadingPopularPlacesCard();
+                return ItemList(
+                  d: lugar[index],
+                );
+                //return LoadingCard1();
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }

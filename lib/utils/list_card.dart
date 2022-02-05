@@ -70,7 +70,7 @@ class ListCard extends StatelessWidget {
                             Icon(
                               FontAwesomeIcons.mapMarker,
                               size: 12,
-                              color: Colors.red,
+                              color: Colors.grey,
                             ),
                             SizedBox(
                               width: 3,
@@ -99,36 +99,61 @@ class ListCard extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
+                            Container(
+                              child: RatingBar.builder(
+                                // ignoreGestures: true,
+                                itemSize: 20,
+                                initialRating: d!.rating!,
+                                minRating: d!.rating!,
+                                maxRating: d!.rating!,
+                                ignoreGestures: true,
+                                direction: Axis.horizontal,
+                                allowHalfRating: false,
+                                itemCount: 5,
+                                //  itemPadding:
+                                //      EdgeInsets.symmetric(horizontal: 4.0),
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star_border_outlined,
+                                  color: Colors.amber,
+                                ),
+                                onRatingUpdate: (rating) {
+                                  //_rating = rating;
+                                  //print(rating);
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Icon(
-                              FontAwesomeIcons.heart,
-                              size: 18,
+                              FontAwesomeIcons.solidHeart,
                               color: Colors.red,
+                              size: 15,
                             ),
                             SizedBox(
-                              width: 10,
+                              width: 5,
                             ),
                             Text(
-                              d!.love.toString(),
+                              "(" + d!.love.toString() + ")",
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
                             SizedBox(
-                              width: 20,
+                              width: 5,
                             ),
                             Icon(
-                              FontAwesomeIcons.comment,
-                              size: 18,
-                              color: Colors.blue,
+                              FontAwesomeIcons.comments,
+                              color: Colors.blueAccent,
+                              size: 15,
                             ),
                             SizedBox(
-                              width: 10,
+                              width: 5,
                             ),
                             Text(
-                              d!.comentario.toString(),
+                              "(" + d!.comentario.toString() + ")",
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey[600]),
                             ),
-                            Spacer(),
                           ],
                         ),
                       ],

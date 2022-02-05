@@ -48,8 +48,8 @@ void main() async {
   runApp(EasyLocalization(
     supportedLocales: [Locale('en'), Locale('es')],
     path: 'assets/translations',
-    fallbackLocale: (english) ? Locale('en') : Locale('es'),
-    startLocale: (english) ? Locale('en') : Locale('es'),
+    fallbackLocale: Locale('en'),
+    startLocale: Locale('en'),
     useOnlyLangCode: true,
     child: MyApp(),
   ));
@@ -112,10 +112,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<BusquedaQueHacerBloc>(
             create: (context) => BusquedaQueHacerBloc()),
       ],
-      child: Consumer2<ThemeProvider, LocaleProvider>(
-        builder:
-            (_, ThemeProvider provider, LocaleProvider localeProvider, __) {
-          return _buildMaterialApp(provider, localeProvider, context);
+      child: Consumer<ThemeProvider>(
+        builder: (_, ThemeProvider provider, __) {
+          return _buildMaterialApp(provider, context);
         },
       ),
     );
@@ -129,8 +128,7 @@ class MyApp extends StatelessWidget {
         child: app);
   }
 
-  Widget _buildMaterialApp(ThemeProvider provider,
-      LocaleProvider localeProvider, BuildContext context) {
+  Widget _buildMaterialApp(ThemeProvider provider, BuildContext context) {
     return MaterialApp(
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
@@ -143,10 +141,8 @@ class MyApp extends StatelessWidget {
       home: LoadingPage(),
       routes: {
         'perfil': (_) => PerfilPage(),
-        '/explorar': (_) => Explorar(),
+        '/explorar': (_) => Explore(),
         'loading': (_) => LoadingPage(),
-        //  'principal_buscar': (context) => BuscarLugarCategoriaPage(),
-        // 'acceso_gps': (_) => AccesoGpsPage(),
       },
       builder: (BuildContext context, Widget? child) {
         if (Device.isAndroid) {

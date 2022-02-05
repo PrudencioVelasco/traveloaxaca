@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
-import 'package:traveloaxaca/pages/done.dart';
 import 'package:traveloaxaca/pages/home.dart';
 import 'package:traveloaxaca/pages/intro.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';

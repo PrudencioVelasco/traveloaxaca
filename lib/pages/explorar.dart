@@ -21,14 +21,13 @@ import 'package:traveloaxaca/widgets/featured_places.dart';
 import 'package:traveloaxaca/widgets/popular_places.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class Explorar extends StatefulWidget {
-  Explorar({Key? key}) : super(key: key);
+class Explore extends StatefulWidget {
+  Explore({Key? key}) : super(key: key);
 
-  @override
-  _ExplorarState createState() => _ExplorarState();
+  _ExploreState createState() => _ExploreState();
 }
 
-class _ExplorarState extends State<Explorar> {
+class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
   FeaturedBloc _featuredBloc = new FeaturedBloc();
   PopularPlacesBloc _popularPlacesBloc = new PopularPlacesBloc();
   CategoriaBloc _categoriaBloc = new CategoriaBloc();
@@ -93,7 +92,6 @@ class _ExplorarState extends State<Explorar> {
 
   @override
   bool get wantKeepAlive => true;
-
   void refresh() {
     setState(() {});
   }

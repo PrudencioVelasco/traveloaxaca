@@ -46,17 +46,14 @@ class _BuscarNextPageState extends State<BuscarNextPage> {
               child: TextFormField(
                 autofocus: true,
                 controller: context.watch<BusquedaNextBloc>().textfieldCtrl,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[800],
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "search & explore".tr(),
                   hintStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[600]),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 15),
                     child: IconButton(

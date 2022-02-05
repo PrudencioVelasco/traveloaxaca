@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/causa_reporte_bloc.dart';
+import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/blocs/internet_bloc.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
 import 'package:traveloaxaca/models/causa_reporte.dart';
@@ -34,6 +35,7 @@ class _ReportarComentarioCompaniaPageState
   CausaReporteBloc _causaReporteBloc = new CausaReporteBloc();
   List<CausaReporte?> _causaReporte = [];
   TourBloc _tourBloc = new TourBloc();
+  CompaniaBloc _companiaBloc = new CompaniaBloc();
   final translator = GoogleTranslator();
 
   @override
@@ -47,6 +49,7 @@ class _ReportarComentarioCompaniaPageState
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       _causaReporteBloc.init(context, refresh);
       _tourBloc.init(context, refresh);
+      _companiaBloc.init(context, refresh);
     });
   }
 
@@ -81,7 +84,7 @@ class _ReportarComentarioCompaniaPageState
     }
   }
 
-  Future agregarReporteComentarioLugar() async {
+  Future agregarReporteComentarioCompania() async {
     final ib = Provider.of<InternetBloc>(context, listen: false);
     var verificarConeccion = await ib.checarInternar();
     if (verificarConeccion == false) {
@@ -91,7 +94,7 @@ class _ReportarComentarioCompaniaPageState
       setState(() {
         _deshabilitar = true;
       });
-      ResponseApi? dato = await _tourBloc.agregarReporteComentarioTour(
+      ResponseApi? dato = await _companiaBloc.agregarReporteComentarioCompania(
           widget.comentario!.idcomentario!, _id, ctrlComentario.text);
       if (dato!.success!) {
         //return _onAlertButtonPressed(context) {
@@ -139,7 +142,9 @@ class _ReportarComentarioCompaniaPageState
                     setState(() {
                       _errorMorivo = "";
                     });
-                    (!_deshabilitar) ? agregarReporteComentarioLugar() : null;
+                    (!_deshabilitar)
+                        ? agregarReporteComentarioCompania()
+                        : null;
                   } else {
                     setState(() {
                       _errorMorivo = "select a option".tr();
@@ -287,7 +292,7 @@ class _ReportarComentarioCompaniaPageState
         //style: TextStyle(color: Colors.red),
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          fillColor: Colors.white,
+          //fillColor: Colors.white,
           filled: true,
           // icon: Icon(Icons.email),
           hintText: "add note".tr(),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:translator/translator.dart';
 import 'package:traveloaxaca/blocs/causa_reporte_bloc.dart';
 import 'package:traveloaxaca/blocs/comments_bloc.dart';
@@ -285,7 +284,7 @@ class _ReportarComentarioLugarPageState
         //style: TextStyle(color: Colors.red),
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          fillColor: Colors.white,
+          // fillColor: Colors.white,
           filled: true,
           // icon: Icon(Icons.email),
           hintText: "add note".tr(),
