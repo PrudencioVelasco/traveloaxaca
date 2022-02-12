@@ -48,7 +48,7 @@ class BusquedaQueHacerBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/buscarLugaresActivos');
+      Uri url = Uri.https(_url, '$_api/buscarLugaresActivos');
       String bodyParams = json.encode({'valor': _searchText.toLowerCase()});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

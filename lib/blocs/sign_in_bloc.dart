@@ -95,7 +95,7 @@ class SignInBloc extends ChangeNotifier {
           String _url = Environment.API_DELIVERY;
           String _api = '/monarca/usuario';
           try {
-            Uri url = Uri.http(_url, '$_api/singInFacebook');
+            Uri url = Uri.https(_url, '$_api/singInFacebook');
             String bodyParams = json.encode({'authToken': accessToken.token});
             Map<String, String> headers = {
               'Content-Type': 'application/json;charset=UTF-8',
@@ -134,7 +134,7 @@ class SignInBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/usuario';
     try {
-      Uri url = Uri.http(_url, '$_api/renewtoken');
+      Uri url = Uri.https(_url, '$_api/renewtoken');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8',

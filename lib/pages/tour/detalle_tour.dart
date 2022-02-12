@@ -17,6 +17,7 @@ import 'package:traveloaxaca/blocs/compania_bloc.dart';
 import 'package:traveloaxaca/blocs/love_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
+import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/comentario_tour.dart';
 import 'package:traveloaxaca/models/compania.dart';
 import 'package:traveloaxaca/models/response_api.dart';
@@ -66,7 +67,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> {
   int _totalLoves = 0;
   bool? _isConnected;
   final BannerAd myBanner = BannerAd(
-    adUnitId: BannerAd.testAdUnitId,
+    adUnitId: Config().idGoogleAds,
     size: AdSize.mediumRectangle,
     request: AdRequest(),
     listener: BannerAdListener(),

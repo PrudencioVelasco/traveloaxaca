@@ -20,7 +20,6 @@ class ToursPage extends StatefulWidget {
 class _ToursPageState extends State<ToursPage> {
   List<Tour?> _listaTours = [];
   TourBloc _tourBloc = new TourBloc();
-  int _selectedIndex = 0;
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -233,68 +232,4 @@ class _ToursPageState extends State<ToursPage> {
       ),
     );
   }
-
-  Widget _botones(Tour? item) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      margin: EdgeInsets.all(15),
-      elevation: 5,
-      clipBehavior: Clip.antiAlias,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: Column(
-          children: [
-            FadeInImage.assetNetwork(
-              placeholder: "assets/images/cargando.gif",
-              image: (item!.imagenestour!.toList().isNotEmpty)
-                  ? item.imagenestour!.toList().first.nombreimagen.toString()
-                  : 'https://img.theculturetrip.com/1440x807/smart/wp-content/uploads/2020/03/mexico1.jpg',
-              fit: BoxFit.cover,
-              height: 260,
-              width: 260,
-            ),
-            Container(
-              color: Colors.red,
-              padding: EdgeInsets.all(2.0),
-              child: Text(item.nombre!),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  /* Widget _chois(Tour? item) {
-    return InkWell(
-      child: Container(
-        padding: EdgeInsets.all(5),
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: 0),
-        child: ChoiceChip(
-          elevation: 5,
-          pressElevation: 5,
-          label: Text(
-            item!.nombre!,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          shape: StadiumBorder(side: BorderSide()),
-          selected: _selectedIndex == item.idclasificacion,
-          padding: EdgeInsets.all(18),
-          labelStyle: TextStyle(color: Colors.black),
-          backgroundColor: Colors.white,
-          onSelected: (bool selected) {
-            setState(() {
-              if (selected) {
-                _selectedIndex = item.idclasificacion!;
-              }
-            });
-          },
-        ),
-      ),
-    );
-  }*/
 }

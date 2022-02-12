@@ -18,7 +18,7 @@ class ImagenBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/imagencompania';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerImagenes');
+      Uri url = Uri.https(_url, '$_api/obtenerImagenes');
       String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

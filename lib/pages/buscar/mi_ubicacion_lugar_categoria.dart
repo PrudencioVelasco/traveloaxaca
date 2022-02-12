@@ -96,11 +96,13 @@ class _MiUbicacionPageState extends State<MiUbicacionPage> {
   Future getUserLocation() async {
     currentLocation = await locateUser();
     if (currentLocation != null) {
-      setState(() {
-        _center = latlong.LatLng(
-            currentLocation!.latitude, currentLocation!.longitude);
-        ubicado = true;
-      });
+      if (mounted) {
+        setState(() {
+          _center = latlong.LatLng(
+              currentLocation!.latitude, currentLocation!.longitude);
+          ubicado = true;
+        });
+      }
     } else {
       setState(() {
         ubicado = false;

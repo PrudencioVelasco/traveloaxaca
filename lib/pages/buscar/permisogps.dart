@@ -5,6 +5,7 @@ import 'package:traveloaxaca/pages/buscar/mi_ubicacion_lugar_categoria.dart';
 import 'package:traveloaxaca/pages/buscar/mi_ubicacion_cosas_quehacer.dart';
 import 'package:traveloaxaca/utils/acceso_gps_page.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PermisoGpsPage extends StatefulWidget {
   final String? nombre;
@@ -90,9 +91,16 @@ class _PermisoGpsPageState extends State<PermisoGpsPage>
               AccesoGpsPage(
                   idclasificacion: widget.idclasificacion,
                   nombre: widget.nombre)));
-      return 'Es necesario el permiso de GPS';
+      //return "please active GPS".tr();
     } else {
-      return 'Active el GPS';
+      //return "please active GPS".tr();
+      Navigator.pushReplacement(
+          context,
+          navegarMapaFadeIn(
+              context,
+              AccesoGpsPage(
+                  idclasificacion: widget.idclasificacion,
+                  nombre: widget.nombre)));
     }
   }
 }

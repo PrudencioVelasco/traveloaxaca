@@ -23,7 +23,7 @@ class PopularPlacesBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/sliderLugaresTops');
+      Uri url = Uri.https(_url, '$_api/sliderLugaresTops');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -44,7 +44,7 @@ class PopularPlacesBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerImagenesLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerImagenesLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -66,7 +66,7 @@ class PopularPlacesBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerLugaresDentroLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerLugaresDentroLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -88,7 +88,7 @@ class PopularPlacesBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerLugaresDentroLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerLugaresDentroLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

@@ -18,7 +18,7 @@ class CausaReporteBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/causareporte';
     try {
-      Uri url = Uri.http(_url, '$_api/todasCausasReportes');
+      Uri url = Uri.https(_url, '$_api/todasCausasReportes');
       // String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

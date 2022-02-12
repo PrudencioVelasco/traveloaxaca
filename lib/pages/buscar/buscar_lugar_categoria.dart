@@ -119,33 +119,32 @@ class _BuscarLugarCategoriaPageState extends State<BuscarLugarCategoriaPage> {
             Container(
               margin: EdgeInsets.only(top: 10),
               height: 55,
-              child: Expanded(
-                child: ListTile(
-                  title: FutureBuilder(
-                      future: someFutureStringFunction(context, widget.nombre!),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Text(snapshot.data.toString().toUpperCase() +
-                              " " +
-                              "nearby".tr().toUpperCase());
-                        } else if (snapshot.hasError) {
-                          return Text("error");
-                        }
-                        return Text("loading...".tr());
-                      }),
-                  leading: CircleAvatar(
-                    child: Icon(FeatherIcons.send),
-                    //  backgroundColor: Colors.white,
-                  ),
-                  onTap: () {
-                    nextScreen(
-                        context,
-                        PermisoGpsPage(
-                          idclasificacion: widget.idclasificacion,
-                          nombre: widget.nombre,
-                        ));
-                  },
+              width: double.infinity,
+              child: ListTile(
+                title: FutureBuilder(
+                    future: someFutureStringFunction(context, widget.nombre!),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(snapshot.data.toString().toUpperCase() +
+                            " " +
+                            "nearby".tr().toUpperCase());
+                      } else if (snapshot.hasError) {
+                        return Text("error");
+                      }
+                      return Text("loading...".tr());
+                    }),
+                leading: CircleAvatar(
+                  child: Icon(FeatherIcons.send),
+                  //  backgroundColor: Colors.white,
                 ),
+                onTap: () {
+                  nextScreen(
+                      context,
+                      PermisoGpsPage(
+                        idclasificacion: widget.idclasificacion,
+                        nombre: widget.nombre,
+                      ));
+                },
               ),
             ),
             Padding(

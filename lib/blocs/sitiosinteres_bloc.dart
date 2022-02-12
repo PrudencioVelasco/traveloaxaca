@@ -18,7 +18,7 @@ class SitiosInteresBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/sitiosinteres';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerSitiosInteresPorLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerSitiosInteresPorLugar');
       String bodyParams = json.encode({'idlugar': idlugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -40,7 +40,7 @@ class SitiosInteresBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/sitiosinteres';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerSitiosInteresPorLugarv2');
+      Uri url = Uri.https(_url, '$_api/obtenerSitiosInteresPorLugarv2');
       String bodyParams = json.encode({'idlugar': idlugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

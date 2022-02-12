@@ -6,7 +6,6 @@ import 'package:traveloaxaca/blocs/featured_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/pages/place_details.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
-import 'package:traveloaxaca/widgets/custom_cache_image.dart';
 import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -162,14 +161,9 @@ class _FeaturedItemList extends StatelessWidget {
               bottom: 10,
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0, 2),
-                          blurRadius: 2)
-                    ]),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Column(

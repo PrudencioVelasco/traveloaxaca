@@ -6,6 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:traveloaxaca/blocs/tour_bloc.dart';
+import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/tour.dart';
 import 'package:traveloaxaca/pages/tour/detalle_tour.dart';
 import 'package:traveloaxaca/utils/empty.dart';
@@ -27,7 +28,7 @@ class TodosToursPageState extends State<TodosToursPage> {
   String _parametro = "";
   bool cargando = true;
   final BannerAd myBanner = BannerAd(
-    adUnitId: BannerAd.testAdUnitId,
+    adUnitId: Config().idGoogleAds,
     size: AdSize.banner,
     request: AdRequest(),
     listener: BannerAdListener(),

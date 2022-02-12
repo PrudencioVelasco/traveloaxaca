@@ -19,7 +19,6 @@ import 'package:traveloaxaca/utils/loading_cards.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:latlong2/latlong.dart' as latlong;
-import 'dart:math' show cos, sqrt, asin;
 
 import 'package:traveloaxaca/utils/snacbar.dart';
 

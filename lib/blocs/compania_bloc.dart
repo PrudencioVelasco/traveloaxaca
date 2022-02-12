@@ -57,7 +57,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/compania';
     try {
-      Uri url = Uri.http(_url, '$_api/buscarCompania');
+      Uri url = Uri.https(_url, '$_api/buscarCompania');
       String bodyParams = json.encode({
         'valor': _searchText.toLowerCase(),
         'idclasificacion': idclasificacion
@@ -82,7 +82,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/compania';
     try {
-      Uri url = Uri.http(_url, '$_api/mostrarCompaniasCercano');
+      Uri url = Uri.https(_url, '$_api/mostrarCompaniasCercano');
       String bodyParams = json.encode({
         'latitud': latitud,
         'longitud': longitud,
@@ -120,7 +120,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/compania';
     try {
-      Uri url = Uri.http(_url, '$_api/mostrarCompaniasXClasificacion');
+      Uri url = Uri.https(_url, '$_api/mostrarCompaniasXClasificacion');
       String bodyParams = json.encode({'idclasificacion': idclasificacion});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -141,7 +141,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/telefono';
     try {
-      Uri url = Uri.http(_url, '$_api/telefonosCompania');
+      Uri url = Uri.https(_url, '$_api/telefonosCompania');
       String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -162,7 +162,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/horario';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerHorario');
+      Uri url = Uri.https(_url, '$_api/obtenerHorario');
       String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -183,7 +183,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/horario';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerHorarioFiltrado');
+      Uri url = Uri.https(_url, '$_api/obtenerHorarioFiltrado');
       String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -204,7 +204,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/compania';
     try {
-      Uri url = Uri.http(_url, '$_api/detallecompania');
+      Uri url = Uri.https(_url, '$_api/detallecompania');
       String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -226,7 +226,7 @@ class CompaniaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/agregarReporteComentarioCompania');
+      Uri url = Uri.https(_url, '$_api/agregarReporteComentarioCompania');
 
       String bodyParams = json.encode({
         'idcomentario': idcomentario,

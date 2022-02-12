@@ -55,7 +55,7 @@ class LugarBloc with ChangeNotifier {
       String _url = Environment.API_DELIVERY;
       String _api = '/monarca/lugar';
       try {
-        Uri url = Uri.http(_url, '$_api/buscarLugaresActivosIn');
+        Uri url = Uri.https(_url, '$_api/buscarLugaresActivosIn');
         String bodyParams = json.encode({
           'idslugares': s,
         });
@@ -82,7 +82,7 @@ class LugarBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerTodosLugares');
+      Uri url = Uri.https(_url, '$_api/obtenerTodosLugares');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -104,7 +104,7 @@ class LugarBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerTodosLugaresCercanos');
+      Uri url = Uri.https(_url, '$_api/obtenerTodosLugaresCercanos');
       String bodyParams = json.encode({
         'latitud': latitud,
         'longitud': longitud,
@@ -129,7 +129,7 @@ class LugarBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerDetalleLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerDetalleLugar');
       String bodyParams = json.encode({
         'idlugar': idlugar,
       });

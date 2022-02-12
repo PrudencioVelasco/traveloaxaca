@@ -18,7 +18,7 @@ class AtractivoBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/atractivo';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerAtractivosLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerAtractivosLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

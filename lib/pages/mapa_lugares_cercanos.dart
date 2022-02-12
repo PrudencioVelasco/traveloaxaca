@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
@@ -8,8 +11,11 @@ import 'package:traveloaxaca/blocs/lugar_bloc.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:traveloaxaca/pages/home.dart';
+import 'package:traveloaxaca/utils/acceso_gps_full_mapa.dart';
 import 'package:traveloaxaca/utils/mostrar_alerta.dart';
 import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:traveloaxaca/utils/permido_gps_full_mapa.dart';
 import 'package:traveloaxaca/widgets/full_mapa_lugares_cercanos.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -44,7 +50,8 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
       _lugarBloc.init(context, refresh);
     });
     checkGpsYLocation();
-    getUserLocation().then((value) => getData());
+    getUserLocation();
+    getData();
   }
 
   Future checkGpsYLocation() async {
@@ -58,7 +65,7 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
       print("su");
     } else if (!permisoGPS) {
       //return 'Es necesario el permiso de GPS';
-      mostrarAlertaGPS(context, "GPS", "Es necesario el permiso de GPS");
+      mostrarAlertaGPS(context, "GPS", "please active GPS".tr());
       print('Es necesario el permiso de GPS');
     } else {
       print('Active el GPS');
@@ -147,6 +154,26 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
     }
   }
 
+  Future accesoGPS(PermissionStatus status) async {
+    // final status = await Permission.location.request();
+    switch (status) {
+      case PermissionStatus.granted:
+        await Navigator.push(
+            context, new MaterialPageRoute(builder: (context) => Home()));
+        break;
+
+      //  case PermissionStatus.undetermined:
+      case PermissionStatus.denied:
+      case PermissionStatus.restricted:
+      case PermissionStatus.permanentlyDenied:
+        openAppSettings();
+        break;
+      case PermissionStatus.limited:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
   @override
   void dispose() {
     _animationController!.dispose();
@@ -169,16 +196,10 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
               selectIndex = i;
               nextScreen(
                   context,
-                  FullMapaLugaresCercanosPage(
+                  PermisoGPSFullMapaPage(
                     lugares: _listaLugarSegundo,
                   ));
-              setState(() {
-                //_pageController.animateToPage(i,
-                //    duration: Duration(milliseconds: 500),
-                //   curve: Curves.elasticOut);
-                // _pageController.jumpToPage(i);
-                //print(i);
-              });
+              setState(() {});
             },
             child: LocationMarket(
               selected: selectIndex == i,
@@ -284,16 +305,46 @@ class _MapaLugaresCercanosPageState extends State<MapaLugaresCercanosPage>
                       ],
                     ),
                   if (_center == null && !cargando)
-                    Container(
-                      alignment: Alignment.center,
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Text(
-                        'please active your GPS for look the map'.tr(),
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ),
+                    Center(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                          child: Text(
+                            "please active your GPS for look the map".tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 25, right: 25, top: 10),
+                          child: Text(
+                            'please activate and reload'.tr(),
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        MaterialButton(
+                            child: Text('reload'.tr(),
+                                style: TextStyle(color: Colors.white)),
+                            color: Colors.black,
+                            shape: StadiumBorder(),
+                            elevation: 0,
+                            splashColor: Colors.transparent,
+                            onPressed: () async {
+                              //  popup = true;
+                              final status =
+                                  await Permission.location.request();
+                              await this.accesoGPS(status);
+
+                              //popup = false;
+                            })
+                      ],
+                    )),
 
                   if (cargando)
                     Align(

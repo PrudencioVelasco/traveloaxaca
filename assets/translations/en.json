@@ -177,8 +177,13 @@
     "read the guide":"Read the guide",
     "photos": "Photos",
     "explore oaxaca":"Explore Oaxaca",
-    "explore mexico":"Explore Mexico",
+    "explore mexico":"Explore México",
     "nearby places": "Nearby Places",
     "sign in with facebook":"Sign In with Facebook",
-    "please active your GPS for look the map":" Se necesita permiso del GPS para ver el mapa."
+    "please active GPS":"Location permission is needed to show you the closest places.",
+    "please active your GPS for look the map":"GPS permission is needed or activate it to see the map, to show you the nearest places.",
+    "active":"Active",
+    "please activate and reload":"Please activate and reload",
+    "submit":"Submit",
+    "tap a start to set your rating":"Tap a start to set your rating"
 }

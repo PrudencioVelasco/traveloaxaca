@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:traveloaxaca/pages/buscar/mi_ubicacion_lugar_categoria.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:traveloaxaca/models/lugar.dart';
+import 'package:traveloaxaca/utils/next_screen.dart';
+import 'package:traveloaxaca/widgets/full_mapa_lugares_cercanos.dart';
 
-class AccesoGpsPage extends StatefulWidget {
-  final String? nombre;
-  final int? idclasificacion;
-  const AccesoGpsPage(
-      {Key? key, required this.nombre, required this.idclasificacion})
-      : super(key: key);
+class AccesoGPSFullMapaPage extends StatefulWidget {
+  final List<Lugar?> lugares;
+  AccesoGPSFullMapaPage({Key? key, required this.lugares}) : super(key: key);
+
   @override
-  _AccesoGpsPageState createState() => _AccesoGpsPageState();
+  State<AccesoGPSFullMapaPage> createState() => _AccesoGPSFullMapaPageState();
 }
 
-class _AccesoGpsPageState extends State<AccesoGpsPage>
+class _AccesoGPSFullMapaPageState extends State<AccesoGPSFullMapaPage>
     with WidgetsBindingObserver {
   bool popup = false;
 
@@ -28,19 +28,6 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed && !popup) {
-      if (await Permission.location.isGranted) {
-        await Navigator.of(context).pushReplacement(new MaterialPageRoute(
-            settings: RouteSettings(name: 'principal_buscar'),
-            builder: (context) => MiUbicacionPage(
-                nombreclasificacion: widget.nombre,
-                idclasificacion: widget.idclasificacion)));
-      }
-    }
   }
 
   @override
@@ -69,19 +56,21 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
               textAlign: TextAlign.center,
             ),
           ),
-          MaterialButton(
-              child: Text('reload'.tr(), style: TextStyle(color: Colors.white)),
-              color: Colors.black,
-              shape: StadiumBorder(),
-              elevation: 0,
-              splashColor: Colors.transparent,
-              onPressed: () async {
-                popup = true;
-                final status = await Permission.location.request();
-                await this.accesoGPS(status);
-
-                popup = false;
-              })
+          Container(
+            child: MaterialButton(
+                child:
+                    Text('reload'.tr(), style: TextStyle(color: Colors.white)),
+                color: Colors.black,
+                shape: StadiumBorder(),
+                elevation: 0,
+                splashColor: Colors.transparent,
+                onPressed: () async {
+                  popup = true;
+                  final status = await Permission.location.request();
+                  await this.accesoGPS(status);
+                  popup = false;
+                }),
+          )
         ],
       )),
     );
@@ -92,11 +81,9 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
       case PermissionStatus.granted:
         bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
         if (isLocationEnabled) {
-          await Navigator.of(context).pushReplacement(new MaterialPageRoute(
-              settings: RouteSettings(name: 'principal_buscar'),
-              builder: (context) => MiUbicacionPage(
-                  nombreclasificacion: widget.nombre,
-                  idclasificacion: widget.idclasificacion)));
+          // location service is enabled,
+          nextScreenReplace(
+              context, FullMapaLugaresCercanosPage(lugares: widget.lugares));
         }
         break;
 

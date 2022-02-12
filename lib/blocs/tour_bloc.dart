@@ -31,7 +31,7 @@ class TourBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/tour';
     try {
-      Uri url = Uri.http(_url, '$_api/todosLosTours');
+      Uri url = Uri.https(_url, '$_api/todosLosTours');
       String bodyParams =
           json.encode({'texto': (parametro != null) ? parametro : ''});
       Map<String, String> headers = {
@@ -59,7 +59,7 @@ class TourBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/tour';
     try {
-      Uri url = Uri.http(_url, '$_api/todosLosLoves');
+      Uri url = Uri.https(_url, '$_api/todosLosLoves');
       String bodyParams = json.encode({'idtour': idtour});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -80,7 +80,7 @@ class TourBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/tour';
     try {
-      Uri url = Uri.http(_url, '$_api/todosLosComentarios');
+      Uri url = Uri.https(_url, '$_api/todosLosComentarios');
       String bodyParams = json.encode({'idtour': idtour});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -103,7 +103,7 @@ class TourBloc with ChangeNotifier {
     String _api = '/monarca/love';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/agregarLoveTour');
+      Uri url = Uri.https(_url, '$_api/agregarLoveTour');
       String bodyParams = json.encode({'idtour': idtour});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -128,7 +128,7 @@ class TourBloc with ChangeNotifier {
     String _api = '/monarca/love';
     try {
       String? token = await _signInBloc.getToken();
-      Uri url = Uri.http(_url, '$_api/totalLoveTourUsuario');
+      Uri url = Uri.https(_url, '$_api/totalLoveTourUsuario');
       String bodyParams = json.encode({'idtour': idtour});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -155,7 +155,7 @@ class TourBloc with ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/agregarReporteComentarioTour');
+      Uri url = Uri.https(_url, '$_api/agregarReporteComentarioTour');
       String bodyParams = json.encode({
         'idcomentario': idcomentario,
         'idcausareporte': idmotivo,

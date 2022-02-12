@@ -4,6 +4,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:provider/provider.dart';
+import 'package:rating_dialog/rating_dialog.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/pages/sign_in.dart';
@@ -29,6 +31,45 @@ class _PerfilPageState extends State<PerfilPage>
       // _con.init(context);
     });
   }
+
+  final _dialog = RatingDialog(
+    // your app's name?
+    title: Text(
+      'explore oaxaca'.tr(),
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 35,
+      ),
+    ),
+    // encourage your user to leave a high rating?
+    message: Text(
+      'tap a start to set your rating'.tr(),
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 15,
+      ),
+    ),
+    // your app's logo?
+    image: Image.asset(
+      "assets/images/exploraoaxaca.png",
+      height: 100,
+    ),
+    submitButtonText: 'submit'.tr(),
+    onCancelled: () => print('cancelled'),
+    onSubmitted: (response) {
+      print('rating: ${response.rating}, comment: ${response.comment}');
+      // TODO: add your own logic
+      if (response.rating < 3.0) {
+        // send their comments to your email or anywhere you wish
+        // ask the user to contact you instead of leaving a bad review
+      } else {
+        //go to app store
+        StoreRedirect.redirect(
+            androidAppId: 'com.proyectomonarca.traveloaxaca',
+            iOSAppId: 'com.example.rating');
+      }
+    },
+  );
 
   openAboutDialog() {
     final sb = context.read<SignInBloc>();
@@ -121,22 +162,26 @@ class _PerfilPageState extends State<PerfilPage>
             height: 5,
           ),
           ListTile(
-            title: Text('rate this app').tr(),
-            leading: Container(
-              height: 30,
-              width: 30,
-              decoration: BoxDecoration(
-                  color: Colors.orangeAccent,
-                  borderRadius: BorderRadius.circular(5)),
-              child: Icon(FontAwesomeIcons.star, size: 20, color: Colors.white),
-            ),
-            trailing: Icon(
-              FontAwesomeIcons.chevronRight,
-              size: 20,
-            ),
-            onTap: () async => LaunchReview.launch(
-                androidAppId: sb.packageName, iOSAppId: Config().iOSAppId),
-          ),
+              title: Text('rate this app').tr(),
+              leading: Container(
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                    color: Colors.orangeAccent,
+                    borderRadius: BorderRadius.circular(5)),
+                child:
+                    Icon(FontAwesomeIcons.star, size: 20, color: Colors.white),
+              ),
+              trailing: Icon(
+                FontAwesomeIcons.chevronRight,
+                size: 20,
+              ),
+              onTap: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => _dialog,
+                );
+              }),
           Divider(
             height: 5,
           ),
@@ -170,7 +215,7 @@ class _PerfilPageState extends State<PerfilPage>
           return AlertDialog(
             title: Text('about us').tr(),
             content: Text(
-              'Somos un grupo de jóvenes Oaxaqueños que nos dimos a la tarea de crear esta aplicación para impulsas a nuestro Estado en el sector turístico.',
+              'Somos un grupo de jóvenes Oaxaqueños que nos dimos a la tarea de crear esta aplicación para impulsar a nuestro Estado en el sector turístico.',
               textAlign: TextAlign.justify,
             ),
             actions: [

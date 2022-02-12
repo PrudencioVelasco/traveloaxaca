@@ -21,7 +21,7 @@ class CategoriaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/categoria';
     try {
-      Uri url = Uri.http(_url, '$_api/todasCategorias');
+      Uri url = Uri.https(_url, '$_api/todasCategorias');
       // String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -43,7 +43,7 @@ class CategoriaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/categoria';
     try {
-      Uri url = Uri.http(_url, '$_api/todasCategoriasPrincipal');
+      Uri url = Uri.https(_url, '$_api/todasCategoriasPrincipal');
       // String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -65,7 +65,7 @@ class CategoriaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/categoria';
     try {
-      Uri url = Uri.http(_url, '$_api/categoriasPorLugar');
+      Uri url = Uri.https(_url, '$_api/categoriasPorLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -87,7 +87,7 @@ class CategoriaBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerLugaresPorCategoria');
+      Uri url = Uri.https(_url, '$_api/obtenerLugaresPorCategoria');
       String bodyParams = json.encode({'idclasificacion': idcategoria});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

@@ -18,7 +18,7 @@ class ConQuienVisitoBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/conquienvisito';
     try {
-      Uri url = Uri.http(_url, '$_api/todosConQuienVisito');
+      Uri url = Uri.https(_url, '$_api/todosConQuienVisito');
       // String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

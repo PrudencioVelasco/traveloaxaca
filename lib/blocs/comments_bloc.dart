@@ -39,7 +39,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/agregarComentario');
+      Uri url = Uri.https(_url, '$_api/agregarComentario');
       String bodyParams =
           json.encode({'idlugar': idlugar, 'comentario': comentario});
       Map<String, String> headers = {
@@ -63,7 +63,7 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/eliminarComentarioLugar');
+      Uri url = Uri.https(_url, '$_api/eliminarComentarioLugar');
       String bodyParams = json.encode({
         'idcomentario': idcomentario,
       });
@@ -87,7 +87,7 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/eliminarComentarioTour');
+      Uri url = Uri.https(_url, '$_api/eliminarComentarioTour');
       String bodyParams = json.encode({
         'idcomentario': idcomentario,
       });
@@ -112,7 +112,7 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/eliminarComentarioCompania');
+      Uri url = Uri.https(_url, '$_api/eliminarComentarioCompania');
       String bodyParams = json.encode({
         'idcomentario': idcomentario,
       });
@@ -135,7 +135,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerComentariosPorLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerComentariosPorLugar');
       String bodyParams = json.encode({
         'idlugar': idLugar,
         'idcomentario': (idcomentario == 0) ? '' : idcomentario,
@@ -162,7 +162,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerComentariosLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerComentariosLugar');
       String bodyParams = json.encode({
         'idlugar': idLugar,
         'idcomentario': (idcomentario == 0) ? '' : idcomentario,
@@ -189,7 +189,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerComentariosTour');
+      Uri url = Uri.https(_url, '$_api/obtenerComentariosTour');
       String bodyParams = json.encode({
         'idtour': idtour,
         'idcomentario': (idcomentario == 0) ? '' : idcomentario,
@@ -217,7 +217,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerComentariosCompania');
+      Uri url = Uri.https(_url, '$_api/obtenerComentariosCompania');
       String bodyParams = json.encode({
         'idcompania': idcompania,
         'idcomentario': (idcomentario == 0) ? '' : idcomentario,
@@ -251,7 +251,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/totalComentarioLugar');
+      Uri url = Uri.https(_url, '$_api/totalComentarioLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -271,7 +271,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/totalComentarioCompania');
+      Uri url = Uri.https(_url, '$_api/totalComentarioCompania');
       String bodyParams = json.encode({'idcompania': idcompania});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -292,7 +292,7 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/totalComentarioLugarUsuario');
+      Uri url = Uri.https(_url, '$_api/totalComentarioLugarUsuario');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -320,8 +320,8 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/agregarComentarioLugar');
-      Uri urlSubirFoto = Uri.http(_url, '$_api/subirFotosComentarioLugar');
+      Uri url = Uri.https(_url, '$_api/agregarComentarioLugar');
+      Uri urlSubirFoto = Uri.https(_url, '$_api/subirFotosComentarioLugar');
       String bodyParams = json.encode({
         'idlugar': idlugar,
         'idconquienvisito': conquienvisito,
@@ -382,8 +382,8 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/agregarComentarioCompania');
-      Uri urlSubirFoto = Uri.http(_url, '$_api/subirFotosComentarioCompania');
+      Uri url = Uri.https(_url, '$_api/agregarComentarioCompania');
+      Uri urlSubirFoto = Uri.https(_url, '$_api/subirFotosComentarioCompania');
       String bodyParams = json.encode({
         'idcompania': idcompania,
         'idconquienvisito': conquienvisito,
@@ -437,7 +437,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
-    Uri urlSubirFoto = Uri.http(_url, '$_api/subirFotosTour');
+    Uri urlSubirFoto = Uri.https(_url, '$_api/subirFotosTour');
     List<MultipartFile> imageList = [];
     for (Asset asset in imagenes) {
       ByteData byteData = await asset.getByteData();
@@ -464,7 +464,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
-    Uri urlSubirFoto = Uri.http(_url, '$_api/subirFotosLugar');
+    Uri urlSubirFoto = Uri.https(_url, '$_api/subirFotosLugar');
     List<MultipartFile> imageList = [];
     for (Asset asset in imagenes) {
       ByteData byteData = await asset.getByteData();
@@ -498,8 +498,8 @@ class CommentsBloc extends ChangeNotifier {
     String _api = '/monarca/comentario';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/agregarComentarioTour');
-      Uri urlSubirFoto = Uri.http(_url, '$_api/subirFotosComentarioTour');
+      Uri url = Uri.https(_url, '$_api/agregarComentarioTour');
+      Uri urlSubirFoto = Uri.https(_url, '$_api/subirFotosComentarioTour');
       String bodyParams = json.encode({
         'idtour': idtour,
         'idconquienvisito': conquienvisito,
@@ -556,7 +556,7 @@ class CommentsBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/comentario';
     try {
-      Uri url = Uri.http(_url, '$_api/agregarReporteComentarioLugar');
+      Uri url = Uri.https(_url, '$_api/agregarReporteComentarioLugar');
       String bodyParams = json.encode({
         'idcomentario': idcomentario,
         'idcausareporte': idmotivo,

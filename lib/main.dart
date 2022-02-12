@@ -48,8 +48,8 @@ void main() async {
   runApp(EasyLocalization(
     supportedLocales: [Locale('en'), Locale('es')],
     path: 'assets/translations',
-    fallbackLocale: Locale('en'),
-    startLocale: Locale('en'),
+    fallbackLocale: Locale('es'),
+    startLocale: Locale('es'),
     useOnlyLangCode: true,
     child: MyApp(),
   ));

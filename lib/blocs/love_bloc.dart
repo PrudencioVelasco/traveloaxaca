@@ -42,7 +42,7 @@ class LoveBloc extends ChangeNotifier {
     String _api = '/monarca/love';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/eliminarLove');
+      Uri url = Uri.https(_url, '$_api/eliminarLove');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8',
@@ -65,7 +65,7 @@ class LoveBloc extends ChangeNotifier {
     String _api = '/monarca/love';
     String? token = await _signInBloc.getToken();
     try {
-      Uri url = Uri.http(_url, '$_api/agregarLove');
+      Uri url = Uri.https(_url, '$_api/agregarLove');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -87,7 +87,7 @@ class LoveBloc extends ChangeNotifier {
     String _api = '/monarca/love';
     try {
       String? token = await _signInBloc.getToken();
-      Uri url = Uri.http(_url, '$_api/totalLoveLugarUsuario');
+      Uri url = Uri.https(_url, '$_api/totalLoveLugarUsuario');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -122,7 +122,7 @@ class LoveBloc extends ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/love';
     try {
-      Uri url = Uri.http(_url, '$_api/totalLove');
+      Uri url = Uri.https(_url, '$_api/totalLove');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

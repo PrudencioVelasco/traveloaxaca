@@ -17,6 +17,7 @@ import 'package:traveloaxaca/blocs/popular_places_bloc.dart';
 import 'package:traveloaxaca/blocs/sign_in_bloc.dart';
 import 'package:traveloaxaca/blocs/sitiosinteres_bloc.dart';
 import 'package:traveloaxaca/comentario/agregar_comentario.dart';
+import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/pages/lugar/galeria_fotos_lugar.dart';
 import 'package:traveloaxaca/comentario/subir_foto.dart';
 import 'package:traveloaxaca/models/actividad.dart';
@@ -90,7 +91,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   int _idComentarioUltimo = 0;
   bool? _isConnected;
   final BannerAd myBanner = BannerAd(
-    adUnitId: BannerAd.testAdUnitId,
+    adUnitId: Config().idGoogleAds,
     size: AdSize.mediumRectangle,
     request: AdRequest(),
     listener: BannerAdListener(),
@@ -128,14 +129,17 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   Future<void> _checkInternetConnection() async {
     try {
       final response = await InternetAddress.lookup('www.google.com');
-      if (response.isNotEmpty)
+      if (response.isNotEmpty) if (mounted) {
         setState(() {
           _isConnected = true;
         });
+      }
     } on SocketException catch (err) {
-      setState(() {
-        _isConnected = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isConnected = false;
+        });
+      }
     }
   }
 

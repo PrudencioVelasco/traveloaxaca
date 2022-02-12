@@ -23,7 +23,7 @@ class RutasBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/ruta';
     try {
-      Uri url = Uri.http(_url, '$_api/todasRutasVisibles');
+      Uri url = Uri.https(_url, '$_api/todasRutasVisibles');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -43,7 +43,7 @@ class RutasBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/ruta';
     try {
-      Uri url = Uri.http(_url, '$_api/todasRutasPrincipales');
+      Uri url = Uri.https(_url, '$_api/todasRutasPrincipales');
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
         'Charset': 'utf-8'
@@ -63,7 +63,7 @@ class RutasBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/ruta';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerLugaresRuta');
+      Uri url = Uri.https(_url, '$_api/obtenerLugaresRuta');
       String bodyParams = json.encode({'idruta': idruta});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

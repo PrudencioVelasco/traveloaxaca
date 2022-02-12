@@ -56,7 +56,7 @@ class BuscarBloc with ChangeNotifier {
       String _api = '/monarca/lugar';
       //List<Lugar> lista = [];
       try {
-        Uri url = Uri.http(_url, '$_api/buscarLugaresActivos');
+        Uri url = Uri.https(_url, '$_api/buscarLugaresActivos');
         String bodyParams = json.encode({'valor': _textFieldCtrl.text});
         Map<String, String> headers = {
           'Content-Type': 'application/json;charset=UTF-8',

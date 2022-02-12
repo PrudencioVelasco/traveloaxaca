@@ -7,7 +7,7 @@ class Config {
   final String countryName = 'Bangladesh';
   final String splashIcon = 'assets/images/splash.png';
   final String logotipo = 'assets/images/exploraoaxaca.png';
-  final String supportEmail = 'prudencio.vepa@gmail.com';
+  final String supportEmail = 'proyecto.explora.oaxaca@gmail.com';
   final String privacyPolicyUrl = '';
   final String ourWebsiteUrl = '';
   final String iOSAppId = '000000000';
@@ -31,7 +31,7 @@ class Config {
   //Language Setup
 
   final List<String> languages = ['English', 'Spanish'];
-
+  final String idGoogleAds = "ca-app-pub-4136133582761372/3634109202";
   //google maps marker icons
   final String hotelIcon = 'assets/images/hotel.png';
   final String restaurantIcon = 'assets/images/restaurant.png';

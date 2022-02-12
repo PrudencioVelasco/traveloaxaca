@@ -22,7 +22,7 @@ class FeaturedBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/sliderPrincipal');
+      Uri url = Uri.https(_url, '$_api/sliderPrincipal');
       // String bodyParams = json.encode({'valor': valor});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

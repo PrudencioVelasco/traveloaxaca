@@ -107,6 +107,8 @@ dependencies:
   introduction_screen: ^2.1.0
   google_mobile_ads: ^1.0.1 
   bottom_nav_layout: ^3.0.9
+  rating_dialog: ^2.0.3
+  store_redirect: ^2.0.1
   
 flutter_icons:
   android: "launcher_icon"

@@ -1008,8 +1008,7 @@ class MapItemDetails extends StatelessWidget {
                         Container(
                           height: 10,
                         ),
-                        Expanded(
-                            child: Column(
+                        Column(
                           children: [
                             Row(
                               children: [
@@ -1026,9 +1025,8 @@ class MapItemDetails extends StatelessWidget {
                               ],
                             )
                           ],
-                        )),
-                        Expanded(
-                            child: Column(
+                        ),
+                        Column(
                           children: [
                             Row(
                               children: [
@@ -1046,98 +1044,82 @@ class MapItemDetails extends StatelessWidget {
                               ],
                             )
                           ],
-                        )),
-                        Expanded(
-                          child: Column(
-                            // crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                //   crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  RatingBar.builder(
-                                    // ignoreGestures: true,
-                                    itemSize: 22,
-                                    initialRating: companiaMapa.rating!,
-                                    minRating: companiaMapa.rating!,
-                                    maxRating: companiaMapa.rating!,
-                                    ignoreGestures: true,
-                                    direction: Axis.horizontal,
-                                    allowHalfRating: false,
-                                    itemCount: 5,
-                                    //itemPadding: EdgeInsets.symmetric(
-                                    //    horizontal: 4.0),
-                                    itemBuilder: (context, _) => Icon(
-                                      Icons.star_border_outlined,
-                                      color: Colors.amber,
-                                    ),
-                                    onRatingUpdate: (rating) {
-                                      //_rating = rating;
-                                      //print(rating);
-                                    },
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Icon(
-                                    FontAwesomeIcons.solidHeart,
-                                    color: Colors.red,
-                                    size: 15,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    "(" + companiaMapa.love.toString() + ")",
-                                    style: TextStyle(
-                                        fontSize: 13, color: Colors.grey[600]),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Icon(
-                                    FontAwesomeIcons.comments,
-                                    color: Colors.blueAccent,
-                                    size: 15,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    "(" +
-                                        companiaMapa.comentario.toString() +
-                                        ")",
-                                    style: TextStyle(
-                                        fontSize: 13, color: Colors.grey[600]),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
                         ),
-                        Expanded(
-                          child: Column(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.drive_eta_outlined),
-                                  Expanded(
-                                      child: Container(
-                                    child: Text(
-                                      '${Config().distancia((companiaMapa.duracion! / 60).floor())}' +
-                                          " " +
-                                          'minutes'.tr(),
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 20,
+                                    width: 90,
+                                    child: RatingBar.builder(
+                                      // ignoreGestures: true,
+                                      itemSize: 20,
+                                      initialRating: companiaMapa.rating!,
+                                      minRating: companiaMapa.rating!,
+                                      maxRating: companiaMapa.rating!,
+                                      ignoreGestures: true,
+                                      direction: Axis.horizontal,
+                                      allowHalfRating: false,
+                                      itemCount: 5,
+
+                                      itemBuilder: (context, _) => Icon(
+                                        Icons.star_border_outlined,
+                                        color: Colors.amber,
                                       ),
+                                      onRatingUpdate: (rating) {
+                                        //_rating = rating;
+                                        //print(rating);
+                                      },
                                     ),
-                                  )),
-                                ],
-                              ),
-                            ],
-                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  FontAwesomeIcons.heart,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  companiaMapa.love.toString(),
+                                  style: TextStyle(
+                                      fontSize: 13, color: Colors.grey[600]),
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Icon(
+                                  FontAwesomeIcons.comment,
+                                  size: 18,
+                                  color: Colors.blue,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  companiaMapa.comentario.toString(),
+                                  style: TextStyle(
+                                      fontSize: 13, color: Colors.grey[600]),
+                                ),
+                                Spacer(),
+                              ],
+                            ),
+                          ],
                         )
                       ],
                     ),

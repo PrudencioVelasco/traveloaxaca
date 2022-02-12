@@ -200,184 +200,178 @@ class _CompaniaComentarioPageState extends State<CompaniaComentarioPage> {
                             height: 0,
                           ),
                       itemBuilder: (_, int index) {
-                        return Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(top: 5, bottom: 5),
-                            decoration: BoxDecoration(
-                              // color: Colors.white,
-                              border: Border(
-                                bottom: BorderSide(
-                                    width: 1, color: Colors.grey.shade300),
-                              ),
-                              //  borderRadius: BorderRadius.circular(5)),
+                        return Container(
+                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                          decoration: BoxDecoration(
+                            // color: Colors.white,
+                            border: Border(
+                              bottom: BorderSide(
+                                  width: 1, color: Colors.grey.shade300),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ListTile(
-                                  leading: (_listComentarios[index]!
-                                          .imageUrl!
-                                          .isEmpty)
-                                      ? Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[300],
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(Icons.person, size: 28),
-                                        )
-                                      : CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor: Colors.grey[200],
-                                          backgroundImage:
-                                              CachedNetworkImageProvider(
-                                                  _listComentarios[index]!
-                                                      .imageUrl!),
-                                        ),
-                                  title: Text(
-                                    _listComentarios[index]!.userName!,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subtitle: Text(
-                                      _listComentarios[index]!.fecha.toString(),
-                                      style: TextStyle(
-                                          color: Colors.grey[500],
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500)),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      PopupMenuButton(
-                                          // key: _menuKey,
-                                          itemBuilder: (_) =>
-                                              <PopupMenuItem<String>>[
-                                                PopupMenuItem<String>(
-                                                    child: Text('report?'.tr()),
-                                                    value: 'reportar'),
-                                                if (_listComentarios[index]!
-                                                        .idusuario ==
-                                                    _signInBloc.idusuario)
-                                                  PopupMenuItem<String>(
-                                                      child:
-                                                          Text('delete?'.tr()),
-                                                      value: 'eliminar'),
-                                              ],
-                                          onSelected: (valor) {
-                                            print(valor);
-                                            if (valor == "reportar") {
-                                              nextScreen(
-                                                  context,
-                                                  ReportarComentarioCompaniaPage(
-                                                      comentario:
-                                                          _listComentarios[
-                                                              index]!));
-                                            }
-                                            if (valor == "eliminar") {
-                                              handleDelete(context,
-                                                  _listComentarios[index]!);
-                                            }
-                                          }),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  //alignment: MainAxisAlignment.start,
-                                  //color: Colors.red,
-                                  child: RatingBar.builder(
-                                    // ignoreGestures: true,
-                                    itemSize: 28,
-                                    initialRating:
-                                        _listComentarios[index]!.rating!,
-                                    minRating: _listComentarios[index]!.rating!,
-                                    maxRating: _listComentarios[index]!.rating!,
-                                    ignoreGestures: true,
-                                    direction: Axis.horizontal,
-                                    allowHalfRating: false,
-                                    itemCount: 5,
-                                    //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                    itemBuilder: (context, _) => Icon(
-                                      Icons.star_border_outlined,
-                                      color: Colors.amber,
-                                    ),
-                                    onRatingUpdate: (rating) {
-                                      //_rating = rating;
-                                      //print(rating);
-                                    },
-                                  ),
-                                ),
-                                ReadMoreText(
-                                  _listComentarios[index]!.comentario!,
-                                  trimLines: 4,
-                                  colorClickableText: Colors.blue,
-                                  trimMode: TrimMode.Line,
-                                  trimCollapsedText: 'read more'.tr(),
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(fontSize: 16),
-                                  trimExpandedText: 'read less'.tr(),
-                                ),
-                                if (_listComentarios[index]!.imagenes!.length >
-                                    0)
-                                  GridView.builder(
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisSpacing: 5,
-                                        mainAxisSpacing: 2,
-                                        crossAxisCount: 3,
-                                      ),
-                                      scrollDirection: Axis.vertical,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: _listComentarios[index]!
-                                          .imagenes!
-                                          .length,
-                                      itemBuilder: (context, index2) {
-                                        return GestureDetector(
-                                          onTap: () => openImageFullScreen(
-                                              context, index, index2),
-                                          child: Container(
-                                            child: CachedNetworkImage(
-                                              imageUrl: (_listComentarios[
-                                                              index]!
-                                                          .imagenes![index2]
-                                                          .imagenurl! !=
-                                                      '')
-                                                  ? _listComentarios[index]!
-                                                      .imagenes![index2]
-                                                      .imagenurl!
-                                                  : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
-                                                      Container(
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ),
-                                              placeholder: (context, url) =>
-                                                  Center(
-                                                child: SizedBox(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                  height: 50.0,
-                                                  width: 50.0,
-                                                ),
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
+                            //  borderRadius: BorderRadius.circular(5)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                leading:
+                                    (_listComentarios[index]!.imageUrl!.isEmpty)
+                                        ? Container(
+                                            height: 50,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[300],
+                                              shape: BoxShape.circle,
                                             ),
+                                            child: Icon(Icons.person, size: 28),
+                                          )
+                                        : CircleAvatar(
+                                            radius: 25,
+                                            backgroundColor: Colors.grey[200],
+                                            backgroundImage:
+                                                CachedNetworkImageProvider(
+                                                    _listComentarios[index]!
+                                                        .imageUrl!),
                                           ),
-                                        );
-                                      }),
-                              ],
-                            ),
+                                title: Text(
+                                  _listComentarios[index]!.userName!,
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                    _listComentarios[index]!.fecha.toString(),
+                                    style: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500)),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    PopupMenuButton(
+                                        // key: _menuKey,
+                                        itemBuilder: (_) =>
+                                            <PopupMenuItem<String>>[
+                                              PopupMenuItem<String>(
+                                                  child: Text('report?'.tr()),
+                                                  value: 'reportar'),
+                                              if (_listComentarios[index]!
+                                                      .idusuario ==
+                                                  _signInBloc.idusuario)
+                                                PopupMenuItem<String>(
+                                                    child: Text('delete?'.tr()),
+                                                    value: 'eliminar'),
+                                            ],
+                                        onSelected: (valor) {
+                                          print(valor);
+                                          if (valor == "reportar") {
+                                            nextScreen(
+                                                context,
+                                                ReportarComentarioCompaniaPage(
+                                                    comentario:
+                                                        _listComentarios[
+                                                            index]!));
+                                          }
+                                          if (valor == "eliminar") {
+                                            handleDelete(context,
+                                                _listComentarios[index]!);
+                                          }
+                                        }),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                //alignment: MainAxisAlignment.start,
+                                //color: Colors.red,
+                                child: RatingBar.builder(
+                                  // ignoreGestures: true,
+                                  itemSize: 28,
+                                  initialRating:
+                                      _listComentarios[index]!.rating!,
+                                  minRating: _listComentarios[index]!.rating!,
+                                  maxRating: _listComentarios[index]!.rating!,
+                                  ignoreGestures: true,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: false,
+                                  itemCount: 5,
+                                  //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star_border_outlined,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    //_rating = rating;
+                                    //print(rating);
+                                  },
+                                ),
+                              ),
+                              ReadMoreText(
+                                _listComentarios[index]!.comentario!,
+                                trimLines: 4,
+                                colorClickableText: Colors.blue,
+                                trimMode: TrimMode.Line,
+                                trimCollapsedText: 'read more'.tr(),
+                                textAlign: TextAlign.justify,
+                                style: TextStyle(fontSize: 16),
+                                trimExpandedText: 'read less'.tr(),
+                              ),
+                              if (_listComentarios[index]!.imagenes!.length > 0)
+                                GridView.builder(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 2,
+                                      crossAxisCount: 3,
+                                    ),
+                                    scrollDirection: Axis.vertical,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: _listComentarios[index]!
+                                        .imagenes!
+                                        .length,
+                                    itemBuilder: (context, index2) {
+                                      return GestureDetector(
+                                        onTap: () => openImageFullScreen(
+                                            context, index, index2),
+                                        child: Container(
+                                          child: CachedNetworkImage(
+                                            imageUrl: (_listComentarios[index]!
+                                                        .imagenes![index2]
+                                                        .imagenurl! !=
+                                                    '')
+                                                ? _listComentarios[index]!
+                                                    .imagenes![index2]
+                                                    .imagenurl!
+                                                : "https://misicebucket.s3.us-east-2.amazonaws.com/no-image-verical.jpg",
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            placeholder: (context, url) =>
+                                                Center(
+                                              child: SizedBox(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                                height: 50.0,
+                                                width: 50.0,
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                            ],
                           ),
                         );
                       }),

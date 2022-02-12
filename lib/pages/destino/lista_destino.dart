@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:traveloaxaca/blocs/ruta_bloc.dart';
+import 'package:traveloaxaca/config/config.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/ruta.dart';
 import 'package:traveloaxaca/pages/destino/mapa_destino.dart';
@@ -35,7 +36,7 @@ class _ListaDestinoPageState extends State<ListaDestinoPage> {
   List<Lugar?> _listaLugar = [];
   RutasBloc _rutasBloc = new RutasBloc();
   final BannerAd myBanner = BannerAd(
-    adUnitId: BannerAd.testAdUnitId,
+    adUnitId: Config().idGoogleAds,
     size: AdSize.banner,
     request: AdRequest(),
     listener: BannerAdListener(),

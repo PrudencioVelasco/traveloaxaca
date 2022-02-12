@@ -49,7 +49,7 @@
     "bookmarks": "Marcadores",
     "saved places": "Lugares guardados",
     "saved blogs": "Blogs guardadas",
-    "sign in first": "Iniciar sesión primero",
+    "sign in first": "Iniciar sesión",
     "sign in to save your favourite places here": "",
     "sign in to save your favourite blogs here": "Sign in to save your favourite blogs here",
     "no blogs found": "No Blogs Found",
@@ -61,7 +61,7 @@
     "something is wrong. please try again.": "Algo está mal. Inténtalo de nuevo.",
     "sign in": "Registrarse",
     "cancel": "Cancelar",
-    "no sign in title": "Inicie sesión primero para acceder a esta función",
+    "no sign in title": "Inicie sesión para acceder a esta función",
     "no sign in subtitle": "Aún no has iniciado sesión. Por favor, inicia sesión para desbloquear esta característica",
     "comments": "Comentarios",
     "write a comment": "Escribir comentario",
@@ -177,8 +177,14 @@
     "read the guide":"Leer la guia",
     "photos": "Fotos",
     "explore oaxaca":"Explora Oaxaca",
-    "explore mexico":"Explora Mexico",
+    "explore mexico":"Explora México",
     "nearby places": "Lugares Cercanos",
     "sign in with facebook":"Entrar con Facebook",
-    "please active your GPS for look the map":"El permiso de GPS es necesario para ver el mapa."
+    "please active GPS":"Se necesita permiso de ubicación para mostrarle los lugares más cercanos.",
+    "please active your GPS for look the map":"El permiso del GPS es necesario, activelo para ver el mapa y  mostrarle los lugares mas cercanos.",
+    "active":"Activar",
+    "please activate and reload":"Por favor, activelo y recargue",
+    "submit":"Aceptar",
+   
+    "tap a start to set your rating":"Seleccione el número de estrellas"
 }

@@ -18,7 +18,7 @@ class ActividadBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/actividad';
     try {
-      Uri url = Uri.http(_url, '$_api/todasActividades');
+      Uri url = Uri.https(_url, '$_api/todasActividades');
       // String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -39,7 +39,7 @@ class ActividadBloc with ChangeNotifier {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/actividad';
     try {
-      Uri url = Uri.http(_url, '$_api/obtenerActividadLugar');
+      Uri url = Uri.https(_url, '$_api/obtenerActividadLugar');
       String bodyParams = json.encode({'idlugar': idLugar});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',

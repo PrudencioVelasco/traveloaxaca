@@ -6,13 +6,11 @@ import 'package:traveloaxaca/api/environment.dart';
 import 'package:traveloaxaca/models/lugar.dart';
 import 'package:traveloaxaca/models/response_api.dart';
 import 'package:http/http.dart' as http;
+
 class BusquedaNextBloc with ChangeNotifier {
-
-
-  SearchBloc (){
+  SearchBloc() {
     getRecentSearchList();
   }
-
 
   List<String> _recentSearchData = [];
   List<String> get recentSearchData => _recentSearchData;
@@ -20,10 +18,8 @@ class BusquedaNextBloc with ChangeNotifier {
   String _searchText = '';
   String get searchText => _searchText;
 
-
   bool _searchStarted = false;
   bool get searchStarted => _searchStarted;
-
 
   TextEditingController _textFieldCtrl = TextEditingController();
   TextEditingController get textfieldCtrl => _textFieldCtrl;
@@ -34,25 +30,25 @@ class BusquedaNextBloc with ChangeNotifier {
     notifyListeners();
   }
 
-
-  Future addToSearchList (String value) async {
+  Future addToSearchList(String value) async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _recentSearchData.add(value);
     await sp.setStringList('recent_search_data', _recentSearchData);
     notifyListeners();
   }
-  Future removeFromSearchList (String value) async {
+
+  Future removeFromSearchList(String value) async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _recentSearchData.remove(value);
     await sp.setStringList('recent_search_data', _recentSearchData);
     notifyListeners();
   }
 
-  Future<List<Lugar>?>  getData() async {
+  Future<List<Lugar>?> getData() async {
     String _url = Environment.API_DELIVERY;
     String _api = '/monarca/lugar';
     try {
-      Uri url = Uri.http(_url, '$_api/buscarLugaresActivos');
+      Uri url = Uri.https(_url, '$_api/buscarLugaresActivos');
       String bodyParams = json.encode({'valor': _searchText.toLowerCase()});
       Map<String, String> headers = {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -67,29 +63,18 @@ class BusquedaNextBloc with ChangeNotifier {
       print('Error: $error');
       return null;
     }
-
   }
 
-
-
-
-
-  setSearchText (value){
+  setSearchText(value) {
     _textFieldCtrl.text = value;
     _searchText = value;
     _searchStarted = true;
     notifyListeners();
   }
 
-
-  saerchInitialize (){
+  saerchInitialize() {
     _textFieldCtrl.clear();
     _searchStarted = false;
     notifyListeners();
-
   }
-
-
-
-
 }
